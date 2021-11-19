@@ -1,4 +1,4 @@
-# Discord Bot Template
+# BanklessBot
 Bankless Discord Bot development<br>
 Multisig Wallet: 0x735FF6F197B0dc18eBEE127DD918d2111Eaf8220 (https://etherscan.io/address/0x735ff6f197b0dc18ebee127dd918d2111eaf8220)
 

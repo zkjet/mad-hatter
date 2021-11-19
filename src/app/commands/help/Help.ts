@@ -4,19 +4,19 @@ import {
 	SlashCommand,
 	SlashCreator,
 } from 'slash-create';
-import HelpMe from '../../service/help/HelpMe';
 import { LogUtils } from '../../utils/Log';
+import HowToBounty from '../../service/help/HowToBounty';
 
 export default class Help extends SlashCommand {
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: 'help',
-			description: 'Getting more info on help!',
+			description: 'Additional information on creating bounties, adding guests, and other operations.',
 			options: [
 				{
-					name: 'me',
+					name: 'bounty',
 					type: CommandOptionType.SUB_COMMAND,
-					description: 'Information that might help me.',
+					description: 'Information on how to create, claim, complete, and delete bounties.',
 				},
 			],
 			throttling: {
@@ -33,8 +33,8 @@ export default class Help extends SlashCommand {
 		
 		let messageOptions: MessageOptions;
 		switch (ctx.subcommands[0]) {
-		case 'me':
-			messageOptions = HelpMe();
+		case 'bounty':
+			messageOptions = HowToBounty();
 			break;
 		}
 		return ctx.send(messageOptions);

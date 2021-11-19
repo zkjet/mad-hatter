@@ -10,7 +10,7 @@ jobs:
     deploy-qa:
         environment:
             name: preview
-            url: url-logdna-here
+            url: https://app.logdna.com/273e532689/logs/view?apps=serendipity-mk1
         runs-on: ubuntu-20.04
         steps:
             - uses: actions/checkout@v2
@@ -29,8 +29,8 @@ jobs:
               uses: AkhileshNS/heroku-deploy@v3.12.12
               with:
                   heroku_api_key: ${{secrets.QA_HEROKU_API_KEY}}
-                  heroku_app_name: 'heroku-app-name-here'
-                  heroku_email: 'email-here'
+                  heroku_app_name: 'serendipity-mk1'
+                  heroku_email: 'bankless@nonsensecodes.io'
                   procfile: 'worker: yarn qa'
               env:
                   HD_DISCORD_BOT_TOKEN: ${{secrets.QA_DISCORD_TOKEN}}
@@ -42,3 +42,8 @@ jobs:
                   HD_MONGODB_CLUSTER: ${{secrets.QA_MONGODB_CLUSTER}}
                   HD_NOTION_TOKEN: ${{secrets.QA_NOTION_TOKEN}}
                   HD_LOGDNA_TOKEN: ${{secrets.QA_LOGDNA_TOKEN}}
+                  HD_TWITTER_API_TOKEN: ${{secrets.QA_TWITTER_API_TOKEN}}
+                  HD_TWITTER_API_SECRET: ${{secrets.QA_TWITTER_API_SECRET}}
+                  HD_TWITTER_BEARER_TOKEN: ${{secrets.QA_TWITTER_API_BEARER_TOKEN}}
+                  HD_TWITTER_ACCESS_TOKEN_SECRET: ${{secrets.QA_TWITTER_API_ACCESS_TOKEN_SECRET}}
+                  HD_DD_API_KEY: ${{secrets.QA_DATADOG_API_KEY}}
