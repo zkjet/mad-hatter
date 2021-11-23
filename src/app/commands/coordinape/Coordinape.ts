@@ -17,7 +17,8 @@ module.exports = class Coordinape extends SlashCommand {
 		super(creator, {
 			name: 'coordinape',
 			description: 'Commands to manage Coordinape rounds',
-			guildIDs: [discordServerIds.banklessDAO, discordServerIds.discordBotGarage],
+			// TODO: Enable this for BanklessDAO in the future
+			guildIDs: [discordServerIds.discordBotGarage],
 			options: [
 				{
 					name: 'form-request',
