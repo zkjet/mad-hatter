@@ -4,7 +4,6 @@ import messageLaunchFirstQuest from './first-quest/messageLaunchFirstQuest';
 import { Message } from 'discord.js';
 import { DiscordEvent } from '../types/discord/DiscordEvent';
 import MessageCreateOnDEGEN from './chat/MessageCreateOnDEGEN';
-import ServiceUtils from '../utils/ServiceUtils';
 import { LogUtils } from '../utils/Log';
 import HandleAFK from './chat/HandleAFK';
 
@@ -16,15 +15,13 @@ export default class implements DiscordEvent {
 		try {
 			if(message.author.bot) return;
 			// DEGEN says hello
-			await MessageCreateOnDEGEN(message).catch(e => {
+			MessageCreateOnDEGEN(message).catch(e => {
 				LogUtils.logError('DEGEN failed to say hello', e);
 			});
-			if (ServiceUtils.isBanklessDAO(message.guild)) {
-				// Run for webhook
-				await messageCreateOnBountyBoard(message).catch(e => {
-					LogUtils.logError('failed to create bounty message from webhook', e);
-				});
-			}
+			// Run for webhook
+			await messageCreateOnBountyBoard(message).catch(e => {
+				LogUtils.logError('failed to create bounty message from webhook', e);
+			});
 			if (message.channel.type === 'DM') {
 				// Run scoap squad DM flow
 				await messageSetScoapRoles(message).catch(e => {

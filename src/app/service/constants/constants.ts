@@ -1,4 +1,5 @@
 export default Object.freeze({
+	DISCORD_BOT_USER_ID: process.env.DISCORD_BOT_APPLICATION_ID,
 	DB_NAME_DEGEN: 'degen',
 	DB_NAME_BOUNTY_BOARD: 'bountyboard',
 	DB_NAME_NEXTAUTH: 'nextauth',

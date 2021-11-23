@@ -43,7 +43,7 @@ export default async (guildMember: GuildMember, ctx: CommandContext): Promise<an
 		if (linkList !== null) {
 			await writePOAPLinksToDb(linkList, timestamp);
 
-			return guildMember.send({ content: 'POAP claim links successfully updated' });
+			return guildMember.send({ content: 'POAP claim links successfully updated!' });
 
 		} else {
 			return guildMember.send({ content: 'links.txt file seems to be empty, please try again.' });
