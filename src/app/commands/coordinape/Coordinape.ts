@@ -19,6 +19,10 @@ import { Website } from '../../service/coordinape/Website';
 import { Apply } from '../../service/coordinape/Apply';
 import { Help } from '../../service/coordinape/Help';
 
+
+// README
+// Permissions for the /coordinape form-request need to be tweaked 
+// the old permission structure is documented on the bottom of the file
 module.exports = class Coordinape extends SlashCommand {
 	constructor(creator: SlashCreator) {
 		super(creator, {
@@ -167,3 +171,32 @@ module.exports = class Coordinape extends SlashCommand {
 	}
 
 };
+
+/*
+permissions: {
+				[discordServerIds.banklessDAO]: [
+					{
+						type: ApplicationCommandPermissionType.ROLE,
+						id: roleIds.level2,
+						permission: true,
+					},
+					{
+						type: ApplicationCommandPermissionType.ROLE,
+						id: roleIds.level1,
+						permission: true,
+					},
+				],
+				[discordServerIds.discordBotGarage]: [
+					{
+						type: ApplicationCommandPermissionType.ROLE,
+						id: roleIds.level2,
+						permission: true,
+					},
+					{
+						type: ApplicationCommandPermissionType.ROLE,
+						id: roleIds.level1,
+						permission: true,
+					},
+				],
+			},
+*/
