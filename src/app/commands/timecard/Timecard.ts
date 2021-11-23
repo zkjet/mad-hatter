@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import {
 	CommandContext,
 	CommandOptionType,
@@ -75,7 +74,7 @@ export default class Timecard extends SlashCommand {
 			}
 			this.handleCommandError(ctx, command);
 		} catch (e) {
-			console.error(e);
+			LogUtils.logError('failed processing timecard', e);
 		}
 	}
 
