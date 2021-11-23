@@ -1,0 +1,31 @@
+/give - Add username, tokens and note (optional) after the command separated by a space e.g /give @zashtoneth 20 thank you note
+
+/gives - Get all the allocations that you have sent
+
+/ungive - Deallocate all your existing tokens that you have given
+
+/receipts - Get all the allocations that you have received
+
+/discord - link to discord
+
+/website - link to website
+
+/apply - typeform link to join coordinape and give out grants through our application
+
+/help - link to documentation
+
+/feedback - please use this to provide feedback/suggestions/bug findings to me
+
+
+The commands all can be executed in group chats/PM , the bot is exclusively linked to yearn's community circle and usable whenever an epoch is active.
+";
+
+-- figure out how to communicate with Coordinape backend
+-- Finish types for data recieved from Coordinape
+-- request, parse, and return data from Coordinape
+
+Bot Controller Link:
+https://github.com/coordinape/coordinape-backend/blob/main/app/Http/Controllers/BotController.php
+
+Google Doc Link:
+https://docs.google.com/document/d/14-lBgw_lwIudYEq_0mcrFuKHc4je8hPkZTSznDUhTaE/edit#heading=h.epvzrx9cc4er
