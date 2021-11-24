@@ -9,17 +9,21 @@ import channelIds from '../constants/channelIds';
 import { getPOAPLink } from './FirstQuestPOAP';
 
 export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: GuildMember): Promise<void> => {
-
+	Log.debug('launching first quest');
+	
 	const dmChannel: DMChannel = await getDMChannel(member, dmChan);
 
 	const fqMessageContent = await getMessageContentFromDb();
+	Log.debug('got first quest content from db');
 
 	const fqMessage = retrieveFqMessage(member);
+	Log.debug('got first quest step for user in flow');
 
 	const content = fqMessageContent[fqMessage.message_id];
-
+	
 	const firstQuestMessage = await dmChannel.send({ content: content.replace(/\\n/g, '\n') });
-
+	Log.debug('sent first quest message step in flow');
+	
 	await firstQuestMessage.react(fqMessage.emoji);
 
 	const filter = (reaction, user) => {
@@ -180,6 +184,7 @@ const retrieveFqMessage = (member) => {
 			return getFqMessage(role.id);
 		}
 	}
+	Log.warn('could not find first quest message');
 };
 
 const getFqMessage = (roleId: string) => {

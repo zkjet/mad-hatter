@@ -14,6 +14,7 @@ export default async (member: GuildMember, ctx?: CommandContext): Promise<any> =
 	const dmChannel = await member.user.createDM();
 
 	await dmChannel.send({ content: 'Which message would you like to edit?' });
+	Log.debug('Asking user which message to edit for first quest');
 
 	await createSelectMessage(dmChannel, member);
 
@@ -22,6 +23,7 @@ export default async (member: GuildMember, ctx?: CommandContext): Promise<any> =
 const createSelectMessage = async (dmChannel, member): Promise<void> => {
 
 	const data = await fetchData();
+	Log.debug('pulled first quest content from db');
 
 	const embed = await createEmbed(data);
 
@@ -66,6 +68,7 @@ const createSelectMessage = async (dmChannel, member): Promise<void> => {
 				}
 			}
 		} else {
+			Log.warn('Command timed out for first quest configuration');
 			await dmChannel.send({ content: 'Command timed out.' });
 		}
 	});
@@ -99,6 +102,7 @@ const collectConfirmation = async (message, member, key, origMessages): Promise<
 				}
 			}
 		} else {
+			Log.warn('Command timed out for first quest configuration emoji reaction');
 			await message.channel.send({ content: 'Command timed out.' });
 		}
 	});

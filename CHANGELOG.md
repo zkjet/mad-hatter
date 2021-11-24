@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1-RELEASE (20201-11-24)
+
+1. Add more phrases and add some logging to first quest
+2. Generate new captcha on failure
+3. Regenerate captcha upon failure
+4. Fix first quest flow for assigning role
+
 ## 1.0.0-RELEASE (2021-11-23)
 
 1. Repo initialized
@@ -7,3 +14,5 @@
 3. Setup heroku integration
 4. Misc fixes and stability enhancements
 5. Add messaging in channels
+6. Add catch handlers for message creation events
+7. Add AFK key to prod

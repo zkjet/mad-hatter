@@ -14,37 +14,66 @@ export default class implements DiscordEvent {
 	async execute(member: GuildMember): Promise<any> {
 		if (member.user.bot) return;
 		try {
-			if (ServiceUtils.isBanklessDAO(member.guild)) {
-				if (await ServiceUtils.runUsernameSpamFilter(member)) {
-					return;
-				} else {
-					if (member.partial) {
-						member = await member.fetch();
-					}
-
-					const captcha = new Captcha(client, {
-						guildID: member.guild.id,
-						roleID: fqConstants.FIRST_QUEST_ROLES.verified,
-						channelID: process.env.DISCORD_CHANNEL_SUPPORT_ID,
-						kickOnFailure: true,
-						attempts: 3,
-						timeout: 60000,
-						showAttemptCount: true,
-					});
-
-					captcha.present(member);
-
-					captcha.on('success', async () => {
-						await new Promise(r => setTimeout(r, 1000));
-
-						await sendFqMessage('undefined', member).catch(e => {
-							LogUtils.logError('First attempt to launch first-quest failed: ', e);
+			if (member.partial) {
+				member = await member.fetch();
+			}
+			
+			if (await ServiceUtils.runUsernameSpamFilter(member)) {
+				return;
+			} else {
+				const captchaOptions = {
+					guildID: member.guild.id,
+					roleID: fqConstants.FIRST_QUEST_ROLES.verified,
+					channelID: process.env.DISCORD_CHANNEL_SUPPORT_ID,
+					kickOnFailure: false,
+					attempts: 1,
+					timeout: 180000,
+					showAttemptCount: true,
+				};
+				
+				const captcha1 = new Captcha(client, captchaOptions);
+				captcha1.present(member);
+				handleCaptchaSuccess(member, captcha1);
+				
+				captcha1.on('failure', () => {
+					const captcha2 = new Captcha(client, captchaOptions);
+					captcha2.present(member);
+					handleCaptchaSuccess(member, captcha2);
+					
+					captcha2.on('failure', () => {
+						captchaOptions.kickOnFailure = true;
+						const captcha3 = new Captcha(client, captchaOptions);
+						captcha3.present(member);
+						handleCaptchaSuccess(member, captcha3);
+						
+						captcha3.on('timeout', () => {
+							member.kick('captcha timeout');
+							
 						});
 					});
-				}
+					
+					captcha2.on('timeout', () => {
+						member.kick('captcha timeout');
+					});
+				});
+				
+				captcha1.on('timeout', () => {
+					member.kick('captcha timeout');
+				});
+				
 			}
 		} catch (e) {
 			LogUtils.logError('failed to process event guildMemberAdd', e);
 		}
 	}
 }
+
+const handleCaptchaSuccess = (member: GuildMember, captcha: Captcha) => {
+	captcha.on('success', async () => {
+		await member.roles.add(fqConstants.FIRST_QUEST_ROLES.verified);
+		await sendFqMessage('undefined', member).catch(e => {
+			LogUtils.logError('First attempt to launch first-quest failed: ', e);
+		});
+	});
+};
+

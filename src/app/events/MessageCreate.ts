@@ -15,7 +15,7 @@ export default class implements DiscordEvent {
 		try {
 			if(message.author.bot) return;
 			// DEGEN says hello
-			MessageCreateOnDEGEN(message).catch(e => {
+			await MessageCreateOnDEGEN(message).catch(e => {
 				LogUtils.logError('DEGEN failed to say hello', e);
 			});
 			// Run for webhook

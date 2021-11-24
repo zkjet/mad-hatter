@@ -26,8 +26,8 @@ export default class implements DiscordEvent {
 			if (client.guilds.cache.some((guild) => guild.id == discordServerIds.banklessDAO || guild.id == discordServerIds.discordBotGarage)) {
 				await MongoDbUtils.connect(constants.DB_NAME_BOUNTY_BOARD);
 				await GuestPassService(client).catch(Log.error);
-				await fqInit();
-				await FirstQuestRescueService();
+				await fqInit().catch(Log.error);
+				await FirstQuestRescueService().catch(Log.error);
 				await restoreScoapEmbedAndVoteRecord().catch(Log.error);
 			}
 			
