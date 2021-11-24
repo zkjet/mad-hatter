@@ -18,6 +18,13 @@ const degenPhrases = {
 		'Solana backwards is ****** OS',
 		'I am not available at the moment... Please leave a message at the sound of the beep ... BEEP.',
 		'Did you see the gas fees today? You don\'t want to...',
+		'Hello',
+		'Howdy',
+		'Hey',
+		'Go Bankless,',
+		'Nice to meet you,',
+		'It\'s great to see you,',
+		'Ahoy,',
 	],
 };
 
