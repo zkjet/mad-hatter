@@ -38,6 +38,7 @@ const degenPhrases = {
 		'I am a complete degenerate.',
 		'👀',
 		'Hello! I\'m so glad you are here! wgmi fren',
+		'Shill me your project 👂',
 	],
 };
 
