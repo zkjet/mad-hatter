@@ -7,3 +7,5 @@
 3. Setup heroku integration
 4. Misc fixes and stability enhancements
 5. Add messaging in channels
+6. Add catch handlers for message creation events
+7. Add AFK key to prod
