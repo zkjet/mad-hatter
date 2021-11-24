@@ -27,7 +27,7 @@ export default class implements DiscordEvent {
 					channelID: process.env.DISCORD_CHANNEL_SUPPORT_ID,
 					kickOnFailure: false,
 					attempts: 1,
-					timeout: 60000,
+					timeout: 180000,
 					showAttemptCount: true,
 				};
 				
@@ -45,8 +45,22 @@ export default class implements DiscordEvent {
 						const captcha3 = new Captcha(client, captchaOptions);
 						captcha3.present(member);
 						handleCaptchaSuccess(member, captcha3);
+						
+						captcha3.on('timeout', () => {
+							member.kick('captcha timeout');
+							
+						});
+					});
+					
+					captcha2.on('timeout', () => {
+						member.kick('captcha timeout');
 					});
 				});
+				
+				captcha1.on('timeout', () => {
+					member.kick('captcha timeout');
+				});
+				
 			}
 		} catch (e) {
 			LogUtils.logError('failed to process event guildMemberAdd', e);
@@ -56,8 +70,10 @@ export default class implements DiscordEvent {
 
 const handleCaptchaSuccess = (member: GuildMember, captcha: Captcha) => {
 	captcha.on('success', async () => {
+		await member.roles.add(fqConstants.FIRST_QUEST_ROLES.verified);
 		await sendFqMessage('undefined', member).catch(e => {
 			LogUtils.logError('First attempt to launch first-quest failed: ', e);
 		});
 	});
 };
+

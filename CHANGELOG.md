@@ -5,6 +5,7 @@
 1. Add more phrases and add some logging to first quest
 2. Generate new captcha on failure
 3. Regenerate captcha upon failure
+4. Fix first quest flow for assigning role
 
 ## 1.0.0-RELEASE (2021-11-23)
 

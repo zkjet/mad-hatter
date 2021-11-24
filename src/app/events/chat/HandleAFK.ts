@@ -8,7 +8,7 @@ const HandleAFK = async (message: Message): Promise<any> => {
 	if (!AFKRole) {
 		return;
 	}
-	message.mentions.users.forEach(async user => {
+	message.mentions.users.forEach(user => {
 		const guildMember: GuildMember = message.guild.members.cache.find(member => {
 			return member.user.id === user.id;
 		});
@@ -18,7 +18,7 @@ const HandleAFK = async (message: Message): Promise<any> => {
 			});
 			const prettyMessage = PublishAFKMessage(message.author.username, message.content, message.guildId, message.channelId, message.id);
 			
-			await guildMember.send({ embeds :[prettyMessage] });
+			guildMember.send({ embeds :[prettyMessage] });
 		}
 	});
 };

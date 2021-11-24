@@ -20,7 +20,7 @@ export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: G
 	Log.debug('got first quest step for user in flow');
 
 	const content = fqMessageContent[fqMessage.message_id];
-
+	
 	const firstQuestMessage = await dmChannel.send({ content: content.replace(/\\n/g, '\n') });
 	Log.debug('sent first quest message step in flow');
 	
