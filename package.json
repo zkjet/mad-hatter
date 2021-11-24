@@ -18,7 +18,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/BanklessDAO/discord-bots"
+        "url": "git+https://github.com/BanklessDAO/degen-bankless-dao"
     },
     "keywords": [
         "bankless",
@@ -29,9 +29,9 @@
     "author": "BANKLESS DAO",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/BanklessDAO/discord-bot-degen/issues"
+        "url": "https://github.com/BanklessDAO/degen-bankless-dao/issues"
     },
-    "homepage": "https://github.com/BanklessDAO/discord-bot-degen/blob/main/README.md",
+    "homepage": "https://github.com/BanklessDAO/degen-bankless-dao/main/README.md",
     "dependencies": {
         "@logdna/logger": "^2.4.1",
         "@notionhq/client": "0.2.0",
