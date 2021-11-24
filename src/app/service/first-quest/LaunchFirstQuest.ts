@@ -21,6 +21,7 @@ export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: G
 
 	const content = fqMessageContent[fqMessage.message_id];
 
+	console.log(content);
 	const firstQuestMessage = await dmChannel.send({ content: content.replace(/\\n/g, '\n') });
 	Log.debug('sent first quest message step in flow');
 	
