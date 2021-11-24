@@ -7,6 +7,7 @@ const degenPhrases = {
 		'Did you say POAP? I want one! Where are they?',
 		'I can\'t get you POAPs, but DEGEN can!',
 		'POAPS? ha that\'s almost as funny as "The Rug"',
+		'There\'s no POAPs here ser, this is a Wendy\'s',
 	],
 	app: [
 		'DEV GUILD STRONK 💪',
@@ -16,6 +17,7 @@ const degenPhrases = {
 		'Did you hear about Solana? lol',
 		'Solana backwards is ****** OS',
 		'I am not available at the moment... Please leave a message at the sound of the beep ... BEEP.',
+		'Did you see the gas fees today? You don\'t want to...',
 	],
 };
 
