@@ -2,10 +2,10 @@ import { GuildMember } from 'discord.js';
 import { DiscordEvent } from '../types/discord/DiscordEvent';
 import ServiceUtils from '../utils/ServiceUtils';
 import { LogUtils } from '../utils/Log';
-import { sendFqMessage } from '../service/first-quest/LaunchFirstQuest';
 import client from '../app';
 import { Captcha } from 'discord.js-captcha';
 import fqConstants from '../service/constants/firstQuest';
+import { sendFqMessage } from '../service/first-quest/LaunchFirstQuest';
 
 export default class implements DiscordEvent {
 	name = 'guildMemberAdd';
@@ -61,7 +61,9 @@ const presentCaptcha = async (member: GuildMember, captcha: Captcha, attempts: n
 
 	captcha.on('success', async () => {
 		await member.roles.add(fqConstants.FIRST_QUEST_ROLES.verified);
-		
+
+		await new Promise(r => setTimeout(r, 1000));
+
 		await sendFqMessage('undefined', member).catch(e => {
 			LogUtils.logError('First attempt to launch first-quest failed: ', e);
 		});
