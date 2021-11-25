@@ -32,35 +32,8 @@ export default class implements DiscordEvent {
 				};
 				
 				const captcha1 = new Captcha(client, captchaOptions);
-				captcha1.present(member);
-				handleCaptchaSuccess(member, captcha1);
-				
-				captcha1.on('failure', () => {
-					const captcha2 = new Captcha(client, captchaOptions);
-					captcha2.present(member);
-					handleCaptchaSuccess(member, captcha2);
-					
-					captcha2.on('failure', () => {
-						captchaOptions.kickOnFailure = true;
-						const captcha3 = new Captcha(client, captchaOptions);
-						captcha3.present(member);
-						handleCaptchaSuccess(member, captcha3);
-						
-						captcha3.on('timeout', () => {
-							member.kick('captcha timeout');
-							
-						});
-					});
-					
-					captcha2.on('timeout', () => {
-						member.kick('captcha timeout');
-					});
-				});
-				
-				captcha1.on('timeout', () => {
-					member.kick('captcha timeout');
-				});
-				
+				await presentCaptcha(member, captcha1, 1, captchaOptions);
+			
 			}
 		} catch (e) {
 			LogUtils.logError('failed to process event guildMemberAdd', e);
@@ -68,12 +41,30 @@ export default class implements DiscordEvent {
 	}
 }
 
-const handleCaptchaSuccess = (member: GuildMember, captcha: Captcha) => {
+const presentCaptcha = async (member: GuildMember, captcha: Captcha, attempts: number, captchaOptions) => {
+	captcha.present(member);
+
+	captcha.on('failure', () => {
+		if (attempts <= 2) {
+			presentCaptcha(member, new Captcha(client, captchaOptions), attempts + 1, captchaOptions);
+
+		} else {
+			captchaOptions.kickOnFailure = true;
+
+			presentCaptcha(member, new Captcha(client, captchaOptions), attempts + 1, captchaOptions);
+		}
+	});
+
+	captcha.on('timeout', () => {
+		member.kick('captcha timeout');
+	});
+
 	captcha.on('success', async () => {
 		await member.roles.add(fqConstants.FIRST_QUEST_ROLES.verified);
+		
 		await sendFqMessage('undefined', member).catch(e => {
 			LogUtils.logError('First attempt to launch first-quest failed: ', e);
 		});
 	});
+	
 };
-

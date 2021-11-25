@@ -9,20 +9,16 @@ import channelIds from '../constants/channelIds';
 import { getPOAPLink } from './FirstQuestPOAP';
 
 export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: GuildMember): Promise<void> => {
-	Log.debug('launching first quest');
 	
 	const dmChannel: DMChannel = await getDMChannel(member, dmChan);
 
 	const fqMessageContent = await getMessageContentFromDb();
-	Log.debug('got first quest content from db');
 
-	const fqMessage = retrieveFqMessage(member);
-	Log.debug('got first quest step for user in flow');
+	const fqMessage = await retrieveFqMessage(member);
 
 	const content = fqMessageContent[fqMessage.message_id];
 	
 	const firstQuestMessage = await dmChannel.send({ content: content.replace(/\\n/g, '\n') });
-	Log.debug('sent first quest message step in flow');
 	
 	await firstQuestMessage.react(fqMessage.emoji);
 
@@ -65,11 +61,15 @@ export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: G
 		// time out silently (user probably invoked !first-quest).
 		// Otherwise, send time out notification.
 		if (firstQuestMessage.id === dmChannel.lastMessage.id) {
-			await dmChannel.send('The conversation timed out. ' +
+			try {
+				await dmChannel.send('The conversation timed out. ' +
 				'All your progress has been saved. ' +
 				'You can continue at any time by ' +
 				'responding to this conversation ' +
 				'with **!first-quest** ');
+			} catch (e) {
+				Log.debug(`First Quest timed out, unable to send dm, error msg: ${e}`);
+			}
 		}
 
 		if (!['limit', 'time'].includes(reason)) {
@@ -154,28 +154,40 @@ export const switchRoles = async (member: GuildMember, fromRole: string, toRole:
 
 	for (const role of roles.values()) {
 		if (role.id === toRole) {
-			await member.roles.add(role);
+			try {
+				await member.roles.add(role);
 
-			const filter = { _id: member.user.id };
+				const filter = { _id: member.user.id };
 
-			const options = { upsert: true };
+				const options = { upsert: true };
 
-			const updateDoc = { $set: { role: role.id, doneRescueCall: false, timestamp: Date.now(), guild: guild.id } };
+				const updateDoc = { $set: { role: role.id, doneRescueCall: false, timestamp: Date.now(), guild: guild.id } };
 
-			const db: Db = await dbInstance.connect(constants.DB_NAME_DEGEN);
+				const db: Db = await dbInstance.connect(constants.DB_NAME_DEGEN);
 
-			const dbFirstQuestTracker = db.collection(constants.DB_COLLECTION_FIRST_QUEST_TRACKER);
+				const dbFirstQuestTracker = db.collection(constants.DB_COLLECTION_FIRST_QUEST_TRACKER);
 
-			await dbFirstQuestTracker.updateOne(filter, updateDoc, options);
+				await dbFirstQuestTracker.updateOne(filter, updateDoc, options);
+			} catch {
+				Log.error(`First Quest: failed to add Role ${role.id} to user ${member.user.id}`);
+				return;
+			}
+			
 		}
 
 		if (role.id === fromRole) {
-			await member.roles.remove(role);
+			try {
+				await member.roles.remove(role);
+
+			} catch {
+				Log.error(`First Quest: failed to remove Role ${role.id} from user ${member.user.id}`);
+			}
+			
 		}
 	}
 };
 
-const retrieveFqMessage = (member) => {
+const retrieveFqMessage = async (member):Promise<any> => {
 
 	const roles = member.roles.cache;
 
@@ -184,7 +196,12 @@ const retrieveFqMessage = (member) => {
 			return getFqMessage(role.id);
 		}
 	}
-	Log.warn('could not find first quest message');
+	try {
+		await member.roles.add(fqConstants.FIRST_QUEST_ROLES.verified);
+		return getFqMessage(fqConstants.FIRST_QUEST_ROLES.verified);
+	} catch {
+		Log.error('could not retrieve first quest message');
+	}
 };
 
 const getFqMessage = (roleId: string) => {
