@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0-SNAPSHOT
+
+1. Handle edge cases for first quest
+
 ## 1.0.1-RELEASE (20201-11-24)
 
 1. Add more phrases and add some logging to first quest

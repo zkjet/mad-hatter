@@ -6,6 +6,7 @@ import { sendFqMessage } from '../service/first-quest/LaunchFirstQuest';
 import client from '../app';
 import { Captcha } from 'discord.js-captcha';
 import fqConstants from '../service/constants/firstQuest';
+import channelIds from '../service/constants/channelIds';
 
 export default class implements DiscordEvent {
 	name = 'guildMemberAdd';
@@ -24,7 +25,7 @@ export default class implements DiscordEvent {
 				const captchaOptions = {
 					guildID: member.guild.id,
 					roleID: fqConstants.FIRST_QUEST_ROLES.verified,
-					channelID: process.env.DISCORD_CHANNEL_SUPPORT_ID,
+					channelID: channelIds.captchaVerification,
 					kickOnFailure: false,
 					attempts: 1,
 					timeout: 180000,

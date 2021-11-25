@@ -118,7 +118,7 @@ module.exports = class FirstQuest extends SlashCommand {
 		command.catch(e => {
 			if (!(e instanceof ValidationError)) {
 				LogUtils.logError('failed to handle first-quest command', e);
-				return ctx.send('Sorry something is not working and our devs are looking into it');
+				return ServiceUtils.sendOutErrorMessage(ctx);
 			}
 		});
 	}

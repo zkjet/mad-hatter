@@ -3,6 +3,7 @@ import client from '../../app';
 import RetrieveFAQs from '../../service/notion/RetrieveFAQs';
 import discordServerIds from '../../service/constants/discordServerIds';
 import { LogUtils } from '../../utils/Log';
+import ServiceUtils from '../../utils/ServiceUtils';
 const trimPageId = process.env.FAQS_PAGE_ID.replace(/-/g, '');
 const FAQ_URL = `https://www.notion.so/FAQs-${trimPageId}`;
 
@@ -102,6 +103,7 @@ export default class NotionFAQs extends SlashCommand {
 			}
 		} catch (e) {
 			LogUtils.logError('error occurred with notion FAQs', e);
+			return ServiceUtils.sendOutErrorMessage(ctx);
 		}
 	}
 }
