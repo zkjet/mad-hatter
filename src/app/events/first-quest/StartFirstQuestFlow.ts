@@ -1,7 +1,7 @@
 import fqConstants from '../../service/constants/firstQuest';
 import channelIds from '../../service/constants/channelIds';
 import client from '../../app';
-import { GuildChannel, GuildMember, MessageEmbed, TextChannel } from 'discord.js';
+import { GuildMember, Message, MessageEmbed, TextChannel } from 'discord.js';
 import { Captcha } from 'discord.js-captcha';
 import Log from '../../utils/Log';
 
@@ -39,18 +39,23 @@ const StartFirstQuestFlow = async (guildMember: GuildMember): Promise<void> => {
 
 const runSuccessAndTimeout = (guildMember: GuildMember, captcha: any, isKickOnFailureSet: boolean) => {
 	captcha.on('success', async () => {
+		Log.debug(`captcha success for ${guildMember.user.tag}`);
 		await guildMember.roles.add(fqConstants.FIRST_QUEST_ROLES.verified).catch(Log.error);
 		const verificationChannel: TextChannel = await guildMember.guild.channels.fetch(channelIds.captchaVerification) as TextChannel;
-		await verificationChannel.send({
+		const message: Message = await verificationChannel.send({
 			embeds: [{
 				title: 'First Quest Start',
-				description: 'Please enable DMs to being your first quest. In case DMs are off, first quest can begin with the clash command `/first-quest start`',
+				description: 'Please enable DMs to begin your first quest. In case DMs are off, first quest can begin with the clash command `/first-quest start`',
 			}],
 		});
+		setTimeout(async () => {
+			await message.delete().catch(Log.error);
+		}, 5000);
 	});
 	
 	if (!isKickOnFailureSet) {
 		captcha.on('timeout', async () => {
+			Log.debug(`captcha timeout for ${guildMember.user.tag}`);
 			await guildMember.kick('captcha timeout').catch(Log.error);
 		});
 	}
