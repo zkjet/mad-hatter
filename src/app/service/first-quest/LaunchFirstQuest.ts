@@ -67,9 +67,8 @@ export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: G
 		if (firstQuestMessage.id === dmChannel.lastMessage.id) {
 			try {
 				await dmChannel.send('The conversation timed out. ' +
-				'All your progress has been saved. ' +
-				'You can continue at any time by ' +
-				'using the **/first-quest start** command in <#897558059021369445>');
+				'You can restart First Quest ' +
+				'using the **/first-quest start** command');
 			} catch (e) {
 				Log.debug(`First Quest timed out, unable to send dm, error msg: ${e}`);
 			}

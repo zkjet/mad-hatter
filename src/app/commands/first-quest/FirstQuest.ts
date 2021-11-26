@@ -73,16 +73,15 @@ module.exports = class FirstQuest extends SlashCommand {
 		try {
 			switch (ctx.subcommands[0]) {
 			case 'start':
-				if (!await guildMember.roles.cache.find(role => role.id === fqConstants.FIRST_QUEST_ROLES.first_quest_complete)) {
-					if (await guildMember.roles.cache.find(role => role.id === fqConstants.FIRST_QUEST_ROLES.verified)) {
-						await guildMember.roles.remove(fqConstants.FIRST_QUEST_ROLES.verified).catch(Log.error);
+				ctx?.send(`Hi, ${ctx.user.mention}! First Quest was launched, please make sure DMs are active.`);
+
+				for (const role of guildMember.roles.cache.values()) {
+					if (Object.values(fqConstants.FIRST_QUEST_ROLES).includes(role.id)) {
+						await guildMember.roles.remove(role.id).catch(Log.error);
 					}
-					ctx?.send(`Hi, ${ctx.user.mention}! First Quest was launched, please check your DM and make sure they are activated.`);
-					command = guildMember.roles.add(fqConstants.FIRST_QUEST_ROLES.verified).catch(Log.error);
-				} else {
-					ctx?.send(`Hi, ${ctx.user.mention}! First Quest was launched, please check your DM and make sure they are activated.`);
-					command = switchRoles(guildMember, fqConstants.FIRST_QUEST_ROLES.first_quest_complete, fqConstants.FIRST_QUEST_ROLES.verified);
 				}
+				
+				command = guildMember.roles.add(fqConstants.FIRST_QUEST_ROLES.verified).catch(Log.error);
 				break;
 			case 'config':
 				command = ConfigureFirstQuest(guildMember, ctx);
