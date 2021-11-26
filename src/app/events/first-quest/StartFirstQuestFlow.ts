@@ -1,7 +1,7 @@
 import fqConstants from '../../service/constants/firstQuest';
 import channelIds from '../../service/constants/channelIds';
 import client from '../../app';
-import { GuildMember } from 'discord.js';
+import { GuildMember, MessageEmbed } from 'discord.js';
 import { Captcha } from 'discord.js-captcha';
 import Log from '../../utils/Log';
 
@@ -60,6 +60,11 @@ const getCaptchaOptions = (guildMember: GuildMember, kickOnFailure: boolean) => 
 		showAttemptCount: true,
 		caseSensitive: true,
 		sendToTextChannel: true,
+		customSuccessEmbed: new MessageEmbed({
+			title: 'Success',
+			color: '#1e7e34',
+			description: 'Please check your DMs to begin your first Quest!',
+		}),
 	};
 };
 
