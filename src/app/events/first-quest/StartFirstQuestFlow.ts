@@ -45,7 +45,7 @@ const runSuccessAndTimeout = (guildMember: GuildMember, captcha: any, isKickOnFa
 		const message: Message = await verificationChannel.send({
 			embeds: [{
 				title: 'First Quest Start',
-				description: 'Please enable DMs to begin your first quest. In case DMs are off, first quest can begin with the clash command `/first-quest start`',
+				description: 'Please enable DMs to begin your first quest. In case DMs are off, first quest can begin with the slash command `/first-quest start`',
 			}],
 		});
 		setTimeout(async () => {
