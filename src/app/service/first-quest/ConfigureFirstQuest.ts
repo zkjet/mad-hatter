@@ -1,5 +1,4 @@
 import { DMChannel, GuildMember, TextBasedChannels } from 'discord.js';
-import { CommandContext } from 'slash-create';
 import { Db, ObjectID } from 'mongodb';
 import dbInstance from '../../utils/MongoDbUtils';
 import constants from '../constants/constants';
@@ -7,8 +6,10 @@ import fqConstants from '../constants/firstQuest';
 import Log from '../../utils/Log';
 import channelIds from '../constants/channelIds';
 import roleIds from '../constants/roleIds';
+import ServiceUtils from '../../utils/ServiceUtils';
 
-export default async (member: GuildMember, ctx?: CommandContext): Promise<any> => {
+export default async (member: GuildMember, ctx): Promise<any> => {
+	ServiceUtils.validateLevel2AboveMembers(member);
 	ctx?.send(`Hi, ${ctx.user.mention}! I sent you a DM with more information.`);
 
 	const dmChannel = await member.user.createDM();

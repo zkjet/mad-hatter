@@ -3,6 +3,9 @@
 ## 1.1.0-SNAPSHOT
 
 1. Handle edge cases for first quest
+   - flow captcha in text channel only
+   - add first quest start command
+   - enhance stability
 
 ## 1.0.1-RELEASE (20201-11-24)
 

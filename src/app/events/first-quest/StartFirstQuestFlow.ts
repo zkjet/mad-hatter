@@ -1,7 +1,7 @@
 import fqConstants from '../../service/constants/firstQuest';
 import channelIds from '../../service/constants/channelIds';
 import client from '../../app';
-import { GuildMember, MessageEmbed } from 'discord.js';
+import { GuildChannel, GuildMember, MessageEmbed, TextChannel } from 'discord.js';
 import { Captcha } from 'discord.js-captcha';
 import Log from '../../utils/Log';
 
@@ -40,6 +40,13 @@ const StartFirstQuestFlow = async (guildMember: GuildMember): Promise<void> => {
 const runSuccessAndTimeout = (guildMember: GuildMember, captcha: any, isKickOnFailureSet: boolean) => {
 	captcha.on('success', async () => {
 		await guildMember.roles.add(fqConstants.FIRST_QUEST_ROLES.verified).catch(Log.error);
+		const verificationChannel: TextChannel = await guildMember.guild.channels.fetch(channelIds.captchaVerification) as TextChannel;
+		await verificationChannel.send({
+			embeds: [{
+				title: 'First Quest Start',
+				description: 'Please enable DMs to being your first quest. In case DMs are off, first quest can begin with the clash command `/first-quest start`',
+			}],
+		});
 	});
 	
 	if (!isKickOnFailureSet) {
