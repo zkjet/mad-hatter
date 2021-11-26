@@ -1,9 +1,9 @@
-import fqConstants from '../../service/constants/firstQuest';
 import channelIds from '../../service/constants/channelIds';
 import client from '../../app';
 import { GuildMember, Message, MessageEmbed, TextChannel } from 'discord.js';
 import { Captcha } from 'discord.js-captcha';
 import Log from '../../utils/Log';
+import firstQuest from '../../service/constants/firstQuest';
 
 const StartFirstQuestFlow = async (guildMember: GuildMember): Promise<void> => {
 	Log.debug(`starting first quest flow for new user ${guildMember.user.tag}`);
@@ -40,7 +40,7 @@ const StartFirstQuestFlow = async (guildMember: GuildMember): Promise<void> => {
 const runSuccessAndTimeout = (guildMember: GuildMember, captcha: any, isKickOnFailureSet: boolean) => {
 	captcha.on('success', async () => {
 		Log.debug(`captcha success for ${guildMember.user.tag}`);
-		await guildMember.roles.add(fqConstants.FIRST_QUEST_ROLES.verified).catch(Log.error);
+		await guildMember.roles.add(firstQuest.FIRST_QUEST_ROLES.verified).catch(Log.error);
 		const verificationChannel: TextChannel = await guildMember.guild.channels.fetch(channelIds.captchaVerification) as TextChannel;
 		const message: Message = await verificationChannel.send({
 			embeds: [{
@@ -64,7 +64,7 @@ const runSuccessAndTimeout = (guildMember: GuildMember, captcha: any, isKickOnFa
 const getCaptchaOptions = (guildMember: GuildMember, kickOnFailure: boolean) => {
 	return {
 		guildID: guildMember.guild.id,
-		roleID: fqConstants.FIRST_QUEST_ROLES.verified,
+		roleID: firstQuest.FIRST_QUEST_ROLES.verified,
 		channelID: channelIds.captchaVerification,
 		kickOnFailure: kickOnFailure,
 		attempts: 1,
