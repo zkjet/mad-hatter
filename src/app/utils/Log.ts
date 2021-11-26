@@ -114,6 +114,10 @@ export const LogUtils = {
 	},
 	
 	logError(message: string, error: Error, guildId?: string): void {
+		if (!error) {
+			Log.error(message);
+			return;
+		}
 		Log.error(message, {
 			indexMeta: true,
 			meta: {
