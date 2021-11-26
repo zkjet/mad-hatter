@@ -1,4 +1,4 @@
-export default Object.freeze({
+const firstQuest = Object.freeze({
 	FIRST_QUEST_ROLES : {
 		verified: process.env.DISCORD_ROLE_FIRST_QUEST_START,
 		first_quest_welcome: process.env.DISCORD_ROLE_FIRST_QUEST_WELCOME,
@@ -23,3 +23,5 @@ export default Object.freeze({
 		'fq8': '**Congratulations! You have reached the end of first quest**. \\n\\nIf you want to repeat first quest, you can reset your role and start over by responding with **!first-quest**.\\n',
 	},
 });
+
+export default firstQuest;
