@@ -49,10 +49,10 @@ export default class AFK extends SlashCommand {
 			return ctx.send(`${ctx.user.username} Sent you a DM with information.`);
 		}).catch(e => {
 			if (e instanceof ValidationError) {
-				return ctx.send(e.message);
+				return ctx.send({ content: `${e.message}`, ephemeral: true });
 			} else {
 				LogUtils.logError('failed to handle AFK command', e);
-				return ctx.send('Sorry something is not working and our devs are looking into it.');
+				return ServiceUtils.sendOutErrorMessage(ctx);
 			}
 		});
 	}

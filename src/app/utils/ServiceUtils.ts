@@ -16,7 +16,7 @@ import {
 	VoiceChannel,
 } from 'discord.js';
 import { Db } from 'mongodb';
-import { CommandContext } from 'slash-create';
+import { ButtonStyle, CommandContext, ComponentActionRow, ComponentType } from 'slash-create';
 import client from '../app';
 import ValidationError from '../errors/ValidationError';
 import constants from '../service/constants/constants';
@@ -294,6 +294,23 @@ const ServiceUtils = {
 			errors: ['time'],
 		};
 		return (await dmChannel.awaitMessages(replyOptions)).first().attachments.first();
+	},
+	
+	sendOutErrorMessage: async (ctx: CommandContext): Promise<any> => {
+		const row: ComponentActionRow = {
+			type: ComponentType.ACTION_ROW,
+			components: [{
+				type: ComponentType.BUTTON,
+				style: ButtonStyle.LINK,
+				label: 'Support',
+				url: 'https://discord.gg/NRj43H83nJ',
+			}],
+		};
+		await ctx.send({
+			content: 'Something is not working. Please reach out to us and a support member will happily assist!',
+			ephemeral: true,
+			components: [row],
+		});
 	},
 };
 

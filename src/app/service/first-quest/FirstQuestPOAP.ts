@@ -20,6 +20,7 @@ import channelIds from '../constants/channelIds';
 import client from '../../app';
 
 export default async (guildMember: GuildMember, ctx: CommandContext): Promise<any> => {
+	ServiceUtils.validateLevel2AboveMembers(guildMember);
 
 	ctx?.send(`Hi, ${ctx.user.mention}! I sent you a DM with more information.`);
 

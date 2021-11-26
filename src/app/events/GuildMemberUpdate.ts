@@ -6,6 +6,8 @@ import { DiscordEvent } from '../types/discord/DiscordEvent';
 import ServiceUtils from '../utils/ServiceUtils';
 import sendGuildWelcomeMessage from './welcomeMats/GuildMats';
 import Log, { LogUtils } from '../utils/Log';
+import firstQuest from '../service/constants/firstQuest';
+import { sendFqMessage } from '../service/first-quest/LaunchFirstQuest';
 
 export default class implements DiscordEvent {
 	name = 'guildMemberUpdate';
@@ -59,6 +61,11 @@ export default class implements DiscordEvent {
 				break;
 			case roleIds.developersGuild:
 				sendGuildWelcomeMessage.devGuildMat(guildMember).catch(err => LogUtils.logError('failed to send dev guild mat', err));
+				break;
+			case firstQuest.FIRST_QUEST_ROLES.verified:
+				await sendFqMessage('undefined', guildMember).catch(e => {
+					LogUtils.logError('First attempt to launch first-quest failed: ', e);
+				});
 				break;
 			}
 		});
