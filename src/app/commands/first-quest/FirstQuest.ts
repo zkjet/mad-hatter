@@ -1,5 +1,4 @@
 import {
-	ApplicationCommandPermissionType,
 	CommandContext,
 	CommandOptionType,
 	SlashCommand,
@@ -14,7 +13,6 @@ import { LogUtils } from '../../utils/Log';
 import FirstQuestPOAP from '../../service/first-quest/FirstQuestPOAP';
 import { sendFqMessage, switchRoles } from '../../service/first-quest/LaunchFirstQuest';
 import fqConstants from '../../service/constants/firstQuest';
-import Log from '../../utils/Log';
 
 module.exports = class FirstQuest extends SlashCommand {
 	constructor(creator: SlashCreator) {
@@ -65,52 +63,6 @@ module.exports = class FirstQuest extends SlashCommand {
 				duration: 1,
 			},
 			defaultPermission: true,
-			// permissions: {
-			// 	[discordServerIds.banklessDAO]: [
-			// 		{
-			// 			type: ApplicationCommandPermissionType.ROLE,
-			// 			id: roleIds.guestPass,
-			// 			permission: true,
-			// 		},
-			// 		{
-			// 			type: ApplicationCommandPermissionType.ROLE,
-			// 			id: roleIds.level1,
-			// 			permission: true,
-			// 		},
-			// 		{
-			// 			type: ApplicationCommandPermissionType.ROLE,
-			// 			id: roleIds.level2,
-			// 			permission: true,
-			// 		},
-			// 		{
-			// 			type: ApplicationCommandPermissionType.ROLE,
-			// 			id: roleIds.admin,
-			// 			permission: true,
-			// 		},
-			// 		{
-			// 			type: ApplicationCommandPermissionType.ROLE,
-			// 			id: roleIds.genesisSquad,
-			// 			permission: true,
-			// 		},
-			// 	],
-			// 	[discordServerIds.discordBotGarage]: [
-			// 		{
-			// 			type: ApplicationCommandPermissionType.ROLE,
-			// 			id: roleIds.level2,
-			// 			permission: true,
-			// 		},
-			// 		{
-			// 			type: ApplicationCommandPermissionType.ROLE,
-			// 			id: roleIds.admin,
-			// 			permission: true,
-			// 		},
-			// 		{
-			// 			type: ApplicationCommandPermissionType.ROLE,
-			// 			id: roleIds.genesisSquad,
-			// 			permission: true,
-			// 		},
-			// 	],
-			// },
 		});
 	}
 
@@ -119,57 +71,59 @@ module.exports = class FirstQuest extends SlashCommand {
 		if (ctx.user.bot) return;
 		const { guildMember } = await ServiceUtils.getGuildAndMember(ctx);
 		let command: Promise<any>;
-		switch (ctx.subcommands[0]) {
-		case 'start':
-			try {
-				if (!await guildMember.roles.cache.find(role => role.id === fqConstants.FIRST_QUEST_ROLES.first_quest_complete)) {
-					ctx?.send(`Hi, ${ctx.user.mention}! First Quest was launched, please check your DM.`);
-					command = sendFqMessage('undefined', guildMember).catch(e => {
-						Log.error('ERROR: ', e);
-					});
-				} else {
-					await switchRoles(guildMember, fqConstants.FIRST_QUEST_ROLES.first_quest_complete, fqConstants.FIRST_QUEST_ROLES.verified);
-					try {
-						ctx?.send(`Hi, ${ctx.user.mention}! First Quest was launched, please check your DM.`);
+		try {
+			switch (ctx.subcommands[0]) {
+			case 'start':
+				try {
+					if (!await guildMember.roles.cache.find(role => role.id === fqConstants.FIRST_QUEST_ROLES.first_quest_complete)) {
+						ctx?.send(`Hi, ${ctx.user.mention}! First Quest was launched, please check your DM and make sure they are activated.`);
 						command = sendFqMessage('undefined', guildMember).catch(e => {
-							Log.error('ERROR: ', e);
+							LogUtils.logError('/first-quest start failed', e);
 						});
+					} else {
+						await switchRoles(guildMember, fqConstants.FIRST_QUEST_ROLES.first_quest_complete, fqConstants.FIRST_QUEST_ROLES.verified);
+						try {
+							ctx?.send(`Hi, ${ctx.user.mention}! First Quest was launched, please check your DM and make sure they are activated.`);
+							command = sendFqMessage('undefined', guildMember).catch(e => {
+								LogUtils.logError('/first-quest start failed', e);
+							});
 
-					} catch {
-						await new Promise(r => setTimeout(r, 1000));
+						} catch {
+							await new Promise(r => setTimeout(r, 1000));
 
-						return await sendFqMessage('undefined', guildMember).catch(e => {
-							Log.error('ERROR: ', e);
-						});
+							return await sendFqMessage('undefined', guildMember).catch(e => {
+								LogUtils.logError('/first-quest start failed', e);
+							});
+						}
+					}
+				} catch (e) {
+					LogUtils.logError('/first-quest start failed', e);
+				}
+				break;
+			case 'config':
+				for (const role of guildMember.roles.cache.values()) {
+					if (role.id === roleIds.level2) {
+						command = ConfigureFirstQuest(guildMember, ctx);
+						return;
 					}
 				}
-			} catch {
-				Log.error('/first-quest start failed');
-			}
-			break;
-		case 'config':
-			for (const role of guildMember.roles.cache.values()) {
-				if (role.id === roleIds.level2) {
-					command = ConfigureFirstQuest(guildMember, ctx);
-					return;
+				return ctx.send(`Hi ${ctx.user.mention}, this command is only available for Level 2 Contributors.`);
+				break;
+			case 'poap-refill':
+				for (const role of guildMember.roles.cache.values()) {
+					if (role.id === roleIds.level2) {
+						command = FirstQuestPOAP(guildMember, ctx);
+						return;
+					}
 				}
+				return ctx.send(`Hi ${ctx.user.mention}, this command is only available for Level 2 Contributors.`);
+				break;
+			default:
+				return ctx.send(`${ctx.user.mention} Please try again.`);
 			}
-			return ctx.send(`Hi ${ctx.user.mention}, this command is only available for Level 2 Contributors.`);
-			break;
-		case 'poap-refill':
-			for (const role of guildMember.roles.cache.values()) {
-				if (role.id === roleIds.level2) {
-					command = FirstQuestPOAP(guildMember, ctx);
-					return;
-				}
-			}
-			return ctx.send(`Hi ${ctx.user.mention}, this command is only available for Level 2 Contributors.`);
-			break;
-		default:
-			return ctx.send(`${ctx.user.mention} Please try again.`);
+		} catch {
+			this.handleCommandError(ctx, command);
 		}
-
-		this.handleCommandError(ctx, command);
 	}
 
 	handleCommandError(ctx: CommandContext, command: Promise<any>) {

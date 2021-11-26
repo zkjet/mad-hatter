@@ -13,6 +13,16 @@ export default class implements DiscordEvent {
 
 	async execute(member: GuildMember): Promise<any> {
 		if (member.user.bot) return;
+
+		try {
+			const dmChannel = await member.user.createDM();
+			await dmChannel.send({ content: 'Welcome to Bankless DAO. Please solve the CAPTCHA below.' });
+		} catch (e) {
+			LogUtils.logError(`First Quest exited due to disabled DMs in user ${member.user}`, e);
+			return;
+		}
+		
+
 		try {
 			if (member.partial) {
 				member = await member.fetch();
@@ -53,10 +63,6 @@ const presentCaptcha = async (member: GuildMember, captcha: Captcha, attempts: n
 
 			presentCaptcha(member, new Captcha(client, captchaOptions), attempts + 1, captchaOptions);
 		}
-	});
-
-	captcha.on('timeout', () => {
-		member.kick('captcha timeout');
 	});
 
 	captcha.on('success', async () => {
