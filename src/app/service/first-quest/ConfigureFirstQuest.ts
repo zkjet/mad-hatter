@@ -7,8 +7,9 @@ import Log from '../../utils/Log';
 import channelIds from '../constants/channelIds';
 import roleIds from '../constants/roleIds';
 import ServiceUtils from '../../utils/ServiceUtils';
+import { CommandContext } from 'slash-create';
 
-export default async (member: GuildMember, ctx): Promise<any> => {
+export default async (member: GuildMember, ctx: CommandContext): Promise<any> => {
 	ServiceUtils.validateLevel2AboveMembers(member);
 	ctx?.send(`Hi, ${ctx.user.mention}! I sent you a DM with more information.`);
 
