@@ -1,7 +1,7 @@
 import { DMChannel, GuildMember, TextBasedChannels } from 'discord.js';
 import constants from '../constants/constants';
 import fqConstants from '../constants/firstQuest';
-import Log from '../../utils/Log';
+import Log, { LogUtils } from '../../utils/Log';
 import dbInstance from '../../utils/MongoDbUtils';
 import { Db } from 'mongodb';
 import client from '../../app';
@@ -45,9 +45,11 @@ export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: G
 
 					await getPOAPLink(member);
 				}
-			} catch {
+			} catch (e) {
+				LogUtils.logError('First Quest: There was an error in the flow. Setting Timeout to try again', e);
+
 				// give some time for the role update to come through and try again
-				await new Promise(r => setTimeout(r, 1000));
+				new Promise(r => setTimeout(r, 1000));
 
 				if (!(fqMessage.end_role === fqConstants.FIRST_QUEST_ROLES.first_quest_complete)) {
 					await sendFqMessage(dmChannel, member);
@@ -65,11 +67,15 @@ export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: G
 		// time out silently (user probably invoked !first-quest).
 		// Otherwise, send time out notification.
 		if (firstQuestMessage.id === dmChannel.lastMessage.id) {
-			await dmChannel.send('The conversation timed out. ' +
+			try {
+				await dmChannel.send('The conversation timed out. ' +
 				'All your progress has been saved. ' +
 				'You can continue at any time by ' +
 				'responding to this conversation ' +
 				'with **!first-quest** ');
+			} catch (e) {
+				LogUtils.logError('First Quest: There was an error in sending DM with info for user to continue flow', e);
+			}
 		}
 
 		if (!['limit', 'time'].includes(reason)) {
@@ -85,7 +91,8 @@ export const fqRescueCall = async (): Promise<void> => {
 
 	const data = await firstQuestTracker.find({}).toArray();
 
-	for (const fqUser of data) {
+	// for (const fqUser of data) {
+	data.forEach(async fqUser => {
 		if (!(fqUser.role === fqConstants.FIRST_QUEST_ROLES.first_quest_complete) && (fqUser.doneRescueCall === false)) {
 
 			if ((+new Date() - fqUser.timestamp) >= (1000 * 60 * 60 * 24)) {
@@ -113,7 +120,7 @@ export const fqRescueCall = async (): Promise<void> => {
 				}
 			}
 		}
-	}
+	});
 };
 
 const getMessageContentFromDb = async (): Promise<void> => {
@@ -184,7 +191,7 @@ const retrieveFqMessage = (member) => {
 			return getFqMessage(role.id);
 		}
 	}
-	Log.warn('could not find first quest message');
+	Log.warn('First Quest: could not find first quest message');
 };
 
 const getFqMessage = (roleId: string) => {

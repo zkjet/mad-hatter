@@ -37,37 +37,38 @@ export default async (guildMember: GuildMember, ctx: CommandContext): Promise<an
 
 	const timestamp = await getExpirationDate(guildMember);
 
-	switch (refillType) {
-	case 'ADD':
+	try {
+		switch (refillType) {
+		case 'ADD':
+			if (linkList !== null) {
+				await writePOAPLinksToDb(linkList, timestamp);
+				await guildMember.send({ content: 'POAP claim links successfully updated!' });
+				Log.debug('First Quest: POAPs successfully refilled for first quest');
+				return;
 
-		if (linkList !== null) {
-			await writePOAPLinksToDb(linkList, timestamp);
-			await guildMember.send({ content: 'POAP claim links successfully updated!' });
-			Log.debug('POAPs successfully refilled for first quest');
-			
-			return;
-		} else {
-			await guildMember.send({ content: 'links.txt file seems to be empty, please try again.' });
-			Log.warn('links.txt seems to be empty for first quest add');
-			return;
+			} else {
+				await guildMember.send({ content: 'links.txt file seems to be empty, please try again.' });
+				Log.warn('First Quest: links.txt seems to be empty for first quest add');
+				return;
+			}
+
+		case 'REPLACE':
+
+			if (linkList !== null) {
+				await retirePOAPLinks();
+				await writePOAPLinksToDb(linkList, timestamp);
+				await guildMember.send({ content: 'POAP claim links successfully updated' });
+				Log.debug('POAPs successfully replaced for first quest');
+				return;
+
+			} else {
+				await guildMember.send({ content: 'links.txt file seems to be empty, please try again.' });
+				Log.warn('links.txt seems to be empty for first quest replace');
+				return;
+			}
 		}
-	case 'REPLACE':
-
-		if (linkList !== null) {
-			await retirePOAPLinks();
-
-			await writePOAPLinksToDb(linkList, timestamp);
-
-			await guildMember.send({ content: 'POAP claim links successfully updated' });
-			Log.debug('POAPs successfully replaced for first quest');
-			return;
-
-		} else {
-			await guildMember.send({ content: 'links.txt file seems to be empty, please try again.' });
-			Log.warn('links.txt seems to be empty for first quest replace');
-			
-			return;
-		}
+	} catch (e) {
+		LogUtils.logError('First Quest: An error occurred while attempting to refill/replace POAP links', e);
 	}
 };
 
@@ -78,23 +79,27 @@ const getExpirationDate = async (guildMember: GuildMember): Promise<any> => {
 
 	const dateReg = /^\d{2}([/])\d{2}\1\d{4}$/;
 
-	if (expirationDate.match(dateReg)) {
-		const split = expirationDate.split('/');
+	try {
+		if (expirationDate.match(dateReg)) {
+			const split = expirationDate.split('/');
 
-		const date = new Date(split[2], split[1] - 1, split[0]);
+			const date = new Date(split[2], split[1] - 1, split[0]);
 
-		const timestamp = date.getTime();
+			const timestamp = date.getTime();
 
-		if (timestamp <= +new Date()) {
-			await guildMember.send({ content: 'Expiration Date can not be in the past. Please try again.' });
+			if (timestamp <= +new Date()) {
+				await guildMember.send({ content: 'Expiration Date can not be in the past. Please try again.' });
+				return await getExpirationDate(guildMember);
+			}
+
+			return timestamp;
+
+		} else {
+			await guildMember.send({ content: 'Incorrect date input. Please try again' });
 			return await getExpirationDate(guildMember);
 		}
-
-		return timestamp;
-
-	} else {
-		await guildMember.send({ content: 'Incorrect date input. Please try again' });
-		return await getExpirationDate(guildMember);
+	} catch (e) {
+		LogUtils.logError('First Quest: An error occurred while retrieving expiration date', e);
 	}
 };
 
@@ -107,7 +112,7 @@ const getListOfPOAPLinks = async (guildMember: GuildMember, attachment: MessageA
 		listOfPOAPLinks = response.data.split('\n');
 
 	} catch (e) {
-		LogUtils.logError('failed to process links.txt file', e);
+		LogUtils.logError('First Quest: Failed to process links.txt file', e);
 
 		await guildMember.send({ content:
 				'Could not process the links.txt file. Please make sure ' +
@@ -122,10 +127,15 @@ const writePOAPLinksToDb = async (links: Array<string>, timestamp: number): Prom
 
 	const firstQuestPOAPs = await db.collection(constants.DB_COLLECTION_FIRST_QUEST_POAPS);
 
-	for (const link of links) {
-		if (link.length > 0) {
-			await firstQuestPOAPs.insertOne({ link: link, current: true, claimed: '', expiration: timestamp, expirationReminder: 0 });
-		}
+	try {
+		// for (const link of links) {
+		links.forEach( async link => {
+			if (link.length > 0) {
+				await firstQuestPOAPs.insertOne({ link: link, current: true, claimed: '', expiration: timestamp, expirationReminder: 0 });
+			}
+		});
+	} catch (e) {
+		LogUtils.logError('First Quest: Failed to write POAP links to database', e);
 	}
 };
 
@@ -140,7 +150,11 @@ const retirePOAPLinks = async (): Promise<void> => {
 
 	const updateDoc = { $set: { current: false } };
 
-	await firstQuestPOAPs.updateMany(filter, updateDoc, options);
+	try {
+		await firstQuestPOAPs.updateMany(filter, updateDoc, options);
+	} catch (e) {
+		LogUtils.logError('First Quest: Failed to retire POAP links', e);
+	}
 };
 
 export const getPOAPLink = async (guildMember: GuildMember):Promise<any> => {
@@ -151,7 +165,7 @@ export const getPOAPLink = async (guildMember: GuildMember):Promise<any> => {
 	const userExists = await firstQuestPOAPs.find({ claimed: guildMember.user.id }).toArray();
 
 	if (userExists.length > 0) {
-		Log.debug('POAP already claimed for firstQuest user');
+		Log.debug('First Quest: POAP already claimed for firstQuest user');
 		return guildMember.send({ content: 'There is one POAP per user. Seems like you got yours already.' });
 	}
 
@@ -159,39 +173,43 @@ export const getPOAPLink = async (guildMember: GuildMember):Promise<any> => {
 
 	const theMany = await firstQuestPOAPs.find(filter1).toArray();
 
-	// send warnings if we run short on POAP links
-	if (theMany.length === 300) {
-		Log.warn('running low on POAPs, less than 300 left');
-		const channels = await guildMember.guild.channels.fetch();
+	try {
+		// send warnings if we run short on POAP links
+		if (theMany.length === 300) {
+			Log.warn('First Quest: running low on POAPs, less than 300 left');
+			const channels = await guildMember.guild.channels.fetch();
 
-		const fqProjectChannel = channels.get(channelIds.firstQuestProject) as TextBasedChannels;
+			const fqProjectChannel = channels.get(channelIds.firstQuestProject) as TextBasedChannels;
 
-		await fqProjectChannel.send({ content:
+			await fqProjectChannel.send({ content:
 				`<@&${ roleIds.firstQuestProject }> : We're running short on POAPs, ` +
 				'only 300 links left. Please refill with **/first-quest poap-refill**' });
 
-	} else if (theMany.length === 150) {
-		Log.warn('running low on POAPs, less than 150 left');
-		const channels = await guildMember.guild.channels.fetch();
+		} else if (theMany.length === 150) {
+			Log.warn('First Quest: running low on POAPs, less than 150 left');
+			const channels = await guildMember.guild.channels.fetch();
 
-		const fqProjectChannel = channels.get(channelIds.firstQuestProject) as TextBasedChannels;
+			const fqProjectChannel = channels.get(channelIds.firstQuestProject) as TextBasedChannels;
 
-		await fqProjectChannel.send({ content:
+			await fqProjectChannel.send({ content:
 				`<@&${ roleIds.firstQuestProject }> : **Last warning**, running really short on ` +
 				'POAPs here, only 150 links left. Please refill with **/first-quest poap-refill**' });
 
-	} else if (theMany.length === 0) {
-		Log.warn('ran out of POAPs!');
-		const channels = await guildMember.guild.channels.fetch();
+		} else if (theMany.length === 0) {
+			Log.warn('ran out of POAPs!');
+			const channels = await guildMember.guild.channels.fetch();
 
-		const fqProjectChannel = channels.get(channelIds.firstQuestProject) as TextBasedChannels;
+			const fqProjectChannel = channels.get(channelIds.firstQuestProject) as TextBasedChannels;
 
-		await fqProjectChannel.send({ content:
+			await fqProjectChannel.send({ content:
 				`<@&${roleIds.firstQuestProject}> : We're out of POAPs. ` +
 				'Please refill with **/first-quest poap-refill**' });
 
-		return guildMember.send({ content:
+			return guildMember.send({ content:
 				'Sorry, we\'re currently out of POAPs. Check the support channel to get help.' });
+		}
+	} catch (e) {
+		LogUtils.logError('First Quest: something has failed while determining POAP links levels', e);
 	}
 
 	// this part makes sure that older claim links are used up first - ignoring retired links
@@ -214,11 +232,15 @@ export const getPOAPLink = async (guildMember: GuildMember):Promise<any> => {
 
 	const updateDoc = { $set: { claimed: guildMember.user.id } };
 
-	await firstQuestPOAPs.updateOne(filter3, updateDoc, options);
+	try {
+		await firstQuestPOAPs.updateOne(filter3, updateDoc, options);
 	
-	await guildMember.send({ content: `Here is your POAP: ${theOne.link}` });
-	Log.debug('POAP given to first quest champion');
-	return;
+		await guildMember.send({ content: `Here is your POAP: ${theOne.link}` });
+		Log.debug('First Quest: POAP given to first quest champion');
+		return;
+	} catch (e) {
+		LogUtils.logError('First Quest: failed to update db with claimant ID', e);
+	}
 };
 
 export const checkPOAPExpiration = async (): Promise<void> => {
@@ -232,62 +254,67 @@ export const checkPOAPExpiration = async (): Promise<void> => {
 
 	const timestampArray = timestampAggregate.map(entry => entry._id);
 
-	for (const ts of timestampArray) {
-		// expired, set current to false
-		if (ts <= +new Date()) {
-			const updateDoc = { $set: { current: false } };
+	// for (const ts of timestampArray) {
+	timestampArray.forEach( async ts => {
+		try {
+			// expired, set current to false
+			if (ts <= +new Date()) {
+				const updateDoc = { $set: { current: false } };
 
-			await firstQuestPOAPs.updateMany({ expiration: ts }, updateDoc, { upsert: false });
+				await firstQuestPOAPs.updateMany({ expiration: ts }, updateDoc, { upsert: false });
 
-		// send 10 day reminder	(sent only once)
-		} else if ((ts - +new Date()) <= (1000 * 60 * 60 * 24 * 10) && (ts - +new Date()) > (1000 * 60 * 60 * 24 * 2)) {
-			if (await firstQuestPOAPs.find({ expiration: ts, expirationReminder: 10 }).count() === 0) {
-				const channel = await getFqProjectChannel();
+			// send 10 day reminder	(sent only once)
+			} else if ((ts - +new Date()) <= (1000 * 60 * 60 * 24 * 10) && (ts - +new Date()) > (1000 * 60 * 60 * 24 * 2)) {
+				if (await firstQuestPOAPs.find({ expiration: ts, expirationReminder: 10 }).count() === 0) {
+					const channel = await getFqProjectChannel();
 
-				if (channel) {
-					channel.send({ content: `<@&${roleIds.firstQuestProject}>: Some POAPs expire in the next 10 days` });
+					if (channel) {
+						channel.send({ content: `<@&${roleIds.firstQuestProject}>: Some POAPs expire in the next 10 days` });
 
-					const report = createExpirationReport(timestampAggregate);
+						const report = createExpirationReport(timestampAggregate);
 
-					channel.send({ content: ((`**Report:**\n${report}`).length < 2000) ?
-						`**Report:**\n${report}` : 'Report exceeds max length. This is unusual, please seek dev support' });
+						channel.send({ content: ((`**Report:**\n${report}`).length < 2000) ?
+							`**Report:**\n${report}` : 'Report exceeds max length. This is unusual, please seek dev support' });
 
-					channel.send({ content: 'You can use **/first-quest poap-refill** to top up the supply' });
+						channel.send({ content: 'You can use **/first-quest poap-refill** to top up the supply' });
 
-					const updateDoc = { $set: { expirationReminder: 10 } };
+						const updateDoc = { $set: { expirationReminder: 10 } };
 
-					await firstQuestPOAPs.updateMany({ expiration: ts }, updateDoc, { upsert: false });
+						await firstQuestPOAPs.updateMany({ expiration: ts }, updateDoc, { upsert: false });
 
-				} else {
-					Log.warn('Unable to get text channel, First quest POAPs about to expire in 10 days');
+					} else {
+						Log.warn('First Quest: Unable to get text channel, First quest POAPs about to expire in 10 days');
+					}
+				}
+
+			// send 2 day reminder	(sent only once)
+			} else if ((ts - +new Date()) <= (1000 * 60 * 60 * 24 * 2)) {
+				if (await firstQuestPOAPs.find({ expiration: ts, expirationReminder: 2 }).count() === 0) {
+					const channel = await getFqProjectChannel();
+
+					if (channel) {
+						channel.send({ content: `<@&${roleIds.firstQuestProject}>: Some POAPs expire in the next 2 days` });
+
+						const report = createExpirationReport(timestampAggregate);
+
+						channel.send({ content: ((`**Report:**\n${report}`).length < 2000) ?
+							`**Report:**\n${report}` : 'Report exceeds max length. This is unusual, please seek dev support' });
+
+						channel.send({ content: 'You can use **/first-quest poap-refill** to top up the supply' });
+
+						const updateDoc = { $set: { expirationReminder: 2 } };
+
+						await firstQuestPOAPs.updateMany({ expiration: ts }, updateDoc, { upsert: false });
+
+					} else {
+						Log.warn('First Quest: Unable to get text channel, First quest POAPs about to expire in 10 days');
+					}
 				}
 			}
-
-		// send 2 day reminder	(sent only once)
-		} else if ((ts - +new Date()) <= (1000 * 60 * 60 * 24 * 2)) {
-			if (await firstQuestPOAPs.find({ expiration: ts, expirationReminder: 2 }).count() === 0) {
-				const channel = await getFqProjectChannel();
-
-				if (channel) {
-					channel.send({ content: `<@&${roleIds.firstQuestProject}>: Some POAPs expire in the next 2 days` });
-
-					const report = createExpirationReport(timestampAggregate);
-
-					channel.send({ content: ((`**Report:**\n${report}`).length < 2000) ?
-						`**Report:**\n${report}` : 'Report exceeds max length. This is unusual, please seek dev support' });
-
-					channel.send({ content: 'You can use **/first-quest poap-refill** to top up the supply' });
-
-					const updateDoc = { $set: { expirationReminder: 2 } };
-
-					await firstQuestPOAPs.updateMany({ expiration: ts }, updateDoc, { upsert: false });
-
-				} else {
-					Log.warn('Unable to get text channel, First quest POAPs about to expire in 10 days');
-				}
-			}
+		} catch (e) {
+			LogUtils.logError('First Quest: There was an issue in determining POAP expiry:', e);
 		}
-	}
+	});
 };
 
 const createExpirationReport = (timestampAggregate) => {
@@ -316,9 +343,8 @@ const getFqProjectChannel = async (): Promise<null | PartialDMChannel | DMChanne
 
 		try {
 			return await channels.get(channelIds.firstQuestProject) as TextBasedChannels;
-
 		} catch {
-			Log.debug('first quest project channel not found');
+			Log.debug('First Quest: project channel not found');
 		}
 	}
 
