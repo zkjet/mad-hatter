@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.1-RELEASE (2021-11-30)
+## 1.1.1-RELEASE (2021-11-27)
 
 1. Improve /first-quest start command
    - simplify command logic
