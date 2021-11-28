@@ -108,7 +108,7 @@ export const fqRescueCall = async (): Promise<void> => {
 					if (guild.id === fqUser.guild) {
 						const channels = await guild.channels.fetch();
 
-						const supportChannel = channels.get(channelIds.generalSupport) as TextBasedChannels;
+						const supportChannel = channels.get(channelIds.firstQuestProject) as TextBasedChannels;
 
 						await supportChannel.send({ content: `User <@${fqUser._id}> appears to be stuck in first-quest, please extend some help.` });
 					}
