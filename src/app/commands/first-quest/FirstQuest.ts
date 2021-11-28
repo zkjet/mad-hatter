@@ -8,10 +8,10 @@ import ServiceUtils from '../../utils/ServiceUtils';
 import ConfigureFirstQuest from '../../service/first-quest/ConfigureFirstQuest';
 import ValidationError from '../../errors/ValidationError';
 import discordServerIds from '../../service/constants/discordServerIds';
-import { LogUtils } from '../../utils/Log';
+import Log, { LogUtils } from '../../utils/Log';
 import FirstQuestPOAP from '../../service/first-quest/FirstQuestPOAP';
-import { sendFqMessage, switchRoles } from '../../service/first-quest/LaunchFirstQuest';
 import fqConstants from '../../service/constants/firstQuest';
+import { switchRoles } from '../../service/first-quest/LaunchFirstQuest';
 
 module.exports = class FirstQuest extends SlashCommand {
 	constructor(creator: SlashCreator) {
@@ -73,27 +73,15 @@ module.exports = class FirstQuest extends SlashCommand {
 		try {
 			switch (ctx.subcommands[0]) {
 			case 'start':
-				if (!await guildMember.roles.cache.find(role => role.id === fqConstants.FIRST_QUEST_ROLES.first_quest_complete)) {
-					ctx?.send(`Hi, ${ctx.user.mention}! First Quest was launched, please check your DM and make sure they are activated.`);
-					command = sendFqMessage('undefined', guildMember).catch(e => {
-						LogUtils.logError('/first-quest start failed', e);
-					});
-				} else {
-					await switchRoles(guildMember, fqConstants.FIRST_QUEST_ROLES.first_quest_complete, fqConstants.FIRST_QUEST_ROLES.verified);
-					try {
-						ctx?.send(`Hi, ${ctx.user.mention}! First Quest was launched, please check your DM and make sure they are activated.`);
-						command = sendFqMessage('undefined', guildMember).catch(e => {
-							LogUtils.logError('/first-quest start failed', e);
-						});
-						
-					} catch {
-						await new Promise(r => setTimeout(r, 1000));
-						
-						return await sendFqMessage('undefined', guildMember).catch(e => {
-							LogUtils.logError('/first-quest start failed', e);
-						});
+				ctx?.send(`Hi, ${ctx.user.mention}! First Quest was launched, please make sure DMs are active.`);
+
+				for (const role of guildMember.roles.cache.values()) {
+					if (Object.values(fqConstants.FIRST_QUEST_ROLES).includes(role.id)) {
+						await guildMember.roles.remove(role.id).catch(Log.error);
 					}
 				}
+				
+				command = guildMember.roles.add(fqConstants.FIRST_QUEST_ROLES.verified).catch(Log.error);
 				break;
 			case 'config':
 				command = ConfigureFirstQuest(guildMember, ctx);
