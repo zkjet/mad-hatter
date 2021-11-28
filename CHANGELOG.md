@@ -1,12 +1,12 @@
 # Changelog
 
-## 1.1.1-RELEASE (2021-11-28)
+## 1.1.1-RELEASE (2021-11-27)
 
 1. Improve /first-quest start command
    - simplify command logic
    - switch to event based launch of first quest
    - fix bug of first quest getting triggered twice
-   - re-route FQ rescue call to first quest project channel instead of general support
+   - route rescue call to first quest channel instead of general support
 
 ## 1.1.0-RELEASE (2021-11-26)
 
