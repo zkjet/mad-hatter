@@ -11,7 +11,6 @@ import discordServerIds from '../../service/constants/discordServerIds';
 import Log, { LogUtils } from '../../utils/Log';
 import FirstQuestPOAP from '../../service/first-quest/FirstQuestPOAP';
 import fqConstants from '../../service/constants/firstQuest';
-import { switchRoles } from '../../service/first-quest/LaunchFirstQuest';
 
 module.exports = class FirstQuest extends SlashCommand {
 	constructor(creator: SlashCreator) {
