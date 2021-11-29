@@ -20,7 +20,7 @@ import { ButtonStyle, CommandContext, ComponentActionRow, ComponentType } from '
 import client from '../app';
 import ValidationError from '../errors/ValidationError';
 import constants from '../service/constants/constants';
-import roleIDs from '../service/constants/roleIds';
+import roleIds from '../service/constants/roleIds';
 import { Allowlist } from '../types/discord/Allowlist';
 import { Confusables } from './Confusables';
 import discordServerIds from '../service/constants/discordServerIds';
@@ -54,13 +54,13 @@ const ServiceUtils = {
 
 	getGuestRole(roles: RoleManager): Role {
 		return roles.cache.find((role) => {
-			return role.id === roleIDs.guestPass;
+			return role.id === roleIds.guestPass;
 		});
 	},
 
 	getAFKRole(roles: RoleManager): Role {
 		return roles.cache.find((role) => {
-			return role.id === roleIDs.AFK;
+			return role.id === roleIds.AFK;
 		});
 	},
 	
@@ -93,31 +93,51 @@ const ServiceUtils = {
 
 	isAnyLevel(guildMember: GuildMember): boolean {
 		return ServiceUtils.hasSomeRole(guildMember, [
-			roleIDs.level1,
-			roleIDs.level2,
-			roleIDs.level3,
-			roleIDs.level4,
+			roleIds.level1,
+			roleIds.level2,
+			roleIds.level3,
+			roleIds.level4,
 		]);
 	},
 
 	isAtLeastLevel1(guildMember: GuildMember): boolean {
 		return ServiceUtils.hasSomeRole(guildMember, [
-			roleIDs.level1,
-			roleIDs.level2,
-			roleIDs.level3,
-			roleIDs.level4,
-			roleIDs.admin,
-			roleIDs.genesisSquad,
+			roleIds.level1,
+			roleIds.level2,
+			roleIds.level3,
+			roleIds.level4,
+			roleIds.admin,
+			roleIds.genesisSquad,
 		]);
+	},
+	
+	/**
+	 * Level 2 members have the highest precedence among the DAO
+	 * @param guildMember
+	 */
+	isALevel2Contributor(guildMember: GuildMember): boolean {
+		return ServiceUtils.hasRole(guildMember, roleIds.level2);
+	},
+	
+	isJustAMember(guildMember: GuildMember): boolean {
+		return ServiceUtils.hasSomeRole(guildMember, [
+			roleIds.level1,
+			roleIds.level3,
+			roleIds.level4,
+		]);
+	},
+	
+	isAGuest(guildMember: GuildMember): boolean {
+		return ServiceUtils.hasRole(guildMember, roleIds.guestPass);
 	},
 
 	isAtLeastLevel2(guildMember: GuildMember): boolean {
 		return ServiceUtils.hasSomeRole(guildMember, [
-			roleIDs.level2,
-			roleIDs.level3,
-			roleIDs.level4,
-			roleIDs.admin,
-			roleIDs.genesisSquad,
+			roleIds.level2,
+			roleIds.level3,
+			roleIds.level4,
+			roleIds.admin,
+			roleIds.genesisSquad,
 		]);
 	},
 	
@@ -172,7 +192,7 @@ const ServiceUtils = {
 		}
 
 		const highRankingMembers = await ServiceUtils.getMembersWithRoles(member.guild,
-			[roleIDs.genesisSquad, roleIDs.admin, roleIDs.level2]);
+			[roleIds.genesisSquad, roleIds.admin, roleIds.level2]);
 
 		// Sanitize high-ranking member names in preparation for comparing them to new member nickname
 		const highRankingNames = highRankingMembers.map(highRankingMember => {
