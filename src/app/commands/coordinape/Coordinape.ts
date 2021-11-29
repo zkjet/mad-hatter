@@ -17,8 +17,7 @@ module.exports = class Coordinape extends SlashCommand {
 		super(creator, {
 			name: 'coordinape',
 			description: 'Commands to manage Coordinape rounds',
-			// TODO: Enable this for BanklessDAO in the future
-			guildIDs: [discordServerIds.discordBotGarage],
+			guildIDs: [discordServerIds.discordBotGarage, discordServerIds.banklessDAO],
 			options: [
 				{
 					name: 'form-request',
@@ -44,6 +43,21 @@ module.exports = class Coordinape extends SlashCommand {
 						id: roleIds.level1,
 						permission: true,
 					},
+					{
+						type: ApplicationCommandPermissionType.ROLE,
+						id: roleIds.guestPass,
+						permission: true,
+					},
+					{
+						type: ApplicationCommandPermissionType.ROLE,
+						id: roleIds.level3,
+						permission: true,
+					},
+					{
+						type: ApplicationCommandPermissionType.ROLE,
+						id: roleIds.level4,
+						permission: true,
+					},
 				],
 				[discordServerIds.discordBotGarage]: [
 					{
@@ -54,6 +68,21 @@ module.exports = class Coordinape extends SlashCommand {
 					{
 						type: ApplicationCommandPermissionType.ROLE,
 						id: roleIds.level1,
+						permission: true,
+					},
+					{
+						type: ApplicationCommandPermissionType.ROLE,
+						id: roleIds.guestPass,
+						permission: true,
+					},
+					{
+						type: ApplicationCommandPermissionType.ROLE,
+						id: roleIds.level3,
+						permission: true,
+					},
+					{
+						type: ApplicationCommandPermissionType.ROLE,
+						id: roleIds.level4,
 						permission: true,
 					},
 				],
@@ -71,7 +100,7 @@ module.exports = class Coordinape extends SlashCommand {
 			command = CoordinapeSendForm(guildMember, ctx);
 			break;
 		default:
-			return ctx.send(`${ctx.user.mention} Please try again.`);
+			return ctx.send({ content: `${ctx.user.mention} Please try again.`, ephemeral: true });
 		}
 
 		this.handleCommandError(ctx, command);

@@ -1,27 +1,24 @@
-import { DMChannel, GuildMember } from 'discord.js';
+import { GuildMember } from 'discord.js';
 import { CommandContext } from 'slash-create';
-import roleIds from '../constants/roleIds';
+import ServiceUtils from '../../utils/ServiceUtils';
 
-export default async (member: GuildMember, ctx?: CommandContext): Promise<any> => {
-	ctx?.send(`Hi, ${ctx.user.mention}! I sent you a DM with more information.`);
-
-	const dmChannel: DMChannel = await member.user.createDM();
-
+export default async (member: GuildMember, ctx: CommandContext): Promise<any> => {
 	if (member.partial) {
 		member = await member.fetch();
 	}
-
-	for (const role of member.roles.cache.values()) {
-		if ((role.id === roleIds.level1) || (role.id === roleIds.level3) || (role.id === roleIds.level4)) {
-			for (const role2 of member.roles.cache.values()) {
-				if (role2.id === roleIds.level2) {
-					await dmChannel.send({ content: 'Here is your form: <https://docs.google.com/forms/d/16qaDbz14C7d31pTZoOTRiDVShfzOimiwZlxUBit0Fmw/>' });
-					return;
-				}
-			}
-
-			await dmChannel.send({ content: 'Here is your form: <https://docs.google.com/forms/d/1-_uHDxyWFjDD92hdujqsylZgLmTLLuUnbJDaMSUX_hY>' });
-			return;
-		}
+	
+	if (ServiceUtils.isALevel2Contributor(member)) {
+		await ctx.send({ content: 'Thank you so much for your contributions! As a thank you we invite you to a Level 2 coordinape round: https://forms.gle/xTHuDdsmn7YcvFLm6', ephemeral: true });
+		return;
+	}
+	
+	if (ServiceUtils.isJustAMember(member)) {
+		await ctx.send({ content: 'Thank you so much for being a part of something special. As a thank you we invite you to a member coordinape round: https://forms.gle/N1aD4R3uTqPDe15AA', ephemeral: true });
+		return;
+	}
+	
+	if (ServiceUtils.isAGuest(member)) {
+		await ctx.send({ content: 'Thank you so much for your interest in BanklessDAO. As a thank you we invite you to a guest coordinape round: https://forms.gle/VqZFtzTNFdmU7WVF9', ephemeral: true });
+		return;
 	}
 };
