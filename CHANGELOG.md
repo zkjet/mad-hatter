@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0-RELEASE (2021-11-30)
+
+1. Add message stability
+
 ## 1.1.1-RELEASE (2021-11-27)
 
 1. Improve /first-quest start command
