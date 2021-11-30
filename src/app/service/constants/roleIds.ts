@@ -1,4 +1,4 @@
-export default Object.freeze({
+const roleIds = Object.freeze({
 	admin: process.env.DISCORD_ROLE_ADMIN_ROLE_ID,
 	guestPass: process.env.DISCORD_ROLE_GUEST_PASS,
 	grantsCommittee: process.env.DISCORD_ROLE_GRANTS_COMITTEE,
@@ -11,3 +11,5 @@ export default Object.freeze({
 	firstQuestProject: process.env.DISCORD_ROLE_FIRST_QUEST_PROJECT,
 	AFK: process.env.DISCORD_ROLE_AFK,
 });
+
+export default roleIds;
