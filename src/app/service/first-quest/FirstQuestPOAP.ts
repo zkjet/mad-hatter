@@ -20,6 +20,7 @@ import channelIds from '../constants/channelIds';
 import client from '../../app';
 
 export default async (guildMember: GuildMember, ctx: CommandContext): Promise<any> => {
+	ServiceUtils.validateLevel2AboveMembers(guildMember);
 
 	ctx?.send(`Hi, ${ctx.user.mention}! I sent you a DM with more information.`);
 
@@ -42,11 +43,14 @@ export default async (guildMember: GuildMember, ctx: CommandContext): Promise<an
 
 		if (linkList !== null) {
 			await writePOAPLinksToDb(linkList, timestamp);
-
-			return guildMember.send({ content: 'POAP claim links successfully updated!' });
-
+			await guildMember.send({ content: 'POAP claim links successfully updated!' });
+			Log.debug('POAPs successfully refilled for first quest');
+			
+			return;
 		} else {
-			return guildMember.send({ content: 'links.txt file seems to be empty, please try again.' });
+			await guildMember.send({ content: 'links.txt file seems to be empty, please try again.' });
+			Log.warn('links.txt seems to be empty for first quest add');
+			return;
 		}
 	case 'REPLACE':
 
@@ -55,10 +59,15 @@ export default async (guildMember: GuildMember, ctx: CommandContext): Promise<an
 
 			await writePOAPLinksToDb(linkList, timestamp);
 
-			return guildMember.send({ content: 'POAP claim links successfully updated' });
+			await guildMember.send({ content: 'POAP claim links successfully updated' });
+			Log.debug('POAPs successfully replaced for first quest');
+			return;
 
 		} else {
-			return guildMember.send({ content: 'links.txt file seems to be empty, please try again.' });
+			await guildMember.send({ content: 'links.txt file seems to be empty, please try again.' });
+			Log.warn('links.txt seems to be empty for first quest replace');
+			
+			return;
 		}
 	}
 };
@@ -143,6 +152,7 @@ export const getPOAPLink = async (guildMember: GuildMember):Promise<any> => {
 	const userExists = await firstQuestPOAPs.find({ claimed: guildMember.user.id }).toArray();
 
 	if (userExists.length > 0) {
+		Log.debug('POAP already claimed for firstQuest user');
 		return guildMember.send({ content: 'There is one POAP per user. Seems like you got yours already.' });
 	}
 
@@ -152,6 +162,7 @@ export const getPOAPLink = async (guildMember: GuildMember):Promise<any> => {
 
 	// send warnings if we run short on POAP links
 	if (theMany.length === 300) {
+		Log.warn('running low on POAPs, less than 300 left');
 		const channels = await guildMember.guild.channels.fetch();
 
 		const fqProjectChannel = channels.get(channelIds.firstQuestProject) as TextBasedChannels;
@@ -161,6 +172,7 @@ export const getPOAPLink = async (guildMember: GuildMember):Promise<any> => {
 				'only 300 links left. Please refill with **/first-quest poap-refill**' });
 
 	} else if (theMany.length === 150) {
+		Log.warn('running low on POAPs, less than 150 left');
 		const channels = await guildMember.guild.channels.fetch();
 
 		const fqProjectChannel = channels.get(channelIds.firstQuestProject) as TextBasedChannels;
@@ -170,6 +182,7 @@ export const getPOAPLink = async (guildMember: GuildMember):Promise<any> => {
 				'POAPs here, only 150 links left. Please refill with **/first-quest poap-refill**' });
 
 	} else if (theMany.length === 0) {
+		Log.warn('ran out of POAPs!');
 		const channels = await guildMember.guild.channels.fetch();
 
 		const fqProjectChannel = channels.get(channelIds.firstQuestProject) as TextBasedChannels;
@@ -203,8 +216,10 @@ export const getPOAPLink = async (guildMember: GuildMember):Promise<any> => {
 	const updateDoc = { $set: { claimed: guildMember.user.id } };
 
 	await firstQuestPOAPs.updateOne(filter3, updateDoc, options);
-
-	return guildMember.send({ content: `Here is your POAP: ${theOne.link}` });
+	
+	await guildMember.send({ content: `Here is your POAP: ${theOne.link}` });
+	Log.debug('POAP given to first quest champion');
+	return;
 };
 
 export const checkPOAPExpiration = async (): Promise<void> => {

@@ -1,5 +1,4 @@
 import { DMChannel, GuildMember, TextBasedChannels } from 'discord.js';
-import { CommandContext } from 'slash-create';
 import { Db, ObjectID } from 'mongodb';
 import dbInstance from '../../utils/MongoDbUtils';
 import constants from '../constants/constants';
@@ -7,13 +6,17 @@ import fqConstants from '../constants/firstQuest';
 import Log from '../../utils/Log';
 import channelIds from '../constants/channelIds';
 import roleIds from '../constants/roleIds';
+import ServiceUtils from '../../utils/ServiceUtils';
+import { CommandContext } from 'slash-create';
 
-export default async (member: GuildMember, ctx?: CommandContext): Promise<any> => {
+export default async (member: GuildMember, ctx: CommandContext): Promise<any> => {
+	ServiceUtils.validateLevel2AboveMembers(member);
 	ctx?.send(`Hi, ${ctx.user.mention}! I sent you a DM with more information.`);
 
 	const dmChannel = await member.user.createDM();
 
 	await dmChannel.send({ content: 'Which message would you like to edit?' });
+	Log.debug('Asking user which message to edit for first quest');
 
 	await createSelectMessage(dmChannel, member);
 
@@ -22,6 +25,7 @@ export default async (member: GuildMember, ctx?: CommandContext): Promise<any> =
 const createSelectMessage = async (dmChannel, member): Promise<void> => {
 
 	const data = await fetchData();
+	Log.debug('pulled first quest content from db');
 
 	const embed = await createEmbed(data);
 
@@ -66,6 +70,7 @@ const createSelectMessage = async (dmChannel, member): Promise<void> => {
 				}
 			}
 		} else {
+			Log.warn('Command timed out for first quest configuration');
 			await dmChannel.send({ content: 'Command timed out.' });
 		}
 	});
@@ -99,6 +104,7 @@ const collectConfirmation = async (message, member, key, origMessages): Promise<
 				}
 			}
 		} else {
+			Log.warn('Command timed out for first quest configuration emoji reaction');
 			await message.channel.send({ content: 'Command timed out.' });
 		}
 	});

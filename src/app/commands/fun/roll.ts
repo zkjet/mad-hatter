@@ -21,6 +21,6 @@ export default class FeatureRequest extends SlashCommand {
 		LogUtils.logCommandStart(ctx);
 		// Ignores commands from bots
 		if (ctx.user.bot) return;
-		await ctx.send(`${ctx.user.username} rolled ${Math.floor(Math.random() * 101)}!`);
+		await ctx.send(`${ctx.user.username} rolled ${Math.floor(Math.random() * 101)}!`).catch();
 	}
 }

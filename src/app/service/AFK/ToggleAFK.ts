@@ -13,11 +13,11 @@ export default async (guildMember: GuildMember): Promise<boolean> => {
 		const AFKRole = ServiceUtils.getAFKRole(guildMember.guild.roles);
 		const isAFK = ServiceUtils.hasRole(guildMember, roleIds.AFK);
 		if (!isAFK) {
-			await guildMember.roles.add(AFKRole);
+			await guildMember.roles.add(AFKRole).catch(Log.error);
 			Log.info(`user ${guildMember.user.tag} given ${AFKRole.name} role`);
 			return true;
 		} else {
-			await guildMember.roles.remove(AFKRole);
+			await guildMember.roles.remove(AFKRole).catch(Log.error);
 			Log.info(`user ${guildMember.user.tag} removed ${AFKRole.name} role`);
 			return false;
 		}

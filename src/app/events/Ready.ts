@@ -6,7 +6,7 @@ import discordServerIds from '../service/constants/discordServerIds';
 import { DiscordEvent } from '../types/discord/DiscordEvent';
 import { restoreScoapEmbedAndVoteRecord } from '../service/scoap-squad/ScoapDatabase';
 import Log, { LogUtils } from '../utils/Log';
-import { fqInit } from '../utils/FirstQuestUtils';
+import FirstQuestUtils from '../utils/FirstQuestUtils';
 import MongoDbUtils from '../utils/MongoDbUtils';
 
 export default class implements DiscordEvent {
@@ -26,8 +26,8 @@ export default class implements DiscordEvent {
 			if (client.guilds.cache.some((guild) => guild.id == discordServerIds.banklessDAO || guild.id == discordServerIds.discordBotGarage)) {
 				await MongoDbUtils.connect(constants.DB_NAME_BOUNTY_BOARD);
 				await GuestPassService(client).catch(Log.error);
-				await fqInit();
-				await FirstQuestRescueService();
+				await FirstQuestUtils.fqInit().catch(Log.error);
+				await FirstQuestRescueService().catch(Log.error);
 				await restoreScoapEmbedAndVoteRecord().catch(Log.error);
 			}
 			

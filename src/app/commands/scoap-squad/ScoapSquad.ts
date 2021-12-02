@@ -17,7 +17,7 @@ module.exports = class ScoapSquad extends SlashCommand {
 		super(creator, {
 			name: 'scoap-squad',
 			description: 'Create or delete a SCOAP Squad request',
-			guildIDs: [discordServerIds.banklessDAO, discordServerIds.discordBotGarage],
+			guildIDs: [discordServerIds.discordBotGarage],
 			options: [
 				{
 					name: 'assemble',
@@ -33,38 +33,6 @@ module.exports = class ScoapSquad extends SlashCommand {
 			},
 			defaultPermission: false,
 			permissions: {
-				[discordServerIds.banklessDAO]: [
-					{
-						type: ApplicationCommandPermissionType.ROLE,
-						id: roleIds.level1,
-						permission: true,
-					},
-					{
-						type: ApplicationCommandPermissionType.ROLE,
-						id: roleIds.level2,
-						permission: true,
-					},
-					{
-						type: ApplicationCommandPermissionType.ROLE,
-						id: roleIds.level3,
-						permission: true,
-					},
-					{
-						type: ApplicationCommandPermissionType.ROLE,
-						id: roleIds.level4,
-						permission: true,
-					},
-					{
-						type: ApplicationCommandPermissionType.ROLE,
-						id: roleIds.admin,
-						permission: true,
-					},
-					{
-						type: ApplicationCommandPermissionType.ROLE,
-						id: roleIds.genesisSquad,
-						permission: true,
-					},
-				],
 				[discordServerIds.discordBotGarage]: [
 					{
 						type: ApplicationCommandPermissionType.ROLE,
@@ -121,7 +89,7 @@ module.exports = class ScoapSquad extends SlashCommand {
 		command.catch(e => {
 			if (!(e instanceof ValidationError)) {
 				LogUtils.logError('failed to handle scoap-squad command', e);
-				return ctx.send('Sorry something is not working and our devs are looking into it');
+				return ServiceUtils.sendOutErrorMessage(ctx);
 			}
 		});
 	}
