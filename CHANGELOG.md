@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.0-RELEASE
+1. Remove datadog tracer
+
 ## 1.2.0-RELEASE (2021-11-30)
 
 1. Add message stability
