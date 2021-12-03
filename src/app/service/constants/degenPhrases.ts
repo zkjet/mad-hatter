@@ -12,6 +12,9 @@ const degenPhrases = {
 		'POAP??... Mods please send the ban hammer this way',
 		'Did you say POAP?... ngmi',
 		'POAPs are nice, what about a POAP pixel party 🎨',
+		'WeNpOaP',
+		'I like to think of POAPs as really cool badges!',
+		'The more discord events you attend, the higher the chance of a POAP!',
 	],
 	app: [
 		'DEV GUILD STRONK 💪',
