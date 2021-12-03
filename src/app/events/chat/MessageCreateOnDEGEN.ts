@@ -1,4 +1,7 @@
-import { Message } from 'discord.js';
+import {
+	Channel,
+	Message,
+} from 'discord.js';
 import degenPhrases from '../../service/constants/degenPhrases';
 import Log, { LogUtils } from '../../utils/Log';
 import constants from '../../service/constants/constants';
@@ -9,6 +12,7 @@ const MessageCreateOnDEGEN = async (message: Message): Promise<void> => {
 		
 		// POAP
 		if (content.match(/POAP/gi)) {
+			await message.channel.sendTyping();
 			await message.channel.send({
 				content: `${degenPhrases.poap[Math.floor(Math.random() * degenPhrases.poap.length)]}`,
 			}).catch(Log.error);
@@ -17,6 +21,7 @@ const MessageCreateOnDEGEN = async (message: Message): Promise<void> => {
 	
 		// APP name
 		if (content.match(/Mad Hatter/gi) || message.mentions.has(constants.DISCORD_BOT_USER_ID)) {
+			await message.channel.sendTyping();
 			await message.channel.send({
 				content: `${degenPhrases.app[Math.floor(Math.random() * degenPhrases.app.length)]}`,
 			}).catch(Log.error);
@@ -25,6 +30,7 @@ const MessageCreateOnDEGEN = async (message: Message): Promise<void> => {
 		
 		// gm
 		if (content.match(/gm/g)) {
+			await message.channel.sendTyping();
 			await message.channel.send({
 				content: 'gm',
 			}).catch(Log.error);
