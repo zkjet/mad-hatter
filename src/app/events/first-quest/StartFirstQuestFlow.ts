@@ -7,15 +7,21 @@ import firstQuest from '../../service/constants/firstQuest';
 
 const StartFirstQuestFlow = async (guildMember: GuildMember): Promise<void> => {
 	Log.debug(`starting first quest flow for new user ${guildMember.user.tag}`);
-	
+
+	for (const role of guildMember.roles.cache.values()) {
+		if (Object.values(firstQuest.FIRST_QUEST_ROLES).includes(role.id)) {
+			await guildMember.roles.remove(role.id).catch(Log.error);
+		}
+	}
+
 	const captchaOptions = getCaptchaOptions(guildMember, false);
 
 	const captcha = new Captcha(client, captchaOptions);
-	
+
 	runSuccessAndTimeout(guildMember, captcha, false);
 	captcha.present(guildMember);
 	Log.debug(`captcha sent to ${guildMember.user.tag}`);
-	
+
 	captcha.on('failure', () => {
 		const captcha2 = new Captcha(client, captchaOptions);
 		runSuccessAndTimeout(guildMember, captcha, false);
@@ -23,12 +29,12 @@ const StartFirstQuestFlow = async (guildMember: GuildMember): Promise<void> => {
 			captcha2.present(guildMember);
 		}, 2000);
 		Log.debug(`captcha sent to ${guildMember.user.tag}`);
-		
+
 		captcha2.on('failure', () => {
 			const captchaOptions3 = getCaptchaOptions(guildMember, true);
 			const captcha3 = new Captcha(client, captchaOptions3);
 			Log.debug(`captcha sent to ${guildMember.user.tag}`);
-			
+
 			runSuccessAndTimeout(guildMember, captcha, true);
 			setTimeout(() => {
 				captcha3.present(guildMember);
@@ -52,7 +58,7 @@ const runSuccessAndTimeout = (guildMember: GuildMember, captcha: any, isKickOnFa
 			await message.delete().catch(Log.error);
 		}, 5000);
 	});
-	
+
 	if (!isKickOnFailureSet) {
 		captcha.on('timeout', async () => {
 			Log.debug(`captcha timeout for ${guildMember.user.tag}`);
