@@ -15,6 +15,7 @@ const degenPhrases = {
 		'WeNpOaP',
 		'I like to think of POAPs as really cool badges!',
 		'The more discord events you attend, the higher the chance of a POAP!',
+		'Prove you’re alive. If you don’t claim your POAP you will become a statistic. You have been warned.',
 	],
 	app: [
 		'DEV GUILD STRONK 💪',
@@ -44,6 +45,9 @@ const degenPhrases = {
 		'👀',
 		'Hello! I\'m so glad you are here! wgmi fren',
 		'Shill me your project 👂',
+		'This is your last chance. After this, there is no turning back. ' +
+		'You take the blue pill - the story ends. You take the red pill - ' +
+		'you stay in Wonderland, and I show you how deep the rabbit hole goes.',
 	],
 };
 
