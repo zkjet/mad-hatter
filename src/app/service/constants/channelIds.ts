@@ -6,5 +6,6 @@ export default Object.freeze({
 	WRITERS_ROOM: process.env.DISCORD_CHANNEL_WRITERS_ROOM_ID,
 	generalSupport: process.env.DISCORD_CHANNEL_SUPPORT_ID,
 	firstQuestProject: process.env.DISCORD_CHANNEL_FIRST_QUEST_PROJECT_ID,
+	firstQuestSupport: process.env.DISCORD_THREAD_FIRST_QUEST_SUPPORT_ID,
 	captchaVerification: process.env.DISCORD_CHANNEL_CAPTCHA_VERIFICATION,
 });

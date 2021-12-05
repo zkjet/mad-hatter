@@ -1,7 +1,7 @@
-import { DMChannel, GuildMember, TextBasedChannels } from 'discord.js';
+import { DMChannel, GuildMember, TextBasedChannels, TextChannel } from 'discord.js';
 import constants from '../constants/constants';
 import fqConstants from '../constants/firstQuest';
-import Log from '../../utils/Log';
+import Log, { LogUtils } from '../../utils/Log';
 import dbInstance from '../../utils/MongoDbUtils';
 import { Db } from 'mongodb';
 import client from '../../app';
@@ -10,7 +10,7 @@ import { getPOAPLink } from './FirstQuestPOAP';
 
 export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: GuildMember): Promise<void> => {
 	Log.debug('launching first quest');
-	
+
 	const dmChannel: DMChannel = await getDMChannel(member, dmChan);
 
 	const fqMessageContent = await getMessageContentFromDb();
@@ -20,10 +20,10 @@ export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: G
 	Log.debug('got first quest step for user in flow');
 
 	const content = fqMessageContent[fqMessage.message_id];
-	
+
 	const firstQuestMessage = await dmChannel.send({ content: content.replace(/\\n/g, '\n') });
 	Log.debug('sent first quest message step in flow');
-	
+
 	await firstQuestMessage.react(fqMessage.emoji);
 
 	const filter = (reaction, user) => {
@@ -106,11 +106,19 @@ export const fqRescueCall = async (): Promise<void> => {
 					const guild = await oAuth2Guild.fetch();
 
 					if (guild.id === fqUser.guild) {
-						const channels = await guild.channels.fetch();
+						let fqSupportThread;
 
-						const supportChannel = channels.get(channelIds.firstQuestProject) as TextBasedChannels;
+						try {
+							fqSupportThread = await client.channels.fetch(channelIds.firstQuestSupport) as TextChannel;
 
-						await supportChannel.send({ content: `User <@${fqUser._id}> appears to be stuck in first-quest, please extend some help.` });
+						} catch (e) {
+							fqSupportThread = null;
+							LogUtils.logError(`First Quest: Failed to fetch support thread and could not send rescue call for user ${fqUser._id}`, e);
+						}
+
+						if (fqSupportThread) {
+							await fqSupportThread.send({ content: `User <@${fqUser._id}> appears to be stuck in first-quest, please extend some help.` });
+						}
 					}
 				}
 			}
@@ -150,43 +158,42 @@ export const firstQuestHandleUserRemove = async (member: GuildMember): Promise<v
 };
 
 export const switchRoles = async (member: GuildMember, fromRole: string, toRole: string): Promise<void> => {
-	const guild = member.guild;
+	try {
+		await member.roles.add(toRole);
 
-	const roles = await guild.roles.fetch();
+		await updateFqTracker(member.user.id, toRole, member.guild.id, false);
 
-	for (const role of roles.values()) {
-		if (role.id === toRole) {
-			try {
-				await member.roles.add(role);
-
-				const filter = { _id: member.user.id };
-
-				const options = { upsert: true };
-
-				const updateDoc = { $set: { role: role.id, doneRescueCall: false, timestamp: Date.now(), guild: guild.id } };
-
-				const db: Db = await dbInstance.connect(constants.DB_NAME_DEGEN);
-
-				const dbFirstQuestTracker = db.collection(constants.DB_COLLECTION_FIRST_QUEST_TRACKER);
-
-				await dbFirstQuestTracker.updateOne(filter, updateDoc, options);
-			} catch {
-				Log.error(`First Quest: failed to add Role ${role.id} to user ${member.user.id}`);
-				return;
-			}
-			
-		}
-
-		if (role.id === fromRole) {
-			try {
-				await member.roles.remove(role);
-
-			} catch {
-				Log.error(`First Quest: failed to remove Role ${role.id} from user ${member.user.id}`);
-			}
-			
-		}
+	} catch {
+		Log.error(`First Quest: failed to add Role ${toRole} to user ${member.user.id}`);
+		return;
 	}
+
+	try {
+		await member.roles.remove(fromRole);
+
+	} catch {
+		Log.error(`First Quest: failed to remove Role ${fromRole} from user ${member.user.id}`);
+	}
+};
+
+export const updateFqTracker = async (userId, roleId, guildId, setRescueCall = true):Promise<void> => {
+	const filter = { _id: userId };
+
+	const options = { upsert: true };
+
+	let updateDoc;
+
+	if (setRescueCall) {
+		updateDoc = { $set: { role: roleId, doneRescueCall: false, timestamp: Date.now(), guild: guildId } };
+	} else {
+		updateDoc = { $set: { role: roleId, timestamp: Date.now(), guild: guildId } };
+	}
+
+	const db: Db = await dbInstance.connect(constants.DB_NAME_DEGEN);
+
+	const dbFirstQuestTracker = db.collection(constants.DB_COLLECTION_FIRST_QUEST_TRACKER);
+
+	await dbFirstQuestTracker.updateOne(filter, updateDoc, options);
 };
 
 const retrieveFqMessage = async (member):Promise<any> => {

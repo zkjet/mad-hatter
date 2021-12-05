@@ -4,6 +4,7 @@ import { GuildMember, Message, MessageEmbed, TextChannel } from 'discord.js';
 import { Captcha } from 'discord.js-captcha';
 import Log from '../../utils/Log';
 import firstQuest from '../../service/constants/firstQuest';
+import { updateFqTracker } from '../../service/first-quest/LaunchFirstQuest';
 
 const StartFirstQuestFlow = async (guildMember: GuildMember): Promise<void> => {
 	Log.debug(`starting first quest flow for new user ${guildMember.user.tag}`);
@@ -47,6 +48,9 @@ const runSuccessAndTimeout = (guildMember: GuildMember, captcha: any, isKickOnFa
 	captcha.on('success', async () => {
 		Log.debug(`captcha success for ${guildMember.user.tag}`);
 		await guildMember.roles.add(firstQuest.FIRST_QUEST_ROLES.verified).catch(Log.error);
+
+		await updateFqTracker(guildMember.user.id, firstQuest.FIRST_QUEST_ROLES.verified, guildMember.guild.id);
+
 		const verificationChannel: TextChannel = await guildMember.guild.channels.fetch(channelIds.captchaVerification) as TextChannel;
 		const message: Message = await verificationChannel.send({
 			embeds: [{

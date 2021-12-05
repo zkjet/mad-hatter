@@ -11,6 +11,7 @@ import discordServerIds from '../../service/constants/discordServerIds';
 import Log, { LogUtils } from '../../utils/Log';
 import FirstQuestPOAP from '../../service/first-quest/FirstQuestPOAP';
 import fqConstants from '../../service/constants/firstQuest';
+import { updateFqTracker } from '../../service/first-quest/LaunchFirstQuest';
 
 module.exports = class FirstQuest extends SlashCommand {
 	constructor(creator: SlashCreator) {
@@ -67,7 +68,7 @@ module.exports = class FirstQuest extends SlashCommand {
 	async run(ctx: CommandContext) {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;
-		const { guildMember } = await ServiceUtils.getGuildAndMember(ctx);
+		const { guildMember, guild } = await ServiceUtils.getGuildAndMember(ctx);
 		let command: Promise<any>;
 		try {
 			switch (ctx.subcommands[0]) {
@@ -79,8 +80,11 @@ module.exports = class FirstQuest extends SlashCommand {
 						await guildMember.roles.remove(role.id).catch(Log.error);
 					}
 				}
-				
+
 				command = guildMember.roles.add(fqConstants.FIRST_QUEST_ROLES.verified).catch(Log.error);
+
+				await updateFqTracker(guildMember.user.id, fqConstants.FIRST_QUEST_ROLES.verified, guild.id);
+
 				break;
 			case 'config':
 				command = ConfigureFirstQuest(guildMember, ctx);
