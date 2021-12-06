@@ -22,7 +22,7 @@ const degenPhrases = {
 		'Let me tell you about TOKEMAK...',
 		'gm',
 		'Hello ser, would you like to hear about our lord and savior Vitalik...',
-		'The store of Ethereum goes like this... Once upon a time there was a little known player playing World of Warcraft...',
+		'The story of Ethereum goes like this... Once upon a time there was a little known player playing World of Warcraft...',
 		'Hello fren! Make sure you never share your seed phrase :)',
 		'Did you hear about Solana? lol',
 		'Solana backwards is ******* OS',
