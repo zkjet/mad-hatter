@@ -2,6 +2,7 @@
 
 ## 1.3.0-RELEASE
 1. Remove datadog tracer
+2. Add OpenTelemetry and Honeycomb exporter
 
 ## 1.2.0-RELEASE (2021-11-30)
 
