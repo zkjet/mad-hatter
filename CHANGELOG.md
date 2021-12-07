@@ -2,6 +2,7 @@
 
 ## 1.3.0-RELEASE
 1. Remove datadog tracer
+2. First Quest feature: Replace timout with cron job
 
 ## 1.2.0-RELEASE (2021-11-30)
 
