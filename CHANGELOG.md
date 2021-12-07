@@ -4,6 +4,7 @@
 
 1. Remove datadog tracer
 2. Add more phrases and fix grammar and add typing feature
+3. Post first-quest rescue call to support thread instead of channel
 
 ## 1.2.0-RELEASE (2021-11-30)
 
