@@ -11,8 +11,9 @@ import discordServerIds from '../../service/constants/discordServerIds';
 import Log, { LogUtils } from '../../utils/Log';
 import FirstQuestPOAP from '../../service/first-quest/FirstQuestPOAP';
 import fqConstants from '../../service/constants/firstQuest';
+import { traceCommand } from '../../utils/TraceUtils';
 
-module.exports = class FirstQuest extends SlashCommand {
+export default class FirstQuest extends SlashCommand {
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: 'first-quest',
@@ -64,6 +65,7 @@ module.exports = class FirstQuest extends SlashCommand {
 		});
 	}
 
+	@traceCommand
 	async run(ctx: CommandContext) {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;

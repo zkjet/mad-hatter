@@ -10,6 +10,7 @@ import roleIds from '../../service/constants/roleIds';
 import { addGuestRoleToUser } from '../../service/guest-pass/AddGuestPass';
 import discordServerIds from '../../service/constants/discordServerIds';
 import Log, { LogUtils } from '../../utils/Log';
+import { traceCommand } from '../../utils/TraceUtils';
 
 export default class GuestPass extends SlashCommand {
 	constructor(creator: SlashCreator) {
@@ -89,6 +90,7 @@ export default class GuestPass extends SlashCommand {
 		});
 	}
 
+	@traceCommand
 	async run(ctx: CommandContext): Promise<any> {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;

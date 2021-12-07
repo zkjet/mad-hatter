@@ -16,6 +16,7 @@ import SubmitBounty from '../../service/bounty/SubmitBounty';
 import CompleteBounty from '../../service/bounty/CompleteBounty';
 import discordServerIds from '../../service/constants/discordServerIds';
 import Log, { LogUtils } from '../../utils/Log';
+import { traceCommand } from '../../utils/TraceUtils';
 
 export default class Bounty extends SlashCommand {
 	constructor(creator: SlashCreator) {
@@ -170,6 +171,7 @@ export default class Bounty extends SlashCommand {
 		});
 	}
 
+	@traceCommand
 	async run(ctx: CommandContext): Promise<any> {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;

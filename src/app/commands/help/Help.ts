@@ -6,6 +6,7 @@ import {
 } from 'slash-create';
 import { LogUtils } from '../../utils/Log';
 import HowToBounty from '../../service/help/HowToBounty';
+import { traceCommand } from '../../utils/TraceUtils';
 
 export default class Help extends SlashCommand {
 	constructor(creator: SlashCreator) {
@@ -27,6 +28,7 @@ export default class Help extends SlashCommand {
 		});
 	}
 	
+	@traceCommand
 	async run(ctx: CommandContext): Promise<any> {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;

@@ -2,6 +2,7 @@ import { SlashCommand, CommandOptionType, CommandContext, SlashCreator } from 's
 import notionPageRefs from '../../service/notion/NotionGuildPages';
 import discordServerIds from '../../service/constants/discordServerIds';
 import { LogUtils } from '../../utils/Log';
+import { traceCommand } from '../../utils/TraceUtils';
 
 export default class NotionGuildPage extends SlashCommand {
 	constructor(creator: SlashCreator) {
@@ -78,6 +79,7 @@ export default class NotionGuildPage extends SlashCommand {
 		});
 	}
 
+	@traceCommand
 	async run(ctx: CommandContext): Promise<any> {
 		LogUtils.logCommandStart(ctx);
 		// Ignores commands from bots

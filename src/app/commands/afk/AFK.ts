@@ -8,6 +8,7 @@ import ServiceUtils from '../../utils/ServiceUtils';
 import ToggleAFK from '../../service/AFK/ToggleAFK';
 import discordServerIds from '../../service/constants/discordServerIds';
 import Log, { LogUtils } from '../../utils/Log';
+import { traceCommand } from '../../utils/TraceUtils';
 
 export default class AFK extends SlashCommand {
 	constructor(creator: SlashCreator) {
@@ -23,6 +24,7 @@ export default class AFK extends SlashCommand {
 		});
 	}
 
+	@traceCommand
 	async run(ctx: CommandContext): Promise<any> {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;

@@ -1,7 +1,7 @@
 import { CommandContext, SlashCommand, SlashCreator } from 'slash-create';
 import discordServerIds from '../../service/constants/discordServerIds';
 import { LogUtils } from '../../utils/Log';
-
+import { traceCommand } from '../../utils/TraceUtils';
 
 export default class FeatureRequest extends SlashCommand {
 	constructor(creator: SlashCreator) {
@@ -17,6 +17,7 @@ export default class FeatureRequest extends SlashCommand {
 		});
 	}
 
+	@traceCommand
 	async run(ctx: CommandContext): Promise<any> {
 		LogUtils.logCommandStart(ctx);
 		// Ignores commands from bots

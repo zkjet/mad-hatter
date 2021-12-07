@@ -11,8 +11,9 @@ import CreateNewScoapPoll from '../../service/scoap-squad/CreateNewScoapPoll';
 import ValidationError from '../../errors/ValidationError';
 import discordServerIds from '../../service/constants/discordServerIds';
 import { LogUtils } from '../../utils/Log';
+import { traceCommand } from '../../utils/TraceUtils';
 
-module.exports = class ScoapSquad extends SlashCommand {
+export default class ScoapSquad extends SlashCommand {
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: 'scoap-squad',
@@ -69,6 +70,7 @@ module.exports = class ScoapSquad extends SlashCommand {
 		});
 	}
 
+	@traceCommand
 	async run(ctx: CommandContext) {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;
