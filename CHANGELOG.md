@@ -8,7 +8,8 @@
 4. Remove dependency on roles from First Quest feature
    - Roles are replaced by database record for DM flow.
    - First Quest Welcome Role ist still needed by captcha library but directly removed after captcha success
-   - Also fixes the message scramble bug that was discovered earlier 
+   - Also fixes the message scramble bug that was discovered earlier
+5. First Quest feature: Replace timout with cron job
 
 ## 1.2.0-RELEASE (2021-11-30)
 

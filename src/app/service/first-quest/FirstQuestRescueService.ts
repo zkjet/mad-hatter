@@ -1,9 +1,40 @@
 import { fqRescueCall } from './LaunchFirstQuest';
 import { checkPOAPExpiration } from './FirstQuestPOAP';
+import cron from 'cron';
+import Log from '../../utils/Log';
+import channelIds from '../constants/channelIds';
+import { TextBasedChannels } from 'discord.js';
+import client from '../../app';
+
+const dateTimeString = () => {
+	const currentdate = new Date();
+	const datetime = 'Cron executed: ' + currentdate.getDate() + '/'
+		+ (currentdate.getMonth() + 1) + '/'
+		+ currentdate.getFullYear() + ' @ '
+		+ currentdate.getHours() + ':'
+		+ currentdate.getMinutes() + ':'
+		+ currentdate.getSeconds();
+	return datetime;
+};
 
 export default async (): Promise<any> => {
-	setInterval(async function(): Promise<void> { await fqRescueCall(); }, (1000 * 60 * 60 * 2));
+	const job = new cron.CronJob('0 0 0/2 * * *', async function() {
+		await fqRescueCall();
+		Log.info(`First Quest: fqRescueCall() cron job executed on ${dateTimeString()}`);
+	}, null, true, 'America/Los_Angeles');
+	job.start();
 
-	setInterval(async function(): Promise<void> { await checkPOAPExpiration(); }, (1000 * 60 * 60 * 6));
+	const job2 = new cron.CronJob('0 0 0/6 * * *', async function() {
+		await checkPOAPExpiration();
+		Log.info(`First Quest: checkPOAPExpiration() cron job executed on ${dateTimeString()}`);
+	}, null, true, 'America/Los_Angeles');
+	job2.start();
+
+	const job3 = new cron.CronJob('0 0/30 * * * *', async function() {
+		const infoChannel = await client.channels.fetch(channelIds.captchaVerification) as TextBasedChannels;
+		await infoChannel.send({ content: 'to start first-quest manually, make sure DMs are enabled and run `/first-quest start` command' });
+		Log.info(`First Quest: /first-quest start reminder cron job executed on ${dateTimeString()}`);
+	}, null, true, 'America/Los_Angeles');
+	job3.start();
 };
 
