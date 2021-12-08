@@ -4,7 +4,7 @@
 
 1. Remove datadog tracer
 2. Add more phrases and fix grammar and add typing feature
-3. First Quest: bug fix to prevent message scramble in edge case
+3. First Quest: bug fix to prevent message scramble in egde case
 
 ## 1.2.0-RELEASE (2021-11-30)
 

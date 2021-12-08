@@ -17,9 +17,9 @@
         "bsonType": "string",
         "description": "Discord guild of user"
       },
-      "step": {
+      "role": {
         "bsonType": "string",
-        "description": "Current first-quest step of user"
+        "description": "Current first-quest Discord role of user"
       },
       "timestamp": {
         "bsonType": "double",
