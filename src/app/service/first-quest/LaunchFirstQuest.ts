@@ -14,7 +14,7 @@ export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: G
 	try {
 		await member.roles.remove(roleIds.firstQuestWelcome);
 	} catch {
-		console.log('failed to remove role');
+		Log.debug('failed to remove role');
 	}
 
 	const dmChannel: DMChannel = await getDMChannel(member, dmChan);

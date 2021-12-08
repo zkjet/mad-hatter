@@ -17,12 +17,12 @@ module.exports = class FirstQuest extends SlashCommand {
 		super(creator, {
 			name: 'first-quest',
 			description: 'First Quest Commands',
-			guildIDs: [discordServerIds.banklessDAO, discordServerIds.discordBotGarage, '913709300592021545'],
+			guildIDs: [discordServerIds.banklessDAO, discordServerIds.discordBotGarage],
 			options: [
 				{
 					name: 'start',
 					type: CommandOptionType.SUB_COMMAND,
-					description: '(Re)start First Quest',
+					description: 'Re-start First Quest',
 					options: [],
 				},
 				{
