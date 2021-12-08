@@ -3,16 +3,11 @@ import client from '../../app';
 import { GuildMember, Message, MessageEmbed, TextChannel } from 'discord.js';
 import { Captcha } from 'discord.js-captcha';
 import Log from '../../utils/Log';
-import firstQuest from '../../service/constants/firstQuest';
+import { addNewUserToDb, sendFqMessage } from '../../service/first-quest/LaunchFirstQuest';
+import roleIds from '../../service/constants/roleIds';
 
 const StartFirstQuestFlow = async (guildMember: GuildMember): Promise<void> => {
 	Log.debug(`starting first quest flow for new user ${guildMember.user.tag}`);
-
-	for (const role of guildMember.roles.cache.values()) {
-		if (Object.values(firstQuest.FIRST_QUEST_ROLES).includes(role.id)) {
-			await guildMember.roles.remove(role.id).catch(Log.error);
-		}
-	}
 
 	const captchaOptions = getCaptchaOptions(guildMember, false);
 
@@ -46,7 +41,8 @@ const StartFirstQuestFlow = async (guildMember: GuildMember): Promise<void> => {
 const runSuccessAndTimeout = (guildMember: GuildMember, captcha: any, isKickOnFailureSet: boolean) => {
 	captcha.on('success', async () => {
 		Log.debug(`captcha success for ${guildMember.user.tag}`);
-		await guildMember.roles.add(firstQuest.FIRST_QUEST_ROLES.verified).catch(Log.error);
+		await addNewUserToDb(guildMember);
+		await sendFqMessage('undefined', guildMember);
 		const verificationChannel: TextChannel = await guildMember.guild.channels.fetch(channelIds.captchaVerification) as TextChannel;
 		const message: Message = await verificationChannel.send({
 			embeds: [{
@@ -70,8 +66,11 @@ const runSuccessAndTimeout = (guildMember: GuildMember, captcha: any, isKickOnFa
 const getCaptchaOptions = (guildMember: GuildMember, kickOnFailure: boolean) => {
 	return {
 		guildID: guildMember.guild.id,
-		roleID: firstQuest.FIRST_QUEST_ROLES.verified,
+		roleID: roleIds.firstQuestWelcome,
 		channelID: channelIds.captchaVerification,
+		// guildID: guildMember.guild.id,
+		// roleID: roleIds.firstQuestWelcome,
+		// channelID: '917991272936013855',
 		kickOnFailure: kickOnFailure,
 		attempts: 1,
 		timeout: 180000,

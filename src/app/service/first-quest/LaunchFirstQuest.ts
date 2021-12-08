@@ -7,22 +7,25 @@ import { Db } from 'mongodb';
 import client from '../../app';
 import channelIds from '../constants/channelIds';
 import { getPOAPLink } from './FirstQuestPOAP';
+import roleIds from '../constants/roleIds';
 
 export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: GuildMember): Promise<void> => {
-	Log.debug('launching first quest');
+
+	try {
+		await member.roles.remove(roleIds.firstQuestWelcome);
+	} catch {
+		console.log('failed to remove role');
+	}
 
 	const dmChannel: DMChannel = await getDMChannel(member, dmChan);
 
 	const fqMessageContent = await getMessageContentFromDb();
-	Log.debug('got first quest content from db');
 
 	const fqMessage = await retrieveFqMessage(member);
-	Log.debug('got first quest step for user in flow');
 
 	const content = fqMessageContent[fqMessage.message_id];
 
 	const firstQuestMessage = await dmChannel.send({ content: content.replace(/\\n/g, '\n') });
-	Log.debug('sent first quest message step in flow');
 
 	await firstQuestMessage.react(fqMessage.emoji);
 
@@ -35,19 +38,8 @@ export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: G
 	collector.on('end', async (collected, reason) => {
 
 		if (reason === 'limit') {
-			await nextStep(member, fqMessage.start_step, fqMessage.end_step);
 			try {
-				if (!(fqMessage.end_step === fqConstants.FIRST_QUEST_STEPS.first_quest_complete)) {
-					await sendFqMessage(dmChannel, member);
-
-				} else {
-					await dmChannel.send({ content: fqMessageContent[getFqMessage(fqConstants.FIRST_QUEST_STEPS.first_quest_complete).message_id].replace(/\\n/g, '\n') });
-
-					await getPOAPLink(member);
-				}
-			} catch {
-				// give some time for the role update to come through and try again
-				await new Promise(r => setTimeout(r, 1000));
+				await nextStep(member, fqMessage.end_step);
 
 				if (!(fqMessage.end_step === fqConstants.FIRST_QUEST_STEPS.first_quest_complete)) {
 					await sendFqMessage(dmChannel, member);
@@ -57,6 +49,8 @@ export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: G
 
 					await getPOAPLink(member);
 				}
+			} catch (e) {
+				Log.debug(`First Quest: failed to move to next step ${e}`);
 			}
 			return;
 		}
@@ -149,61 +143,47 @@ export const firstQuestHandleUserRemove = async (member: GuildMember): Promise<v
 	}
 };
 
-export const nextStep = async (member: GuildMember, fromStep: string, toStep: string): Promise<void> => {
+export const nextStep = async (member: GuildMember, toStep: string): Promise<void> => {
 	const guild = member.guild;
 
-	const roles = await guild.roles.fetch();
+	const filter = { _id: member.user.id };
 
-	for (const role of roles.values()) {
-		if (role.id === toStep) {
-			try {
-				await member.roles.add(role);
+	const options = { upsert: true };
 
-				const filter = { _id: member.user.id };
+	const updateDoc = { $set: { step: toStep, doneRescueCall: false, timestamp: Date.now(), guild: guild.id } };
 
-				const options = { upsert: true };
+	const db: Db = await dbInstance.connect(constants.DB_NAME_DEGEN);
 
-				const updateDoc = { $set: { role: role.id, doneRescueCall: false, timestamp: Date.now(), guild: guild.id } };
+	const dbFirstQuestTracker = db.collection(constants.DB_COLLECTION_FIRST_QUEST_TRACKER);
 
-				const db: Db = await dbInstance.connect(constants.DB_NAME_DEGEN);
+	await dbFirstQuestTracker.updateOne(filter, updateDoc, options);
+};
 
-				const dbFirstQuestTracker = db.collection(constants.DB_COLLECTION_FIRST_QUEST_TRACKER);
+export const addNewUserToDb = async (guildMember) => {
+	const guild = guildMember.guild;
 
-				await dbFirstQuestTracker.updateOne(filter, updateDoc, options);
-			} catch {
-				Log.error(`First Quest: failed to add Role ${role.id} to user ${member.user.id}`);
-				return;
-			}
+	const filter = { _id: guildMember.user.id };
 
-		}
+	const options = { upsert: true };
 
-		if (role.id === fromStep) {
-			try {
-				await member.roles.remove(role);
+	const updateDoc = { $set: { step: fqConstants.FIRST_QUEST_STEPS.verified, doneRescueCall: false, timestamp: Date.now(), guild: guild.id } };
 
-			} catch {
-				Log.error(`First Quest: failed to remove Role ${role.id} from user ${member.user.id}`);
-			}
+	const db: Db = await dbInstance.connect(constants.DB_NAME_DEGEN);
 
-		}
-	}
+	const dbFirstQuestTracker = db.collection(constants.DB_COLLECTION_FIRST_QUEST_TRACKER);
+
+	await dbFirstQuestTracker.updateOne(filter, updateDoc, options);
 };
 
 const retrieveFqMessage = async (member):Promise<any> => {
 
-	const roles = member.roles.cache;
+	const db: Db = await dbInstance.connect(constants.DB_NAME_DEGEN);
 
-	for (const role of roles.values()) {
-		if (Object.values(fqConstants.FIRST_QUEST_STEPS).indexOf(role.id) > -1) {
-			return getFqMessage(role.id);
-		}
-	}
-	try {
-		await member.roles.add(fqConstants.FIRST_QUEST_STEPS.verified);
-		return getFqMessage(fqConstants.FIRST_QUEST_STEPS.verified);
-	} catch {
-		Log.error('could not retrieve first quest message');
-	}
+	const firstQuestTracker = await db.collection(constants.DB_COLLECTION_FIRST_QUEST_TRACKER);
+
+	const data = await firstQuestTracker.find({ '_id': member.user.id }).toArray();
+
+	return getFqMessage(data[0].step);
 };
 
 const getFqMessage = (step_name: string) => {

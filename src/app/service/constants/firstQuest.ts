@@ -1,14 +1,4 @@
 const firstQuest = Object.freeze({
-	FIRST_QUEST_ROLES : {
-		verified: process.env.DISCORD_ROLE_FIRST_QUEST_START,
-		first_quest_welcome: process.env.DISCORD_ROLE_FIRST_QUEST_WELCOME,
-		first_quest_membership: process.env.DISCORD_ROLE_FIRST_QUEST_MEMBERSHIP,
-		firehose: process.env.DISCORD_ROLE_FIRST_QUEST_FIREHOSE,
-		first_quest_scholar: process.env.DISCORD_ROLE_FIRST_QUEST_SCHOLAR,
-		first_quest_guest_pass: process.env.DISCORD_ROLE_FIRST_QUEST_GUEST_PASS,
-		first_quest: process.env.DISCORD_ROLE_FIRST_QUEST,
-		first_quest_complete: process.env.DISCORD_ROLE_FIRST_QUEST_COMPLETE,
-	},
 
 	FIRST_QUEST_STEPS : {
 		verified: 'FIRST_QUEST_STEP_1',

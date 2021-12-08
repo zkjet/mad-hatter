@@ -8,16 +8,16 @@ import ServiceUtils from '../../utils/ServiceUtils';
 import ConfigureFirstQuest from '../../service/first-quest/ConfigureFirstQuest';
 import ValidationError from '../../errors/ValidationError';
 import discordServerIds from '../../service/constants/discordServerIds';
-import Log, { LogUtils } from '../../utils/Log';
 import FirstQuestPOAP from '../../service/first-quest/FirstQuestPOAP';
-import fqConstants from '../../service/constants/firstQuest';
+import { addNewUserToDb, sendFqMessage } from '../../service/first-quest/LaunchFirstQuest';
+import { LogUtils } from '../../utils/Log';
 
 module.exports = class FirstQuest extends SlashCommand {
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: 'first-quest',
 			description: 'First Quest Commands',
-			guildIDs: [discordServerIds.banklessDAO, discordServerIds.discordBotGarage],
+			guildIDs: [discordServerIds.banklessDAO, discordServerIds.discordBotGarage, '913709300592021545'],
 			options: [
 				{
 					name: 'start',
@@ -74,13 +74,10 @@ module.exports = class FirstQuest extends SlashCommand {
 			case 'start':
 				ctx?.send(`Hi, ${ctx.user.mention}! First Quest was launched, please make sure DMs are active.`);
 
-				for (const role of guildMember.roles.cache.values()) {
-					if (Object.values(fqConstants.FIRST_QUEST_ROLES).includes(role.id)) {
-						await guildMember.roles.remove(role.id).catch(Log.error);
-					}
-				}
-				
-				command = guildMember.roles.add(fqConstants.FIRST_QUEST_ROLES.verified).catch(Log.error);
+				await addNewUserToDb(guildMember);
+
+				command = sendFqMessage('undefined', guildMember);
+
 				break;
 			case 'config':
 				command = ConfigureFirstQuest(guildMember, ctx);
