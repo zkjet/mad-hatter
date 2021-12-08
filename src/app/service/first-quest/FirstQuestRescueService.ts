@@ -7,13 +7,13 @@ import { TextBasedChannels } from 'discord.js';
 import client from '../../app';
 
 const dateTimeString = () => {
-	const currentdate = new Date();
-	const datetime = 'Cron executed: ' + currentdate.getDate() + '/'
-		+ (currentdate.getMonth() + 1) + '/'
-		+ currentdate.getFullYear() + ' @ '
-		+ currentdate.getHours() + ':'
-		+ currentdate.getMinutes() + ':'
-		+ currentdate.getSeconds();
+	const currentDate = new Date();
+	const datetime = 'Cron executed: ' + currentDate.getDate() + '/'
+		+ (currentDate.getMonth() + 1) + '/'
+		+ currentDate.getFullYear() + ' @ '
+		+ currentDate.getHours() + ':'
+		+ currentDate.getMinutes() + ':'
+		+ currentDate.getSeconds();
 	return datetime;
 };
 
