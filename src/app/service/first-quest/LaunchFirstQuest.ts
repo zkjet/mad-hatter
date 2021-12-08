@@ -1,7 +1,7 @@
-import { DMChannel, GuildMember, TextBasedChannels } from 'discord.js';
+import { DMChannel, GuildMember, TextBasedChannels, TextChannel } from 'discord.js';
 import constants from '../constants/constants';
 import fqConstants from '../constants/firstQuest';
-import Log from '../../utils/Log';
+import Log, { LogUtils } from '../../utils/Log';
 import dbInstance from '../../utils/MongoDbUtils';
 import { Db } from 'mongodb';
 import client from '../../app';
@@ -100,11 +100,19 @@ export const fqRescueCall = async (): Promise<void> => {
 					const guild = await oAuth2Guild.fetch();
 
 					if (guild.id === fqUser.guild) {
-						const channels = await guild.channels.fetch();
+						let fqSupportThread;
 
-						const supportChannel = channels.get(channelIds.firstQuestProject) as TextBasedChannels;
+						try {
+							fqSupportThread = await client.channels.fetch(channelIds.firstQuestSupport) as TextChannel;
 
-						await supportChannel.send({ content: `User <@${fqUser._id}> appears to be stuck in first-quest, please extend some help.` });
+						} catch (e) {
+							fqSupportThread = null;
+							LogUtils.logError(`First Quest: Failed to fetch support thread and could not send rescue call for user ${fqUser._id}`, e);
+						}
+
+						if (fqSupportThread) {
+							await fqSupportThread.send({ content: `User <@${fqUser._id}> appears to be stuck in first-quest, please extend some help.` });
+						}
 					}
 				}
 			}
