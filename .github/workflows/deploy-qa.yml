@@ -43,3 +43,5 @@ jobs:
                   HD_MONGODB_CLUSTER: ${{secrets.QA_MONGODB_CLUSTER}}
                   HD_NOTION_TOKEN: ${{secrets.QA_NOTION_TOKEN}}
                   HD_LOGDNA_TOKEN: ${{secrets.QA_LOGDNA_TOKEN}}
+                  HD_HONEYCOMB_APIKEY: ${{secrets.QA_HONEYCOMB_APIKEY}}
+                  HD_HONEYCOMB_DATASET: ${{secrets.QA_HONEYCOMB_DATASET}}
