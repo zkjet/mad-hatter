@@ -10,7 +10,7 @@ import { getPOAPLink } from './FirstQuestPOAP';
 
 export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: GuildMember): Promise<void> => {
 	Log.debug('launching first quest');
-	
+
 	const dmChannel: DMChannel = await getDMChannel(member, dmChan);
 
 	const fqMessageContent = await getMessageContentFromDb();
@@ -20,10 +20,10 @@ export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: G
 	Log.debug('got first quest step for user in flow');
 
 	const content = fqMessageContent[fqMessage.message_id];
-	
+
 	const firstQuestMessage = await dmChannel.send({ content: content.replace(/\\n/g, '\n') });
 	Log.debug('sent first quest message step in flow');
-	
+
 	await firstQuestMessage.react(fqMessage.emoji);
 
 	const filter = (reaction, user) => {
@@ -35,13 +35,13 @@ export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: G
 	collector.on('end', async (collected, reason) => {
 
 		if (reason === 'limit') {
-			await switchRoles(member, fqMessage.start_role, fqMessage.end_role);
+			await nextStep(member, fqMessage.start_step, fqMessage.end_step);
 			try {
-				if (!(fqMessage.end_role === fqConstants.FIRST_QUEST_ROLES.first_quest_complete)) {
+				if (!(fqMessage.end_step === fqConstants.FIRST_QUEST_STEPS.first_quest_complete)) {
 					await sendFqMessage(dmChannel, member);
 
 				} else {
-					await dmChannel.send({ content: fqMessageContent[getFqMessage(fqConstants.FIRST_QUEST_ROLES.first_quest_complete).message_id].replace(/\\n/g, '\n') });
+					await dmChannel.send({ content: fqMessageContent[getFqMessage(fqConstants.FIRST_QUEST_STEPS.first_quest_complete).message_id].replace(/\\n/g, '\n') });
 
 					await getPOAPLink(member);
 				}
@@ -49,11 +49,11 @@ export const sendFqMessage = async (dmChan:TextBasedChannels | string, member: G
 				// give some time for the role update to come through and try again
 				await new Promise(r => setTimeout(r, 1000));
 
-				if (!(fqMessage.end_role === fqConstants.FIRST_QUEST_ROLES.first_quest_complete)) {
+				if (!(fqMessage.end_step === fqConstants.FIRST_QUEST_STEPS.first_quest_complete)) {
 					await sendFqMessage(dmChannel, member);
 
 				} else {
-					await dmChannel.send({ content: fqMessageContent[getFqMessage(fqConstants.FIRST_QUEST_ROLES.first_quest_complete).message_id].replace(/\\n/g, '\n') });
+					await dmChannel.send({ content: fqMessageContent[getFqMessage(fqConstants.FIRST_QUEST_STEPS.first_quest_complete).message_id].replace(/\\n/g, '\n') });
 
 					await getPOAPLink(member);
 				}
@@ -88,7 +88,7 @@ export const fqRescueCall = async (): Promise<void> => {
 	const data = await firstQuestTracker.find({}).toArray();
 
 	for (const fqUser of data) {
-		if (!(fqUser.role === fqConstants.FIRST_QUEST_ROLES.first_quest_complete) && (fqUser.doneRescueCall === false)) {
+		if (!(fqUser.step === fqConstants.FIRST_QUEST_STEPS.first_quest_complete) && (fqUser.doneRescueCall === false)) {
 
 			if ((+new Date() - fqUser.timestamp) >= (1000 * 60 * 60 * 24)) {
 
@@ -149,13 +149,13 @@ export const firstQuestHandleUserRemove = async (member: GuildMember): Promise<v
 	}
 };
 
-export const switchRoles = async (member: GuildMember, fromRole: string, toRole: string): Promise<void> => {
+export const nextStep = async (member: GuildMember, fromStep: string, toStep: string): Promise<void> => {
 	const guild = member.guild;
 
 	const roles = await guild.roles.fetch();
 
 	for (const role of roles.values()) {
-		if (role.id === toRole) {
+		if (role.id === toStep) {
 			try {
 				await member.roles.add(role);
 
@@ -174,17 +174,17 @@ export const switchRoles = async (member: GuildMember, fromRole: string, toRole:
 				Log.error(`First Quest: failed to add Role ${role.id} to user ${member.user.id}`);
 				return;
 			}
-			
+
 		}
 
-		if (role.id === fromRole) {
+		if (role.id === fromStep) {
 			try {
 				await member.roles.remove(role);
 
 			} catch {
 				Log.error(`First Quest: failed to remove Role ${role.id} from user ${member.user.id}`);
 			}
-			
+
 		}
 	}
 };
@@ -194,35 +194,35 @@ const retrieveFqMessage = async (member):Promise<any> => {
 	const roles = member.roles.cache;
 
 	for (const role of roles.values()) {
-		if (Object.values(fqConstants.FIRST_QUEST_ROLES).indexOf(role.id) > -1) {
+		if (Object.values(fqConstants.FIRST_QUEST_STEPS).indexOf(role.id) > -1) {
 			return getFqMessage(role.id);
 		}
 	}
 	try {
-		await member.roles.add(fqConstants.FIRST_QUEST_ROLES.verified);
-		return getFqMessage(fqConstants.FIRST_QUEST_ROLES.verified);
+		await member.roles.add(fqConstants.FIRST_QUEST_STEPS.verified);
+		return getFqMessage(fqConstants.FIRST_QUEST_STEPS.verified);
 	} catch {
 		Log.error('could not retrieve first quest message');
 	}
 };
 
-const getFqMessage = (roleId: string) => {
-	switch (roleId) {
-	case (fqConstants.FIRST_QUEST_ROLES.verified):
+const getFqMessage = (step_name: string) => {
+	switch (step_name) {
+	case (fqConstants.FIRST_QUEST_STEPS.verified):
 		return fqMessageFlow['verified'];
-	case (fqConstants.FIRST_QUEST_ROLES.first_quest_welcome):
+	case (fqConstants.FIRST_QUEST_STEPS.first_quest_welcome):
 		return fqMessageFlow['welcome'];
-	case (fqConstants.FIRST_QUEST_ROLES.first_quest_membership):
+	case (fqConstants.FIRST_QUEST_STEPS.first_quest_membership):
 		return fqMessageFlow['membership'];
-	case (fqConstants.FIRST_QUEST_ROLES.firehose):
+	case (fqConstants.FIRST_QUEST_STEPS.firehose):
 		return fqMessageFlow['firehose'];
-	case (fqConstants.FIRST_QUEST_ROLES.first_quest_scholar):
+	case (fqConstants.FIRST_QUEST_STEPS.first_quest_scholar):
 		return fqMessageFlow['scholar'];
-	case (fqConstants.FIRST_QUEST_ROLES.first_quest_guest_pass):
+	case (fqConstants.FIRST_QUEST_STEPS.first_quest_guest_pass):
 		return fqMessageFlow['guest_pass'];
-	case (fqConstants.FIRST_QUEST_ROLES.first_quest):
+	case (fqConstants.FIRST_QUEST_STEPS.first_quest):
 		return fqMessageFlow['first_quest'];
-	case (fqConstants.FIRST_QUEST_ROLES.first_quest_complete):
+	case (fqConstants.FIRST_QUEST_STEPS.first_quest_complete):
 		return fqMessageFlow['complete'];
 	}
 };
@@ -231,49 +231,49 @@ const fqMessageFlow = {
 	verified: {
 		message_id: 'fq1',
 		emoji: '🏦',
-		start_role: fqConstants.FIRST_QUEST_ROLES.verified,
-		end_role: fqConstants.FIRST_QUEST_ROLES.first_quest_welcome,
+		start_step: fqConstants.FIRST_QUEST_STEPS.verified,
+		end_step: fqConstants.FIRST_QUEST_STEPS.first_quest_welcome,
 	},
 	welcome: {
 		message_id: 'fq2',
 		emoji: '🏦',
-		start_role: fqConstants.FIRST_QUEST_ROLES.first_quest_welcome,
-		end_role: fqConstants.FIRST_QUEST_ROLES.first_quest_membership,
+		start_step: fqConstants.FIRST_QUEST_STEPS.first_quest_welcome,
+		end_step: fqConstants.FIRST_QUEST_STEPS.first_quest_membership,
 	},
 	membership: {
 		message_id: 'fq3',
 		emoji: '🏦',
-		start_role: fqConstants.FIRST_QUEST_ROLES.first_quest_membership,
-		end_role: fqConstants.FIRST_QUEST_ROLES.firehose,
+		start_step: fqConstants.FIRST_QUEST_STEPS.first_quest_membership,
+		end_step: fqConstants.FIRST_QUEST_STEPS.firehose,
 	},
 	firehose: {
 		message_id: 'fq4',
 		emoji: '✏️',
-		start_role: fqConstants.FIRST_QUEST_ROLES.firehose,
-		end_role: fqConstants.FIRST_QUEST_ROLES.first_quest_scholar,
+		start_step: fqConstants.FIRST_QUEST_STEPS.firehose,
+		end_step: fqConstants.FIRST_QUEST_STEPS.first_quest_scholar,
 	},
 	scholar: {
 		message_id: 'fq5',
 		emoji: '✏️',
-		start_role: fqConstants.FIRST_QUEST_ROLES.first_quest_scholar,
-		end_role: fqConstants.FIRST_QUEST_ROLES.first_quest_guest_pass,
+		start_step: fqConstants.FIRST_QUEST_STEPS.first_quest_scholar,
+		end_step: fqConstants.FIRST_QUEST_STEPS.first_quest_guest_pass,
 	},
 	guest_pass: {
 		message_id: 'fq6',
 		emoji: '✏️',
-		start_role: fqConstants.FIRST_QUEST_ROLES.first_quest_guest_pass,
-		end_role: fqConstants.FIRST_QUEST_ROLES.first_quest,
+		start_step: fqConstants.FIRST_QUEST_STEPS.first_quest_guest_pass,
+		end_step: fqConstants.FIRST_QUEST_STEPS.first_quest,
 	},
 	first_quest: {
 		message_id: 'fq7',
 		emoji: '🤠',
-		start_role: fqConstants.FIRST_QUEST_ROLES.first_quest,
-		end_role: fqConstants.FIRST_QUEST_ROLES.first_quest_complete,
+		start_step: fqConstants.FIRST_QUEST_STEPS.first_quest,
+		end_step: fqConstants.FIRST_QUEST_STEPS.first_quest_complete,
 	},
 	complete: {
 		message_id: 'fq8',
 		emoji: '',
-		start_role: fqConstants.FIRST_QUEST_ROLES.first_quest_complete,
-		end_role: fqConstants.FIRST_QUEST_ROLES.verified,
+		start_step: fqConstants.FIRST_QUEST_STEPS.first_quest_complete,
+		end_step: fqConstants.FIRST_QUEST_STEPS.verified,
 	},
 };
