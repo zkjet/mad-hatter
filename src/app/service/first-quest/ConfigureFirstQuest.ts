@@ -112,10 +112,16 @@ const collectConfirmation = async (message, member, key, origMessages): Promise<
 
 const collectUserInput = async (dmChannel: DMChannel, member: GuildMember, key: string, origMessages: Record<string, string>): Promise<void> => {
 
-	await dmChannel.send({ content: '**Your input please:** \n(Go here for guidance on how to format your message ' +
+	await dmChannel.send({ content: '**Your input please: - ATTENTION: Character limit for messages is 2000! ** \n(Go here for guidance on how to format your message ' +
 			'<https://support.discord.com/hc/en-us/articles/210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline->)' });
 
 	const responseContent = (await dmChannel.awaitMessages({ max: 1, time: (30000 * 60), errors: ['time'] })).first().content;
+
+	if (responseContent.length > 2000) {
+		await dmChannel.send({ content: 'Message too long, command aborted. Please reduce to 2000 characters and run the command again.' });
+
+		return;
+	}
 
 	const finalConfirmation = await dmChannel.send({ content: '👍 - Confirm and exit \n➡️ - Confirm and select another \n❌ - Cancel' });
 

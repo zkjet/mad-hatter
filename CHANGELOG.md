@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1-RELEASE (2021-12-10)
+
+1. Hotfix to enforce 2000 character constraint in first quest messages
+2. Update default first quest messages 1-7 to current version (for db init)
+
 ## 1.2.0-RELEASE (2021-11-30)
 
 1. Add message stability
