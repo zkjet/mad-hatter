@@ -4,6 +4,14 @@
 
 1. Remove datadog tracer
 2. Add more phrases and fix grammar and add typing feature
+3. Add OpenTelemetry and Honeycomb exporter
+4. Post first-quest rescue call to support thread instead of channel
+5. Remove dependency on roles from First Quest feature
+   - Roles are replaced by database record for DM flow.
+   - First Quest Welcome Role ist still needed by captcha library but directly removed after captcha success
+   - Also fixes the message scramble bug that was discovered earlier
+6. First Quest feature: Replace timout with cron job
+7. Add character limit check for first-quest config
 
 ## 1.2.0-RELEASE (2021-11-30)
 

@@ -40,3 +40,5 @@ jobs:
           HD_NOTION_TOKEN: ${{secrets.PROD_NOTION_TOKEN}}
           HD_LOGDNA_TOKEN: ${{secrets.PROD_LOGDNA_TOKEN}}
           HD_SENTRY_DSN: ${{secrets.SENTRY_DSN}}
+          HD_HONEYCOMB_APIKEY: ${{secrets.PROD_HONEYCOMB_APIKEY}}
+          HD_HONEYCOMB_DATASET: ${{secrets.PROD_HONEYCOMB_DATASET}}
