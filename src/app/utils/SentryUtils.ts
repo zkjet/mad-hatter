@@ -1,31 +1,34 @@
 import { CommandContext } from 'slash-create';
 import * as Sentry from '@sentry/node';
 
-export function command(target: Object, propertyKey: string, descriptor: PropertyDescriptor) {
-    const originalValue = descriptor.value;
-    descriptor.value = async function (...args: any[]) {
-        let ctx = args[0] as CommandContext;
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function command(target: Object, propertyKey: string, descriptor: PropertyDescriptor): any {
+	const originalValue = descriptor.value;
+	descriptor.value = async function(...args: any[]) {
+		const ctx = args[0] as CommandContext;
 
-        const transaction = Sentry.startTransaction({
-            op: "command",
-            name: ctx.commandName
-        });
+		const transaction = Sentry.startTransaction({
+			op: 'command',
+			name: ctx.commandName,
+		});
 
-        Sentry.configureScope(scope => {
-            scope.setSpan(transaction);
-            scope.setUser({
-                username: ctx.users[0]
-            })
-        });
+		Sentry.configureScope(scope => {
+			scope.setSpan(transaction);
+			scope.setUser({
+				username: ctx.users[0],
+			});
+		});
 
-        try {
-            var result = await originalValue.apply(this, args);
-        } catch (e) {
-            Sentry.captureException(e);
-        } finally {
-            transaction.finish();
-        }
+		let result: any;
 
-        return result;
-    }
+		try {
+			result = await originalValue.apply(this, args);
+		} catch (e) {
+			Sentry.captureException(e);
+		} finally {
+			transaction.finish();
+		}
+
+		return result;
+	};
 }
