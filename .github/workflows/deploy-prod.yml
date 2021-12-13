@@ -39,3 +39,4 @@ jobs:
           HD_MONGODB_CLUSTER: ${{secrets.PROD_MONGODB_CLUSTER}}
           HD_NOTION_TOKEN: ${{secrets.PROD_NOTION_TOKEN}}
           HD_LOGDNA_TOKEN: ${{secrets.PROD_LOGDNA_TOKEN}}
+          HD_SENTRY_DSN: ${{secrets.SENTRY_DSN}}

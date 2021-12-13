@@ -4,6 +4,22 @@ import Discord, { Client, ClientOptions, Intents, WSEventType } from 'discord.js
 import path from 'path';
 import fs from 'fs';
 import Log, { LogUtils } from './utils/Log';
+import * as Sentry from '@sentry/node';
+import { RewriteFrames } from "@sentry/integrations";
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  debug: process.env.NODE_ENV == 'development' ? true : false,
+  tracesSampleRate: 1.0,
+  environment: process.env.NODE_ENV,
+  release: process.env.npm_package_version,
+  integrations: [
+    new RewriteFrames({
+      root: __dirname
+    }),
+	new Sentry.Integrations.Http({ tracing: true }),
+  ],
+});
 
 // initialize logger
 new Log();
@@ -18,19 +34,28 @@ const creator = new SlashCreator({
 });
 
 creator.on('debug', (message) => Log.debug(`debug: ${ message }`));
-creator.on('warn', (message) => Log.warn(`warn: ${ message }`));
-creator.on('error', (error: Error) => Log.error(`error: ${ error }`));
+creator.on('warn', (message) => {
+	Log.warn(`warn: ${ message }`)
+	Sentry.captureMessage(message.toString())
+});
+creator.on('error', (error: Error) => {
+	Log.error(`error: ${ error }`)
+	Sentry.captureException(error);
+});
 creator.on('synced', () => Log.debug('Commands synced!'));
 creator.on('commandRegister', (command: SlashCommand) => Log.debug(`Registered command ${command.commandName}`));
-creator.on('commandError', (command: SlashCommand, error: Error) => Log.error(`Command ${command.commandName}:`, {
-	indexMeta: true,
-	meta: {
-		name: error.name,
-		message: error.message,
-		stack: error.stack,
-		command,
-	},
-}));
+creator.on('commandError', (command: SlashCommand, error: Error) => {
+	Log.error(`Command ${command.commandName}:`, {
+		indexMeta: true,
+		meta: {
+			name: error.name,
+			message: error.message,
+			stack: error.stack,
+			command,
+		},
+	})
+	Sentry.captureException(error);
+});
 
 // Ran after the command has completed
 creator.on('commandRun', (command:SlashCommand, result: Promise<any>, ctx: CommandContext) => {
@@ -46,7 +71,10 @@ creator
 	.syncCommands();
 
 // Log client errors
-client.on('error', Log.error);
+client.on('error', (error: Error) => {
+	Log.error(error);
+	Sentry.captureException(error);
+});
 
 client.login(process.env.DISCORD_BOT_TOKEN);
 
@@ -89,6 +117,7 @@ function initializeEvents(): void {
 					event,
 				},
 			});
+			Sentry.captureException(e);
 		}
 	});
 }

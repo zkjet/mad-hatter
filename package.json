@@ -35,6 +35,9 @@
     "dependencies": {
         "@logdna/logger": "^2.4.1",
         "@notionhq/client": "0.2.0",
+        "@sentry/integrations": "^6.16.0",
+        "@sentry/node": "^6.15.0",
+        "@sentry/tracing": "^6.15.0",
         "@types/node": "^16.7.1",
         "axios": "^0.21.4",
         "dayjs": "^1.10.7",
@@ -47,6 +50,7 @@
         "mongodb": "^3.6.9",
         "p-queue": "^6.6.2",
         "slash-create": "^4.3.0",
+        "tslib": "^2.3.1",
         "uuid": "^8.3.2"
     },
     "devDependencies": {

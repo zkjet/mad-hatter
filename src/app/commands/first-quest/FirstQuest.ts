@@ -11,8 +11,9 @@ import discordServerIds from '../../service/constants/discordServerIds';
 import Log, { LogUtils } from '../../utils/Log';
 import FirstQuestPOAP from '../../service/first-quest/FirstQuestPOAP';
 import fqConstants from '../../service/constants/firstQuest';
+import { command } from '../../utils/SentryUtils';
 
-module.exports = class FirstQuest extends SlashCommand {
+export default class FirstQuest extends SlashCommand {
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: 'first-quest',
@@ -64,6 +65,7 @@ module.exports = class FirstQuest extends SlashCommand {
 		});
 	}
 
+	@command
 	async run(ctx: CommandContext) {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;

@@ -11,6 +11,7 @@ import Checkout from '../../service/timecard/Checkout';
 import Hours from '../../service/timecard/Hours';
 import discordServerIds from '../../service/constants/discordServerIds';
 import { LogUtils } from '../../utils/Log';
+import { command } from '../../utils/SentryUtils';
 
 export default class Timecard extends SlashCommand {
 	constructor(creator: SlashCreator) {
@@ -51,6 +52,7 @@ export default class Timecard extends SlashCommand {
 		});
 	}
 
+	@command
 	async run(ctx: CommandContext): Promise<any> {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;
