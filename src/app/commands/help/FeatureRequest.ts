@@ -5,7 +5,7 @@ export default class FeatureRequest extends SlashCommand {
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: 'feature-request',
-			description: 'Pull up the form to submit a new feature request',
+			description: 'Retrieve feature request form',
 			throttling: {
 				usages: 2,
 				duration: 1,

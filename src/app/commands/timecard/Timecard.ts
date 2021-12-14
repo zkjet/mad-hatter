@@ -22,17 +22,17 @@ export default class Timecard extends SlashCommand {
 				{
 					name: 'checkin',
 					type: CommandOptionType.SUB_COMMAND,
-					description: 'Initiate time card.',
+					description: 'Initiate time card',
 				},
 				{
 					name: 'checkout',
 					type: CommandOptionType.SUB_COMMAND,
-					description: 'End and log timecard.',
+					description: 'End and log timecard',
 					options: [
 						{
 							name: 'description',
 							type: CommandOptionType.STRING,
-							description: 'Brief description of what you are working on.',
+							description: 'Log what you worked on',
 							required: true,
 						},
 					],
@@ -40,7 +40,7 @@ export default class Timecard extends SlashCommand {
 				{
 					name: 'hours',
 					type: CommandOptionType.SUB_COMMAND,
-					description: 'Calculate total hours worked.',
+					description: 'Calculate total hours worked',
 				},
 			],
 			throttling: {
