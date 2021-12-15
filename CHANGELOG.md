@@ -12,6 +12,7 @@
    - Also fixes the message scramble bug that was discovered earlier
 6. First Quest feature: Replace timout with cron job
 7. Add character limit check for first-quest config
+8. Add more names to username spam filter
 
 ## 1.2.0-RELEASE (2021-11-30)
 
