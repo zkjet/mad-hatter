@@ -17,7 +17,7 @@ export default class NotionFAQs extends SlashCommand {
 				{
 					type: CommandOptionType.STRING,
 					name: 'question',
-					description: 'Do you have a specific question?',
+					description: 'Ask a specific question',
 				},
 			],
 			throttling: {

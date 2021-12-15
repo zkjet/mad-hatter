@@ -21,7 +21,7 @@ export default class GuestPass extends SlashCommand {
 				{
 					type: CommandOptionType.USER,
 					name: 'user',
-					description: 'User to grant guest pass to',
+					description: 'Grant guest pass to:',
 					required: true,
 				},
 			],
