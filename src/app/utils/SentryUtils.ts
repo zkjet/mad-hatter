@@ -18,12 +18,12 @@ export function command(target: Object, propertyKey: string, descriptor: Propert
 				id: ctx.member.user.id,
 				username: ctx.member.user.username,
 				discriminator: ctx.member.user.discriminator,
-				nickname: ctx.member.nick
+				nickname: ctx.member.nick,
 			});
 			scope.setTags({
 				guild: ctx.guildID,
-				channel: ctx.channelID
-			})
+				channel: ctx.channelID,
+			});
 		});
 
 		let result: any;
