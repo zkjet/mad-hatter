@@ -10,7 +10,6 @@ import { RewriteFrames } from "@sentry/integrations";
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
-  debug: process.env.NODE_ENV == 'development' ? true : false,
   tracesSampleRate: 1.0,
   environment: process.env.NODE_ENV,
   release: process.env.npm_package_version,

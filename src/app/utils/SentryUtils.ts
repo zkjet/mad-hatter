@@ -15,8 +15,15 @@ export function command(target: Object, propertyKey: string, descriptor: Propert
 		Sentry.configureScope(scope => {
 			scope.setSpan(transaction);
 			scope.setUser({
-				username: ctx.users[0],
+				id: ctx.member.user.id,
+				username: ctx.member.user.username,
+				discriminator: ctx.member.user.discriminator,
+				nickname: ctx.member.nick
 			});
+			scope.setTags({
+				guild: ctx.guildID,
+				channel: ctx.channelID
+			})
 		});
 
 		let result: any;
