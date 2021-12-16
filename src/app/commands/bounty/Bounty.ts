@@ -22,7 +22,7 @@ export default class Bounty extends SlashCommand {
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: 'bounty',
-			description: 'List, create, claimBounty, delete, and mark bounties complete',
+			description: 'List, create, claim, delete, and complete bounties',
 			guildIDs: [discordServerIds.banklessDAO, discordServerIds.discordBotGarage],
 			options: [
 				{
@@ -33,7 +33,7 @@ export default class Bounty extends SlashCommand {
 						{
 							name: 'bounty-id',
 							type: CommandOptionType.STRING,
-							description: 'Hash ID of the bounty',
+							description: 'Bounty Hash ID',
 							required: true,
 						},
 					],
@@ -46,7 +46,7 @@ export default class Bounty extends SlashCommand {
 						{
 							name: 'bounty-id',
 							type: CommandOptionType.STRING,
-							description: 'Hash ID of the bounty',
+							description: 'Bounty Hash ID',
 							required: true,
 						},
 					],
@@ -54,24 +54,24 @@ export default class Bounty extends SlashCommand {
 				{
 					name: 'create',
 					type: CommandOptionType.SUB_COMMAND,
-					description: 'Create a new draft of a bounty and finalize on the website',
+					description: 'Create a new draft of a bounty',
 					options: [
 						{
 							name: 'title',
 							type: CommandOptionType.STRING,
-							description: 'What should the bounty be called?',
+							description: 'Title of the bounty',
 							required: true,
 						},
 						{
 							name: 'reward',
 							type: CommandOptionType.STRING,
-							description: 'What is the reward? (i.e 100 BANK)',
+							description: 'Reward for bounty completion',
 							required: true,
 						},
 						{
 							name: 'copies',
 							type: CommandOptionType.INTEGER,
-							description: 'How many bounties should be published? (level 3+, max 100)',
+							description: 'Publish identical bounties (level 3+, max 100)',
 							required: false,
 						},
 					],
@@ -79,12 +79,12 @@ export default class Bounty extends SlashCommand {
 				{
 					name: 'publish',
 					type: CommandOptionType.SUB_COMMAND,
-					description: 'Validate discord handle drafted bounty from the website',
+					description: 'Validate discord handle',
 					options: [
 						{
 							name: 'bounty-id',
 							type: CommandOptionType.STRING,
-							description: 'Bounty hash ID',
+							description: 'Bounty Hash ID',
 							required: true,
 						},
 					],
@@ -92,12 +92,12 @@ export default class Bounty extends SlashCommand {
 				{
 					name: 'list',
 					type: CommandOptionType.SUB_COMMAND,
-					description: 'View list of bounties you created or are claimed',
+					description: 'View a fitered list of bounties',
 					options: [
 						{
 							name: 'list-type',
 							type: CommandOptionType.STRING,
-							description: 'Which bounties should be displayed?',
+							description: 'Filter bounties by',
 							choices: [
 								{
 									name: 'created by me',
@@ -132,7 +132,7 @@ export default class Bounty extends SlashCommand {
 						{
 							name: 'bounty-id',
 							type: CommandOptionType.STRING,
-							description: 'Hash ID of the bounty',
+							description: 'Bounty Hash ID',
 							required: true,
 						},
 					],
@@ -145,7 +145,7 @@ export default class Bounty extends SlashCommand {
 						{
 							name: 'bounty-id',
 							type: CommandOptionType.STRING,
-							description: 'Hash ID of the bounty',
+							description: 'Bounty Hash ID',
 							required: true,
 						},
 						{
@@ -157,7 +157,7 @@ export default class Bounty extends SlashCommand {
 						{
 							name: 'notes',
 							type: CommandOptionType.STRING,
-							description: 'any additional notes for bounty completion',
+							description: 'Any additional notes',
 							required: false,
 						},
 					],

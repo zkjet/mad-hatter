@@ -17,19 +17,19 @@ export default class FirstQuest extends SlashCommand {
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: 'first-quest',
-			description: 'First Quest Commands',
+			description: 'First Quest commands',
 			guildIDs: [discordServerIds.banklessDAO, discordServerIds.discordBotGarage],
 			options: [
 				{
 					name: 'start',
 					type: CommandOptionType.SUB_COMMAND,
-					description: 'Re-start First Quest',
+					description: '(Re)start First Quest',
 					options: [],
 				},
 				{
 					name: 'config',
 					type: CommandOptionType.SUB_COMMAND,
-					description: 'Configure First Quest Message Content',
+					description: 'Configure First Quest message content',
 					options: [],
 				},
 				{
@@ -40,7 +40,7 @@ export default class FirstQuest extends SlashCommand {
 						{
 							name: 'refill-type',
 							type: CommandOptionType.STRING,
-							description: 'Add (POAP is same as current) or replace (It\'s a new POAP) POAPs ',
+							description: 'Add or replace POAPs ',
 							required: true,
 							choices: [
 								{

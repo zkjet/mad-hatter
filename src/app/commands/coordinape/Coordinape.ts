@@ -17,13 +17,13 @@ export default class Coordinape extends SlashCommand {
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: 'coordinape',
-			description: 'Commands to manage Coordinape rounds',
+			description: 'Manage Coordinape rounds',
 			guildIDs: [discordServerIds.discordBotGarage, discordServerIds.banklessDAO],
 			options: [
 				{
 					name: 'form-request',
 					type: CommandOptionType.SUB_COMMAND,
-					description: 'Send correct for to coordinape participants.',
+					description: 'Send link to Coordinape round',
 					options: [],
 				},
 			],

@@ -12,12 +12,12 @@ export default class Help extends SlashCommand {
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: 'help',
-			description: 'Additional information on creating bounties, adding guests, and other operations.',
+			description: 'Learn to manage bounties, add guests and more',
 			options: [
 				{
 					name: 'bounty',
 					type: CommandOptionType.SUB_COMMAND,
-					description: 'Information on how to create, claim, complete, and delete bounties.',
+					description: 'Learn about managing bounties',
 				},
 			],
 			throttling: {
