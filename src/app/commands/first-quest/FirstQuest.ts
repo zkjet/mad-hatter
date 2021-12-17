@@ -9,10 +9,11 @@ import ConfigureFirstQuest from '../../service/first-quest/ConfigureFirstQuest';
 import ValidationError from '../../errors/ValidationError';
 import discordServerIds from '../../service/constants/discordServerIds';
 import FirstQuestPOAP from '../../service/first-quest/FirstQuestPOAP';
+import { command } from '../../utils/SentryUtils';
 import { addNewUserToDb, sendFqMessage } from '../../service/first-quest/LaunchFirstQuest';
 import { LogUtils } from '../../utils/Log';
 
-module.exports = class FirstQuest extends SlashCommand {
+export default class FirstQuest extends SlashCommand {
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: 'first-quest',
@@ -64,6 +65,7 @@ module.exports = class FirstQuest extends SlashCommand {
 		});
 	}
 
+	@command
 	async run(ctx: CommandContext) {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;

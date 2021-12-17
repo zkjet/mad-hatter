@@ -11,8 +11,9 @@ import CoordinapeSendForm from '../../service/coordinape/CoordinapeSendForm';
 import ValidationError from '../../errors/ValidationError';
 import discordServerIds from '../../service/constants/discordServerIds';
 import { LogUtils } from '../../utils/Log';
+import { command } from '../../utils/SentryUtils';
 
-module.exports = class Coordinape extends SlashCommand {
+export default class Coordinape extends SlashCommand {
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: 'coordinape',
@@ -90,6 +91,7 @@ module.exports = class Coordinape extends SlashCommand {
 		});
 	}
 
+	@command
 	async run(ctx: CommandContext) {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;
