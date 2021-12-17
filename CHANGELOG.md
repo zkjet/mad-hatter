@@ -16,6 +16,7 @@
 9. Update command descriptions for conciseness and consistency
 10. Add more names to username spam filter
 11. Setup Sentry integration
+12. Enable tsconfig strict mode
 
 
 ## 1.2.0-RELEASE (2021-11-30)
