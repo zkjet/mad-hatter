@@ -68,7 +68,7 @@ const restoreReactionCollector = async (scoapEmbed: ScoapEmbed, voteRecord: Vote
 };
 
 export const restoreScoapEmbedAndVoteRecord = async (): Promise<boolean> => {
-	const db: Db = await MongoDbUtils.connect(constants.DB_NAME_BOUNTY_BOARD);
+	const db: Db = await MongoDbUtils.connect(constants.DB_NAME_DEGEN);
 	const dbScoap = db.collection(constants.DB_COLLECTION_SCOAP_SQUAD).find({});
 	const dataArray = await dbScoap.toArray();
 	if (dataArray.length > 0) {
