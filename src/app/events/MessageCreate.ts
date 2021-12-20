@@ -1,4 +1,3 @@
-
 import { Message } from 'discord.js';
 import { DiscordEvent } from '../types/discord/DiscordEvent';
 import MessageCreateOnDEGEN from './chat/MessageCreateOnDEGEN';

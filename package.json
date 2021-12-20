@@ -27,7 +27,7 @@
         "crypto"
     ],
     "author": "BANKLESS DAO",
-    "license": "MIT",
+    "license": "BUSL-1.1",
     "bugs": {
         "url": "https://github.com/BanklessDAO/degen-bankless-dao/issues"
     },
