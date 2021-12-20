@@ -1,6 +1,6 @@
 {
     "name": "degen-bankless-dao",
-    "version": "1.2.0",
+    "version": "1.2.2",
     "description": "Administrative and Utilitarian bot for the Bankless Discord Server.",
     "main": "app.js",
     "private": true,
@@ -12,8 +12,8 @@
         "prestart": "yarn install && yarn build",
         "pretest": "yarn install && yarn build",
         "start": "node --trace-warnings -r dotenv/config dist/app/app.js",
-        "lint": "eslint ./src/app/**/*.ts --ext .ts",
-        "format": "eslint ./src/app/**/*.ts --ext .ts --fix",
+        "lint": "eslint . --ext .ts",
+        "format": "eslint . --ext .ts --fix",
         "watch": "tsc -p tsconfig.json -w"
     },
     "repository": {

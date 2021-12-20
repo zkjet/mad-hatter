@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.2-RELEASE (2021-12-20)
+
+1. Remove bounty commands
+2. Fix yarn lint
+
 ## 1.2.1-RELEASE (2021-12-10)
 
 1. Hotfix to enforce 2000 character constraint in first quest messages
