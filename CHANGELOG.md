@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.3-RELEASE (2021-12-30)
+
+1. Update Coordinape round url for January 2022
+
 ## 1.2.2-RELEASE (2021-12-20)
 
 1. Remove bounty commands
