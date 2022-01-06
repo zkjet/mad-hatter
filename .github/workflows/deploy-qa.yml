@@ -43,3 +43,4 @@ jobs:
                   HD_MONGODB_CLUSTER: ${{secrets.QA_MONGODB_CLUSTER}}
                   HD_NOTION_TOKEN: ${{secrets.QA_NOTION_TOKEN}}
                   HD_LOGDNA_TOKEN: ${{secrets.QA_LOGDNA_TOKEN}}
+                  HD_SENTRY_IO_DSN: ${{secrets.QA_SENTRY_IO_DSN}}

@@ -9,7 +9,7 @@ export default class Help extends SlashCommand {
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: 'help',
-			description: 'Additional information on creating bounties, adding guests, and other operations.',
+			description: 'TBD',
 			options: [],
 			throttling: {
 				usages: 3,

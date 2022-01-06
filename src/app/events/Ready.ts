@@ -4,7 +4,6 @@ import { Client, Guild } from 'discord.js';
 import constants from '../service/constants/constants';
 import discordServerIds from '../service/constants/discordServerIds';
 import { DiscordEvent } from '../types/discord/DiscordEvent';
-import { restoreScoapEmbedAndVoteRecord } from '../service/scoap-squad/ScoapDatabase';
 import Log, { LogUtils } from '../utils/Log';
 import FirstQuestUtils from '../utils/FirstQuestUtils';
 import MongoDbUtils from '../utils/MongoDbUtils';
@@ -15,11 +14,11 @@ export default class implements DiscordEvent {
 
 	async execute(client: Client): Promise<any> {
 		try {
-			Log.info('The Sun will never set on the DAO. Neither will I. DEGEN & Serendipity are ready for service.');
+			Log.info(`${constants.APP_NAME} is getting ready!`);
 			
 			client.user.setActivity(process.env.DISCORD_BOT_ACTIVITY);
 			client.guilds.cache.forEach((guild: Guild) => {
-				Log.info(`DEGEN active for: ${guild.id}, ${guild.name}`);
+				Log.info(`${constants.APP_NAME} active for: ${guild.id}, ${guild.name}`);
 			});
 			await MongoDbUtils.connect(constants.DB_NAME_DEGEN);
 
@@ -27,10 +26,11 @@ export default class implements DiscordEvent {
 				await GuestPassService(client).catch(Log.error);
 				await FirstQuestUtils.fqInit().catch(Log.error);
 				await FirstQuestRescueService().catch(Log.error);
-				await restoreScoapEmbedAndVoteRecord().catch(Log.error);
+				// TODO: enable when scoap squad is fixed
+				// await restoreScoapEmbedAndVoteRecord().catch(Log.error);
 			}
 			
-			Log.info('DEGEN is ready!');
+			Log.info(`${constants.APP_NAME} is ready!`);
 		} catch (e) {
 			LogUtils.logError('Error processing event ready', e);
 		}

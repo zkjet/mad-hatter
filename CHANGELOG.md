@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.4-RELEASE (2022-01-05)
+
+1. Add Sentry.io tracking and add stability enhancements
+
 ## 1.2.3-RELEASE (2021-12-30)
 
 1. Update Coordinape round url for January 2022

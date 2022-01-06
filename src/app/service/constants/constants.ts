@@ -1,4 +1,7 @@
 export default Object.freeze({
+	APP_VERSION: process.env.npm_package_version,
+	APP_NAME: 'MadHatter',
+	
 	DISCORD_BOT_USER_ID: process.env.DISCORD_BOT_APPLICATION_ID,
 	DB_NAME_DEGEN: 'degen',
 	DB_NAME_NEXTAUTH: 'nextauth',

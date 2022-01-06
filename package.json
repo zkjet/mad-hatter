@@ -1,6 +1,6 @@
 {
     "name": "degen-bankless-dao",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "description": "Administrative and Utilitarian bot for the Bankless Discord Server.",
     "main": "app.js",
     "private": true,
@@ -33,6 +33,9 @@
     },
     "homepage": "https://github.com/BanklessDAO/degen-bankless-dao/main/README.md",
     "dependencies": {
+        "@sentry/integrations": "^6.16.1",
+        "@sentry/node": "^6.16.1",
+        "@sentry/tracing": "^6.16.1",
         "@logdna/logger": "^2.4.1",
         "@notionhq/client": "0.2.0",
         "@types/node": "^16.7.1",
