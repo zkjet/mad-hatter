@@ -8,6 +8,7 @@ import ServiceUtils from '../../utils/ServiceUtils';
 import ToggleAFK from '../../service/AFK/ToggleAFK';
 import discordServerIds from '../../service/constants/discordServerIds';
 import Log, { LogUtils } from '../../utils/Log';
+import { command } from '../../utils/SentryUtils';
 
 export default class AFK extends SlashCommand {
 	constructor(creator: SlashCreator) {
@@ -23,6 +24,7 @@ export default class AFK extends SlashCommand {
 		});
 	}
 
+	@command
 	async run(ctx: CommandContext): Promise<any> {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;
@@ -31,25 +33,25 @@ export default class AFK extends SlashCommand {
 		if (!AFKRole) {
 			return ctx.send({ content: 'AFK Role does not exist on this server', ephemeral: true });
 		}
-		let command: Promise<any>;
+		let commandPromise: Promise<any>;
 		try {
 			const isAFK : boolean = await ToggleAFK(guildMember);
 			if (isAFK) {
-				command = ctx.send(`${ctx.user.username} has gone AFK!`).catch(Log.error);
+				commandPromise = ctx.send(`${ctx.user.username} has gone AFK!`).catch(Log.error);
 			} else {
-				command = ctx.send(`Welcome back ${ctx.user.username}!`).catch(Log.error);
+				commandPromise = ctx.send(`Welcome back ${ctx.user.username}!`).catch(Log.error);
 			}
 		} catch (e) {
-			this.handleCommandError(ctx, command);
+			this.handleCommandError(ctx, commandPromise);
 		}
 	}
 
-	handleCommandError(ctx: CommandContext, command?: Promise<any>): void {
-		if (command == null) {
+	handleCommandError(ctx: CommandContext, commandPromise?: Promise<any>): void {
+		if (commandPromise == null) {
 			Log.error('command null for AFK');
 			return;
 		}
-		command.then(() => {
+		commandPromise.then(() => {
 			return ctx.send(`${ctx.user.username} Sent you a DM with information.`);
 		}).catch(e => {
 			if (e instanceof ValidationError) {

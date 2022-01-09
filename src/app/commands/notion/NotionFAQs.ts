@@ -4,6 +4,7 @@ import RetrieveFAQs from '../../service/notion/RetrieveFAQs';
 import discordServerIds from '../../service/constants/discordServerIds';
 import { LogUtils } from '../../utils/Log';
 import ServiceUtils from '../../utils/ServiceUtils';
+import { command } from '../../utils/SentryUtils';
 const trimPageId = process.env.FAQS_PAGE_ID.replace(/-/g, '');
 const FAQ_URL = `https://www.notion.so/FAQs-${trimPageId}`;
 
@@ -17,7 +18,7 @@ export default class NotionFAQs extends SlashCommand {
 				{
 					type: CommandOptionType.STRING,
 					name: 'question',
-					description: 'Do you have a specific question?',
+					description: 'Ask a specific question',
 				},
 			],
 			throttling: {
@@ -27,6 +28,7 @@ export default class NotionFAQs extends SlashCommand {
 		});
 	}
 
+	@command
 	async run(ctx: CommandContext): Promise<any> {
 		LogUtils.logCommandStart(ctx);
 		// Ignores commands from bots
@@ -52,7 +54,7 @@ export default class NotionFAQs extends SlashCommand {
 					const answer = '\n' + faq.answer.trim() + '\n';
 					replyStr = replyStr + question + answer + '\n';
 				});
-				ctx.send(`${ctx.user.mention} Sent you a DM with information.`);
+				await ctx.send(`${ctx.user.mention} Sent you a DM with information.`);
 				return guildMember.send(replyStr.substring(0, 1950));
 			} else {
 				// Try to find the answer to the given question

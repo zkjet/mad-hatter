@@ -1,14 +1,18 @@
 // Libs
-import './utils/tracer';
 import { SlashCreator, GatewayServer, SlashCommand, CommandContext } from 'slash-create';
 import Discord, { Client, ClientOptions, Intents, WSEventType } from 'discord.js';
 import path from 'path';
 import fs from 'fs';
+import constants from './service/constants/constants';
+import './utils/SentryUtils';
+import * as Sentry from '@sentry/node';
+import { RewriteFrames } from '@sentry/integrations';
 import Log, { LogUtils } from './utils/Log';
 
 // initialize logger
 new Log();
 
+initializeSentryIO();
 const client: Client = initializeClient();
 initializeEvents();
 
@@ -49,7 +53,7 @@ creator
 // Log client errors
 client.on('error', Log.error);
 
-client.login(process.env.DISCORD_BOT_TOKEN);
+client.login(process.env.DISCORD_BOT_TOKEN).catch(Log.error);
 
 function initializeClient(): Client {
 	const clientOptions: ClientOptions = {
@@ -68,6 +72,20 @@ function initializeClient(): Client {
 		partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER'],
 	};
 	return new Discord.Client(clientOptions);
+}
+
+function initializeSentryIO() {
+	Sentry.init({
+		tracesSampleRate: 1.0,
+		release: `${constants.APP_NAME}@${constants.APP_VERSION}`,
+		environment: process.env.SENTRY_ENVIRONMENT,
+		integrations: [
+			new RewriteFrames({
+				root: __dirname,
+			}),
+			new Sentry.Integrations.Http({ tracing: true }),
+		],
+	});
 }
 
 function initializeEvents(): void {
