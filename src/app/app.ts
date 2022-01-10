@@ -8,6 +8,7 @@ import './utils/SentryUtils';
 import * as Sentry from '@sentry/node';
 import { RewriteFrames } from '@sentry/integrations';
 import Log, { LogUtils } from './utils/Log';
+import apiKeys from './service/constants/apiKeys';
 
 // initialize logger
 new Log();
@@ -76,6 +77,7 @@ function initializeClient(): Client {
 
 function initializeSentryIO() {
 	Sentry.init({
+		dsn: `${apiKeys.sentryDSN}`,
 		tracesSampleRate: 1.0,
 		release: `${constants.APP_NAME}@${constants.APP_VERSION}`,
 		environment: process.env.SENTRY_ENVIRONMENT,
