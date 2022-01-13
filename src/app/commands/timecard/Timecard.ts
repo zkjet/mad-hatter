@@ -58,30 +58,30 @@ export default class Timecard extends SlashCommand {
 		if (ctx.user.bot) return;
 
 		const { guildMember } = await ServiceUtils.getGuildAndMember(ctx);
-		let command: Promise<any>;
+		let commandPromise: Promise<any>;
 		
 		try {
 			switch (ctx.subcommands[0]) {
 			case 'checkin':
-				command = Checkin(guildMember, Date.now());
+				commandPromise = Checkin(guildMember, Date.now());
 				break;
 			case 'checkout':
-				command = Checkout(guildMember, Date.now(), ctx.options.checkout['description']);
+				commandPromise = Checkout(guildMember, Date.now(), ctx.options.checkout['description']);
 				break;
 			case 'hours':
-				command = Hours(guildMember);
+				commandPromise = Hours(guildMember);
 				break;
 			default:
 				return ctx.send(`${ctx.user.mention} Please try again.`);
 			}
-			this.handleCommandError(ctx, command);
+			this.handleCommandError(ctx, commandPromise);
 		} catch (e) {
 			LogUtils.logError('failed processing timecard', e);
 		}
 	}
 
-	handleCommandError(ctx: CommandContext, command: Promise<any>): void {
-		command.then(() => {
+	handleCommandError(ctx: CommandContext, commandPromise: Promise<any>): void {
+		commandPromise.then(() => {
 			return ctx.send(`${ctx.user.mention} Sent you a DM with information.`);
 		}).catch(e => {
 			if (e instanceof ValidationError) {

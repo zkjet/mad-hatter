@@ -8,17 +8,17 @@ export default async (member: GuildMember, ctx: CommandContext): Promise<any> =>
 	}
 	
 	if (ServiceUtils.isALevel2Contributor(member)) {
-		await ctx.send({ content: 'Thank you so much for your contributions! As a thank you we invite you to a Level 2 coordinape round: https://forms.gle/xTHuDdsmn7YcvFLm6', ephemeral: true });
+		await ctx.send({ content: 'Thank you so much for your contributions! As a thank you we invite you to a Level 2 coordinape round: https://forms.gle/6c2RqaPAMJGNFErY8', ephemeral: true });
 		return;
 	}
 	
 	if (ServiceUtils.isJustAMember(member)) {
-		await ctx.send({ content: 'Thank you so much for being a part of something special. As a thank you we invite you to a member coordinape round: https://forms.gle/N1aD4R3uTqPDe15AA', ephemeral: true });
+		await ctx.send({ content: 'Thank you so much for being a part of something special. As a thank you we invite you to a member coordinape round: https://forms.gle/TrRt6YVzJaKChpxMA', ephemeral: true });
 		return;
 	}
 	
 	if (ServiceUtils.isAGuest(member)) {
-		await ctx.send({ content: 'Thank you so much for your interest in BanklessDAO. As a thank you we invite you to a guest coordinape round: https://forms.gle/VqZFtzTNFdmU7WVF9', ephemeral: true });
+		await ctx.send({ content: 'Thank you so much for your interest in BanklessDAO. As a thank you we invite you to a guest coordinape round: https://forms.gle/4Y8cSUuY2RUp9r5b9', ephemeral: true });
 		return;
 	}
 };

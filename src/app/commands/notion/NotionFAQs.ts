@@ -54,7 +54,7 @@ export default class NotionFAQs extends SlashCommand {
 					const answer = '\n' + faq.answer.trim() + '\n';
 					replyStr = replyStr + question + answer + '\n';
 				});
-				ctx.send(`${ctx.user.mention} Sent you a DM with information.`);
+				await ctx.send(`${ctx.user.mention} Sent you a DM with information.`);
 				return guildMember.send(replyStr.substring(0, 1950));
 			} else {
 				// Try to find the answer to the given question
