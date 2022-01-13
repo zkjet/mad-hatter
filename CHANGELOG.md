@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.3.0-RELEASE
+## 1.3.0-RELEASE (2022-01-13)
 
 1. Remove datadog tracer
 2. Add more phrases and fix grammar and add typing feature
