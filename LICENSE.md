@@ -7,12 +7,12 @@ License text copyright (c) 2017 MariaDB Corporation Ab, All Rights Reserved.
 
 Parameters
 
-Licensor:             BanklessDAO | DEGEN Workgroup
+Licensor:             BanklessDAO
 
 Licensed Work:        DEGEN
-                      The Licensed Work is (c) 2021 BanklessDAO | DEGEN Workgroup
+                      The Licensed Work is (c) 2021 BanklessDAO
 
-Change Date:          The earlier of 2023-11-27
+Change Date:          The earlier of 2023-12-20
 
 Change License:       GNU General Public License v3.0 or later
 

@@ -1,11 +1,11 @@
 const degenPhrases = {
 	poap: [
 		'Did you say POAP? How dare you...',
-		'let me get you your poap, oh dear looks like I misplaced them somehow... DEGEN can help with that ',
-		'So you want a POAP? *sigh* DEGEN can help with that',
+		'let me get you your poap, oh dear looks like I misplaced them somehow... <@927569512612659230> can help with that ',
+		'So you want a POAP? *sigh* <@927569512612659230> can help with that',
 		'So you want a POAP? Love that for you.',
 		'Did you say POAP? I want one! Where are they?',
-		'I can\'t get you POAPs, but DEGEN can!',
+		'I can\'t get you POAPs, but <@927569512612659230> can!',
 		'POAPS? Ha that\'s almost as funny as "The Rug"',
 		'There\'s no POAPs here ser, this is a Wendy\'s',
 		'It\'s always "wenPOAP" this, "wenPOAP" that, never "Hi how are you doing today?"',

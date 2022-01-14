@@ -1,4 +1,3 @@
-import messageCreateOnBountyBoard from './bounty/MessageCreateOnBountyBoard';
 import { Message } from 'discord.js';
 import { DiscordEvent } from '../types/discord/DiscordEvent';
 import MessageCreateOnDEGEN from './chat/MessageCreateOnDEGEN';
@@ -15,10 +14,6 @@ export default class implements DiscordEvent {
 			// DEGEN says hello
 			await MessageCreateOnDEGEN(message).catch(e => {
 				LogUtils.logError('DEGEN failed to say hello', e);
-			});
-			// Run for webhook
-			await messageCreateOnBountyBoard(message).catch(e => {
-				LogUtils.logError('failed to create bounty message from webhook', e);
 			});
 			// TODO: enable scoap squad at a future date
 			// if (message.channel.type === 'DM') {

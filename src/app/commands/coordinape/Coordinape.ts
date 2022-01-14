@@ -92,24 +92,25 @@ export default class Coordinape extends SlashCommand {
 	}
 
 	@command
-	async run(ctx: CommandContext) {
+	async run(ctx: CommandContext): Promise<void> {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;
 		const { guildMember } = await ServiceUtils.getGuildAndMember(ctx);
-		let command: Promise<any>;
+		let commandPromise: Promise<any>;
 		switch (ctx.subcommands[0]) {
 		case 'form-request':
-			command = CoordinapeSendForm(guildMember, ctx);
+			commandPromise = CoordinapeSendForm(guildMember, ctx);
 			break;
 		default:
-			return ctx.send({ content: `${ctx.user.mention} Please try again.`, ephemeral: true });
+			await ctx.send({ content: `${ctx.user.mention} Please try again.`, ephemeral: true });
+			return;
 		}
 
-		this.handleCommandError(ctx, command);
+		this.handleCommandError(ctx, commandPromise);
 	}
 
-	handleCommandError(ctx: CommandContext, command: Promise<any>) {
-		command.catch(e => {
+	handleCommandError(ctx: CommandContext, commandPromise: Promise<any>): void {
+		commandPromise.catch(e => {
 			if (!(e instanceof ValidationError)) {
 				LogUtils.logError('failed to handle coordinape command', e);
 				return ServiceUtils.sendOutErrorMessage(ctx);
@@ -117,4 +118,4 @@ export default class Coordinape extends SlashCommand {
 		});
 	}
 
-};
+}
