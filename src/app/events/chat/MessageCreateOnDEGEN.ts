@@ -25,14 +25,6 @@ const MessageCreateOnDEGEN = async (message: Message): Promise<void> => {
 			return;
 		}
 		
-		// gm
-		if (content.match(/gm/g)) {
-			await message.channel.sendTyping();
-			await message.channel.send({
-				content: 'gm',
-			}).catch(Log.error);
-			return;
-		}
 	} catch (e) {
 		LogUtils.logError('failed to reply back message in channel regex', e);
 	}
