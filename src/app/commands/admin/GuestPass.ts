@@ -94,7 +94,7 @@ export default class GuestPass extends SlashCommand {
 	async run(ctx: CommandContext): Promise<any> {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;
-		
+
 		Log.info('/guest-pass start');
 		const guild = await client.guilds.fetch(ctx.guildID);
 		const guestUser = await guild.members.fetch(ctx.options.user);
@@ -108,7 +108,7 @@ export default class GuestPass extends SlashCommand {
 		} catch (e) {
 			LogUtils.logError('failed to add guest role to user', e);
 		}
-		await ctx.send(`<@${ctx.user.id}> guest pass added and message sent!`);
+		await ctx.send(`<@${guestUser.id}> check your DMs. <@${ctx.user.id}> gave you a Guest Pass.`);
 	}
 }
 
