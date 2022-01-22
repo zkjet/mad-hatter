@@ -20,9 +20,9 @@ module.exports = class Squad extends SlashCommand {
 			guildIDs: [discordServerIds.banklessDAO, discordServerIds.discordBotGarage],
 			options: [
 				{
-					name: 'assemble',
+					name: 'up',
 					type: CommandOptionType.SUB_COMMAND,
-					description: 'Assembe a Squad',
+					description: 'Assemble a Squad',
 					options: [],
 				},
 			],
@@ -76,7 +76,7 @@ module.exports = class Squad extends SlashCommand {
 		const { guildMember } = await ServiceUtils.getGuildAndMember(ctx);
 		let command: Promise<any>;
 		switch (ctx.subcommands[0]) {
-		case 'assemble':
+		case 'up':
 			command = LaunchSquad(guildMember, ctx);
 			break;
 		default:

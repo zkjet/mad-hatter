@@ -18,6 +18,9 @@ export default Object.freeze({
 	DB_COLLECTION_NEXT_AUTH_ACCOUNTS: 'accounts',
 
 	DB_COLLECTION_SCOAP_SQUAD: 'scoapSquad',
+	DB_COLLECTION_SQUAD: 'squad',
+	DB_COLLECTION_SQUAD_CHANNELS: 'squadChannels',
+
 	DB_COLLECTION_POAP_ADMINS: 'poapAdmins',
 	DB_COLLECTION_ALLOWLIST: 'allowList',
 
