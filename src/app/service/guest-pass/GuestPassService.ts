@@ -1,11 +1,11 @@
 import constants from '../constants/constants';
 import { Client } from '@notionhq/client';
 import { Client as DiscordClient } from 'discord.js';
-import { Page } from '@notionhq/client/build/src/api-types';
 import { Db } from 'mongodb';
 import ServiceUtils from '../../utils/ServiceUtils';
 import Log, { LogUtils } from '../../utils/Log';
 import MongoDbUtils from '../../utils/MongoDbUtils';
+import { GetPageResponse } from '@notionhq/client/build/src/api-endpoints';
 
 const notion = new Client({ auth: process.env.NOTION_TOKEN });
 
@@ -13,7 +13,6 @@ const notion = new Client({ auth: process.env.NOTION_TOKEN });
  * Handle guest pass role background service
  */
 export default async (client: DiscordClient): Promise<void> => {
-
 	// Retrieve guild
 	const guild = await client.guilds.fetch(process.env.DISCORD_SERVER_ID);
 
@@ -107,7 +106,7 @@ export default async (client: DiscordClient): Promise<void> => {
  *
  * @param {string} tag Discord tag (e.g. hydrabolt#0001)
  */
-module.exports.findGuestPassPageByDiscordTag = async (tag: string): Promise<Page> => {
+module.exports.findGuestPassPageByDiscordTag = async (tag: string): Promise<GetPageResponse> => {
 	Log.log('finding guest pass page by discord tag');
 	const response = await notion.databases.query({
 		database_id: process.env.NOTION_GUEST_PASS_DATABASE_ID,
