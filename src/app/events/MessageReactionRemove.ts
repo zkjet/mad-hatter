@@ -1,5 +1,5 @@
 import { DiscordEvent } from '../types/discord/DiscordEvent';
-import messageReactionRemoveSquad from './squad/MessageReactionRemoveSquad';
+import messageReactionAddRemoveSquad from './squad/MessageReactionAddRemoveSquad';
 import ServiceUtils from '../utils/ServiceUtils';
 import { LogUtils } from '../utils/Log';
 import { MessageReaction, PartialUser, User } from 'discord.js';
@@ -29,7 +29,7 @@ export default class implements DiscordEvent {
 				return;
 			}
 			if (ServiceUtils.isBanklessDAO(reaction.message.guild)) {
-				await messageReactionRemoveSquad(reaction, user as User).catch(e => LogUtils.logError('failed to react to squad', e));
+				await messageReactionAddRemoveSquad(reaction, user as User, 'REMOVE').catch(e => LogUtils.logError('failed to react to squad', e));
 			}
 		} catch (e) {
 			LogUtils.logError('failed to process event messageReactionRemove', e);

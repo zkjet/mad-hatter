@@ -1,9 +1,10 @@
 import {
 	DMChannel,
 	GuildMember,
-	MessageActionRow,
-	MessageSelectMenu,
-	MessageEmbed, TextChannel, User, Message, MessageButton,
+	MessageEmbed,
+	TextChannel,
+	User,
+	Message,
 } from 'discord.js';
 import { CommandContext } from 'slash-create';
 import Log, { LogUtils } from '../../utils/Log';
@@ -19,13 +20,21 @@ import { randomUUID } from 'crypto';
 export default async (member: GuildMember, ctx?: CommandContext): Promise<void> => {
 	ctx?.send(`Hi, ${ctx.user.mention}! I sent you a DM with more information.`);
 
-	await getTitle(member);
+	await getTitle(member, ctx);
 };
 
-const getTitle = async (member: GuildMember): Promise<void> => {
+const getTitle = async (member: GuildMember, ctx?: CommandContext): Promise<void> => {
 	const dmChannel: DMChannel = await member.user.createDM();
 
-	const getTitlePrompt = await dmChannel.send({ content: 'Let\'s assemble a Squad! What is the title of your project?' });
+	let getTitlePrompt: Message;
+	try {
+		getTitlePrompt = await dmChannel.send({ content: 'Let\'s assemble a Squad! What is the title of your project?' });
+
+	} catch {
+		ctx?.send(`Hi, ${ctx.user.mention}! Please enable DMs and try again.`);
+
+		return;
+	}
 
 	const collector = dmChannel.createMessageCollector({ max: 1, time: (5000 * 60), dispose: true });
 
@@ -134,7 +143,7 @@ const xPostConfirm = async (member, title, description, squadEmbed): Promise<voi
 
 				if (users.has(member.user.id)) {
 					if (reac.emoji.name === '📮') {
-						await createMultiSelect(member, title, description, squadEmbed);
+						await getCrossPostChannels(member, squadEmbed);
 
 						return;
 					} else if (reac.emoji.name === '👍') {
@@ -182,7 +191,7 @@ const finalConfirm = async (member, squadEmbed, xChannelList): Promise<void> => 
 
 	const finalConfirmMsg = await dmChannel.send({ content:
 			'👍 - Good to go, post now.\n' +
-			'🔃 - I want to change something else - start over\n' +
+			'🔃 - I want to change something - start over\n' +
 			'❌ - Abort' });
 
 	const filter = (reaction, user) => {
@@ -235,22 +244,23 @@ const finalConfirm = async (member, squadEmbed, xChannelList): Promise<void> => 
 
 const postSquad = async (member, squadEmbed, xChannelList): Promise<void> => {
 
-	await dbCreateSquad(squadEmbed, member.user.id);
-
 	const dmChannel: DMChannel = await member.user.createDM();
 
 	const squadChannel: TextChannel = await client.channels.fetch(channelIds.scoapSquad) as TextChannel;
 
 	const squadMsg = await squadChannel.send({ embeds: [squadEmbed] });
 
+	await dbCreateSquad(squadEmbed, member.user.id, squadMsg);
+
 	await squadMsg.react('🙋');
 	await squadMsg.react('❌');
 
 	if (xChannelList.length > 0) {
 		for (const chan of xChannelList) {
-			const xPostChannel: TextChannel = await client.channels.fetch(chan) as TextChannel;
 
 			try {
+				const xPostChannel: TextChannel = await client.channels.fetch(chan) as TextChannel;
+
 				await xPostChannel.send({ embeds: [squadEmbed] });
 
 				await xPostChannel.send({ content: `To join the squad, raise your hand here: <${squadMsg.url}>\n` });
@@ -265,8 +275,19 @@ const postSquad = async (member, squadEmbed, xChannelList): Promise<void> => {
 
 };
 
-const dbCreateSquad = async (squadEmbed, userId) => {
-	const updateDoc = { _id: squadEmbed.footer.text, authorId: userId, title: squadEmbed.title, description: squadEmbed.description, claimedBy: {}, created: squadEmbed.timestamp };
+const dbCreateSquad = async (squadEmbed, userId, squadMsg) => {
+
+	const updateDoc = {
+		_id: squadEmbed.footer.text,
+		guildId: squadMsg.guild.id,
+		messageId: squadMsg.id,
+		authorId: userId,
+		title: squadEmbed.title,
+		description: squadEmbed.description,
+		claimedBy: {},
+		created: squadEmbed.timestamp,
+		active: true,
+	};
 
 	const db: Db = await dbInstance.connect(constants.DB_NAME_DEGEN);
 
@@ -276,6 +297,7 @@ const dbCreateSquad = async (squadEmbed, userId) => {
 };
 
 const dbClaimSquad = async (squadId, userId, toggle) => {
+
 	const db: Db = await dbInstance.connect(constants.DB_NAME_DEGEN);
 
 	const dbSquad = db.collection(constants.DB_COLLECTION_SQUAD);
@@ -296,11 +318,22 @@ const dbClaimSquad = async (squadId, userId, toggle) => {
 };
 
 export const claimSquad = async (user: User, squadMsg: Message, toggle: string): Promise<void> => {
-	const updateEmbed = squadMsg.embeds[0].addField('\u200b', `🙋 - <@${user.id}>`, false);
 
-	await dbClaimSquad(updateEmbed.footer.text, user.id, toggle);
+	const db: Db = await dbInstance.connect(constants.DB_NAME_DEGEN);
 
-	await squadMsg.edit({ embeds:[updateEmbed] });
+	const dbSquad = db.collection(constants.DB_COLLECTION_SQUAD);
+
+	const squad = await dbSquad.findOne({ 'messageId': squadMsg.id });
+
+	if (user.id in squad.claimedBy) return ;
+
+	if (squadMsg.embeds[0].fields.length <= 24) {
+		const updateEmbed = squadMsg.embeds[0].addField('\u200b', `🙋 - <@${user.id}>`, false);
+
+		await dbClaimSquad(updateEmbed.footer.text, user.id, toggle);
+
+		await squadMsg.edit({ embeds:[updateEmbed] });
+	}
 };
 
 export const unclaimSquad = async (user: User, squadMsg: Message, toggle: string): Promise<void> => {
@@ -323,179 +356,117 @@ export const unclaimSquad = async (user: User, squadMsg: Message, toggle: string
 
 const createEmbed = (member: GuildMember, title: string, description: string): MessageEmbed => {
 	return new MessageEmbed()
-		.setAuthor(member.user.username)
+		.setAuthor(member.user.username, member.user.avatarURL())
 		.setTitle(title)
 		.setDescription(description)
 		.setFooter(randomUUID())
 		.setTimestamp();
 };
 
-// const selectChannel = async (member) => {
-// 	const dmChannel: DMChannel = await member.user.createDM();
-//
-// 	await dmChannel.send({ content: 'You will be presented with two lists of channels.\n\n' +
-// 			'Your selection from `CURRENT CHANNELS` list will be removed from the shortlist.\n' +
-// 			'Your selection from `AVAILABLE CHANNELS` list will be added to the shortlist.\n\n' +
-// 			'You can select channels by responding with their corresponding index number after the prompt.\n' +
-// 			'Your response should be a comma delimited list of channel indices e.g. `1,10,5,7` - consisting of both, channels to add AND channels to remove (if any).\n\n' +
-// 			'The total number of channels in the shortlist is limited to 25. Please ensure that:\n' +
-// 			'`(current channels + your selection from AVAILABLE CHANNELS - your selection from CURRENT CHANNELS) <=25`' });
-//
-// 	await dmChannel.send({ content: 'List of `CURRENT CHANNELS`' });
-//
-// 	const channelShortlist = await dbChannelShortlist();
-//
-// 	await dmChannel.send({ content: 'List of `AVAILABLE CHANNELS`' });
-//
-// 	const channels = await member.guild.channels.fetch();
-//
-// 	const channelArray = [];
-//
-// 	for (const channel of channels.values()) {
-// 		if (!channel.isThread()) {
-// 			channelArray.push(channel.id);
-// 		}
-// 	}
-//
-// 	for (const [index, channel] of channelArray.entries()) {
-// 		await dmChannel.send({ content: `${index} <#${channel}>` });
-// 	}
-//
-// 	const getChannelsPrompt = await dmChannel.send({ content: 'Your selection please' });
-//
-// 	const collector = dmChannel.createMessageCollector({ max: 1, time: (5000 * 60), dispose: true });
-//
-// 	collector.on('collect', async (msg) => {
-//
-// 		try {
-// 			// validate
-//
-// 			await dbAddChannelsToShortlist(msg.content, channelShortlist, channelArray);
-//
-// 			return;
-//
-// 		} catch (e) {
-// 			if (e instanceof ValidationError) {
-// 				await selectChannel(member);
-// 			}
-// 			return;
-// 		}
-// 	});
-//
-// 	collector.on('end', async (_, reason) => {
-//
-// 		// if getChannelsPrompt is not the last message, time out silently.
-// 		if ((getChannelsPrompt.id === dmChannel.lastMessage.id) && (reason === 'time')) {
-// 			try {
-// 				await dmChannel.send('The conversation timed out.');
-// 			} catch (e) {
-// 				Log.debug(`Squad selectChannel collector timed out, unable to send dm, error msg: ${e}`);
-// 			}
-// 		}
-// 		if (!['time'].includes(reason)) {
-// 			Log.debug(`Squad selectChannel collector stopped for unknown reason: ${reason}`);
-// 		}
-// 	});
-// };
-//
-// const dbAddChannelsToShortlist = async (input, channelShortlist, channelArray) => {
-// 	const index = input.split(',');
-// 	console.log(index);
-// 	console.log(channelShortlist);
-// 	for (const val of index.values()) {
-// 		console.log(val);
-// 		// try to remove channel from shortlist
-// 		// try {
-// 		// 	const removed = channelShortlist.splice(parseInt(val), 1);
-// 		// 	console.log('removed', removed);
-// 		// 	console.log('channelShortlist', channelShortlist);
-// 		// } catch (e) {
-// 		// 	console.log(`val not found ${e}`);
-// 		// }
-// 		// try to add channels to db
-// 		// console.log('val - channelShortlist.length', val - channelShortlist.length);
-// 		// if ((val - channelShortlist.length) >= 0) {
-// 		// 	channelShortlist.push(channelArray[val - channelShortlist.length]);
-// 		//
-// 		// }
-// 	}
-//
-// 	console.log(channelShortlist);
-//
-// 	const db: Db = await dbInstance.connect(constants.DB_NAME_DEGEN);
-//
-// 	const dbSquad = db.collection(constants.DB_COLLECTION_SQUAD_CHANNELS);
-//
-// 	const record = await dbSquad.findOne({});
-//
-// 	await dbSquad.updateOne({ _id: record._id }, { $set: { claimedBy: channelShortlist } }, { upsert: true });
-// };
-//
-// const dbChannelShortlist = async () => {
-// 	const db: Db = await dbInstance.connect(constants.DB_NAME_DEGEN);
-//
-// 	const dbSquad = db.collection(constants.DB_COLLECTION_SQUAD_CHANNELS);
-//
-// 	const records:Record<string, any> = await dbSquad.find({}).toArray();
-//
-// 	console.log(records);
-//
-// 	return records.channels;
-// };
+const getCrossPostChannels = async (member: GuildMember, squadEmbed) => {
 
-const createMultiSelect = async (member: GuildMember, title: string, description: string, squadEmbed): Promise<void> => {
 	const dmChannel: DMChannel = await member.user.createDM();
 
-	const channels = await member.guild.channels.fetch();
+	const channelListInputPrompt = await dmChannel.send({ content: 'Please send me a list of comma separated channel Id\'s' });
 
-	const optionsArray = [];
+	const collector = dmChannel.createMessageCollector({ max: 1, time: (20000 * 60), dispose: true });
 
-	for (const channel of channels.values()) {
-		optionsArray.push({
-			label: channel.name,
-			description: channel.id,
-			value: channel.id,
-		});
-	}
+	collector.on('collect', async (msg) => {
 
-	const row = new MessageActionRow()
-		.addComponents(
-			new MessageSelectMenu()
-				.setCustomId('select')
-				.setPlaceholder('Nothing selected')
-				.setMinValues(0)
-				.setMaxValues(25)
-				.addOptions(optionsArray.slice(0, 25)),
-		);
+		try {
 
-	const row2 = new MessageActionRow()
-		.addComponents(
-			new MessageButton()
-				.setCustomId('back')
-				.setLabel('Back')
-				.setStyle('PRIMARY'),
-			new MessageButton()
-				.setCustomId('next')
-				.setLabel('Next')
-				.setStyle('PRIMARY'),
-			new MessageButton()
-				.setCustomId('done')
-				.setLabel('Done')
-				.setStyle('SUCCESS'),
-		);
+			const userInput = msg.content.split(',');
 
-	const interactionMsg = await dmChannel.send({ content: 'please select at least one channel to cross post your squad.', components: [row, row2] });
+			// Remove duplicates
+			const unique = [...new Set(userInput)];
 
-	console.log(interactionMsg.components);
+			const xPostChannels = [];
 
-	client.on('interactionCreate', async interaction => {
-		if (!interaction.isSelectMenu()) return;
+			// Only include items that consists of 18 numeric characters
+			for (const chan of unique) {
+				if (/^[0-9]{18}/.test(chan)) {
+					xPostChannels.push(chan);
+				}
+			}
 
-		// only trigger interaction of recent message
-		if (!(interactionMsg.id === await interaction.channel.messages.cache.lastKey(1)[0])) return;
+			await finalConfirm(member, squadEmbed, xPostChannels);
 
-		await finalConfirm(member, squadEmbed, interaction.values);
+			return;
 
-		return;
+		} catch (e) {
+			if (e instanceof ValidationError) {
+				await getCrossPostChannels(member, squadEmbed);
+			}
+			return;
+		}
 	});
+
+	collector.on('end', async (_, reason) => {
+
+		// if channelListInputPrompt is not the last message, time out silently.
+		if ((channelListInputPrompt.id === dmChannel.lastMessage.id) && (reason === 'time')) {
+			try {
+				await dmChannel.send('The conversation timed out.');
+			} catch (e) {
+				Log.debug(`Squad getCrossPostChannels collector timed out, unable to send dm, error msg: ${e}`);
+			}
+		}
+		if (!['time', 'limit'].includes(reason)) {
+			Log.debug(`Squad getCrossPostChannels collector stopped for unknown reason: ${reason}`);
+		}
+	});
+};
+
+export const checkExpiration = async (): Promise<void> => {
+
+	const db: Db = await dbInstance.connect(constants.DB_NAME_DEGEN);
+
+	const dbSquad = db.collection(constants.DB_COLLECTION_SQUAD);
+
+	const timestampAggregate = await dbSquad.aggregate([
+		{ '$match': {	active: true } },
+	]).toArray();
+
+	const squadChannel: TextChannel = await client.channels.fetch(channelIds.scoapSquad) as TextChannel;
+
+	for (const squad of timestampAggregate) {
+
+		// 1000 * 60 * 60 * 24 * 7
+		if ((+new Date() - squad.created) >= 1000 * 60) {
+
+			const guilds = await client.guilds.fetch();
+
+			for (const oAuth2Guild of guilds.values()) {
+				const guild = await oAuth2Guild.fetch();
+
+				if (guild.id === squad.guildId) {
+					const members = await guild.members.fetch();
+
+					for (const member of members.values()) {
+						if (member.id === squad.authorId) {
+
+							const dmChannel: DMChannel = await member.createDM();
+
+							try {
+								await dmChannel.send({ content: 'Squad has been completed. Time to get in touch with your team! ' +
+										`<https://discord.com/channels/${squad.guildId}/${channelIds.scoapSquad}/${squad.messageId}>` });
+							} catch {
+								Log.info(`Squad completed - failed to send DM - SquadId ${squad._id}`);
+							}
+
+							const squadMsg = await squadChannel.messages.fetch(squad.messageId);
+
+							await squadMsg.reactions.removeAll();
+
+							await squadMsg.react('🔃');
+
+							await dbSquad.updateOne({ _id: squad._id }, { $set: { active: false } }, { upsert: true });
+
+							return;
+						}
+					}
+				}
+			}
+		}
+	}
 };

@@ -1,12 +1,12 @@
 import { GuildMember, Message, MessageReaction, User } from 'discord.js';
 import channelIds from '../../service/constants/channelIds';
 import Log, { LogUtils } from '../../utils/Log';
-import { claimSquad } from '../../service/squad/LaunchSquad';
+import { claimSquad, unclaimSquad } from '../../service/squad/LaunchSquad';
 import { Db } from 'mongodb';
 import dbInstance from '../../utils/MongoDbUtils';
 import constants from '../../service/constants/constants';
 
-export default async (reaction: MessageReaction, user: User): Promise<any> => {
+export default async (reaction: MessageReaction, user: User, toggle: string): Promise<any> => {
 	if (reaction.message.channel.id !== channelIds.scoapSquad) {
 		return;
 	}
@@ -32,11 +32,35 @@ export default async (reaction: MessageReaction, user: User): Promise<any> => {
 
 
 	if (reaction.emoji.name === '🙋') {
-		return claimSquad(guildMember.user, message, 'CLAIM').catch(e => LogUtils.logError('failed to claim squad', e));
-	} else if (reaction.emoji.name === '❌') {
+		if (toggle === 'ADD') {
+			return claimSquad(guildMember.user, message, 'CLAIM').catch(e => LogUtils.logError('failed to claim squad', e));
+
+		} else if (toggle === 'REMOVE') {
+			return unclaimSquad(guildMember.user, message, 'UNCLAIM').catch(e => LogUtils.logError('failed to un-claim squad', e));
+		}
+
+	} else if ((reaction.emoji.name === '❌') && (toggle === 'ADD')) {
 		if (user.id === record.authorId) {
+
 			await message.reactions.removeAll()
 				.catch(error => LogUtils.logError('Squad: failed to clear reactions:', error));
+
+			await message.react('🔃');
+
+			await dbSquad.updateOne({ _id: record._id }, { $set: { active: false } }, { upsert: true });
+
+		}
+		return;
+	} else if ((reaction.emoji.name === '🔃') && (toggle === 'ADD')) {
+		if (user.id === record.authorId) {
+
+			await message.reactions.removeAll()
+				.catch(error => LogUtils.logError('Squad: failed to clear reactions:', error));
+
+			await message.react('🙋');
+			await message.react('❌');
+
+			await dbSquad.updateOne({ _id: record._id }, { $set: { active: true, created: Date.now() } }, { upsert: true });
 		}
 		return;
 	}
