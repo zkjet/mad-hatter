@@ -10,6 +10,7 @@ const roleIds = Object.freeze({
 	developersGuild: process.env.DISCORD_ROLE_DEVELOPERS_GUILD,
 	firstQuestProject: process.env.DISCORD_ROLE_FIRST_QUEST_PROJECT,
 	AFK: process.env.DISCORD_ROLE_AFK,
+	firstQuestWelcome: process.env.DISCORD_ROLE_FIRST_QUEST_WELCOME,
 });
 
 export default roleIds;

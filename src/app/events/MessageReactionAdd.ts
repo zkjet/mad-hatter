@@ -1,6 +1,5 @@
 import { MessageReaction, PartialUser, User } from 'discord.js';
 import { DiscordEvent } from '../types/discord/DiscordEvent';
-import messageReactionAddBounty from './bounty/MessageReactionAddBounty';
 import messageReactionAddRemoveSquad from './squad/MessageReactionAddRemoveSquad';
 import ServiceUtils from '../utils/ServiceUtils';
 import { LogUtils } from '../utils/Log';
@@ -30,7 +29,6 @@ export default class implements DiscordEvent {
 				return;
 			}
 			if (ServiceUtils.isBanklessDAO(reaction.message.guild)) {
-				await messageReactionAddBounty(reaction, user as User).catch(e => LogUtils.logError('failed to react to bounty', e));
 				await messageReactionAddRemoveSquad(reaction, user as User, 'ADD').catch(e => LogUtils.logError('failed to react to squad', e));
 			}
 		} catch (e) {

@@ -85,7 +85,7 @@ export default async (client: DiscordClient): Promise<void> => {
 				const guestDBQuery = {
 					_id: activeUser._id,
 				};
-				const timeoutDB: Db = await MongoDbUtils.connect(constants.DB_NAME_BOUNTY_BOARD);
+				const timeoutDB: Db = await MongoDbUtils.connect(constants.DB_NAME_DEGEN);
 				const timeoutDBGuestUsers = timeoutDB.collection(constants.DB_COLLECTION_GUEST_USERS);
 				const dbDeleteResult = await timeoutDBGuestUsers.findOneAndDelete(guestDBQuery);
 				if (dbDeleteResult == null) {

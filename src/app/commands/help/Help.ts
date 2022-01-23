@@ -1,24 +1,16 @@
 import {
 	CommandContext,
-	CommandOptionType, MessageOptions,
 	SlashCommand,
 	SlashCreator,
 } from 'slash-create';
-import { LogUtils } from '../../utils/Log';
-import HowToBounty from '../../service/help/HowToBounty';
+import Log, { LogUtils } from '../../utils/Log';
 
 export default class Help extends SlashCommand {
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: 'help',
-			description: 'Additional information on creating bounties, adding guests, and other operations.',
-			options: [
-				{
-					name: 'bounty',
-					type: CommandOptionType.SUB_COMMAND,
-					description: 'Information on how to create, claim, complete, and delete bounties.',
-				},
-			],
+			description: 'TBD',
+			options: [],
 			throttling: {
 				usages: 3,
 				duration: 1,
@@ -31,12 +23,6 @@ export default class Help extends SlashCommand {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;
 		
-		let messageOptions: MessageOptions;
-		switch (ctx.subcommands[0]) {
-		case 'bounty':
-			messageOptions = HowToBounty();
-			break;
-		}
-		return ctx.send(messageOptions);
+		await ctx.send('https://discord.gg/C4xmJJUkMh').catch(Log.error);
 	}
 }

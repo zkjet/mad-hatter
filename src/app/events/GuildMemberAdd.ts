@@ -1,8 +1,7 @@
 import { GuildMember } from 'discord.js';
 import { DiscordEvent } from '../types/discord/DiscordEvent';
 import ServiceUtils from '../utils/ServiceUtils';
-import Log, { LogUtils } from '../utils/Log';
-import StartFirstQuestFlow from './first-quest/StartFirstQuestFlow';
+import { LogUtils } from '../utils/Log';
 
 export default class implements DiscordEvent {
 	name = 'guildMemberAdd';
@@ -18,8 +17,6 @@ export default class implements DiscordEvent {
 			if (await ServiceUtils.runUsernameSpamFilter(member)) {
 				return;
 			}
-			
-			await StartFirstQuestFlow(member).catch(Log.error);
 			
 		} catch (e) {
 			LogUtils.logError('failed to process event guildMemberAdd', e);
