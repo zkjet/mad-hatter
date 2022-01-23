@@ -1,7 +1,7 @@
 export default Object.freeze({
 	APP_VERSION: process.env.npm_package_version,
 	APP_NAME: 'MadHatter',
-	
+
 	DISCORD_BOT_USER_ID: process.env.DISCORD_BOT_APPLICATION_ID,
 	DB_NAME_DEGEN: 'degen',
 	DB_NAME_NEXTAUTH: 'nextauth',
@@ -24,6 +24,7 @@ export default Object.freeze({
 	DB_COLLECTION_POAP_ADMINS: 'poapAdmins',
 	DB_COLLECTION_ALLOWLIST: 'allowList',
 
+	MONGODB_URI_PARTIAL: `${process.env.MONGODB_PREFIX}://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASS}@${process.env.MONGODB_CLUSTER}/`,
 	MONGODB_OPTIONS: '?retryWrites=true&w=majority',
 
 	SCOAP_SQUAD_EMBED_SPACER: '\u2800'.repeat(60),

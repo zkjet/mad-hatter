@@ -375,14 +375,16 @@ const getCrossPostChannels = async (member: GuildMember, squadEmbed) => {
 
 		try {
 
-			const userInput = msg.content.split(',');
+			// Remove white spaces
+			const noWhitespaces = msg.content.replace(/\s/g, '');
+
+			const rawArray = noWhitespaces.split(',');
 
 			// Remove duplicates
-			const unique = [...new Set(userInput)];
-
-			const xPostChannels = [];
+			const unique = [...new Set(rawArray)];
 
 			// Only include items that consists of 18 numeric characters
+			const xPostChannels = [];
 			for (const chan of unique) {
 				if (/^[0-9]{18}/.test(chan)) {
 					xPostChannels.push(chan);
