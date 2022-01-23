@@ -16,7 +16,7 @@ const dateTimeString = () => {
 
 export default async (): Promise<any> => {
 
-	const checkExpirationCronJob = new cron.CronJob('0/30 * * * * *', async function() {
+	const checkExpirationCronJob = new cron.CronJob('0 0/30 * * * *', async function() {
 
 		await checkExpiration();
 

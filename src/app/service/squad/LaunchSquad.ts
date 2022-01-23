@@ -433,8 +433,7 @@ export const checkExpiration = async (): Promise<void> => {
 
 	for (const squad of timestampAggregate) {
 
-		// 1000 * 60 * 60 * 24 * 7
-		if ((+new Date() - squad.created) >= 1000 * 60) {
+		if ((+new Date() - squad.created) >= 1000 * 60 * 60 * 24 * 7) {
 
 			const guilds = await client.guilds.fetch();
 
