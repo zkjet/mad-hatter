@@ -1,8 +1,5 @@
 # Changelog
 
-## 1.4.0-RELEASE
-
-1. Update notion client to v0.4.1
 ## 1.3.0-RELEASE (2022-01-13)
 
 1. Remove datadog tracer
@@ -19,6 +16,7 @@
 9. Update command descriptions for conciseness and consistency
 10. Add more names to username spam filter
 11. Remove first quest features
+12. Update notion client to v0.4.1
 
 ## 1.2.4-RELEASE (2022-01-05)
 
