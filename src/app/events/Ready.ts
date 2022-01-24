@@ -1,11 +1,9 @@
 import GuestPassService from '../service/guest-pass/GuestPassService';
-import FirstQuestRescueService from '../service/first-quest/FirstQuestRescueService';
 import { Client, Guild } from 'discord.js';
 import constants from '../service/constants/constants';
 import discordServerIds from '../service/constants/discordServerIds';
 import { DiscordEvent } from '../types/discord/DiscordEvent';
 import Log, { LogUtils } from '../utils/Log';
-import FirstQuestUtils from '../utils/FirstQuestUtils';
 import MongoDbUtils from '../utils/MongoDbUtils';
 
 export default class implements DiscordEvent {
@@ -24,8 +22,6 @@ export default class implements DiscordEvent {
 
 			if (client.guilds.cache.some((guild) => guild.id == discordServerIds.banklessDAO || guild.id == discordServerIds.discordBotGarage)) {
 				await GuestPassService(client).catch(Log.error);
-				await FirstQuestUtils.fqInit().catch(Log.error);
-				await FirstQuestRescueService().catch(Log.error);
 				// TODO: enable when scoap squad is fixed
 				// await restoreScoapEmbedAndVoteRecord().catch(Log.error);
 			}

@@ -1,4 +1,3 @@
-// Libs
 import { SlashCreator, GatewayServer, SlashCommand, CommandContext } from 'slash-create';
 import Discord, { Client, ClientOptions, Intents, WSEventType } from 'discord.js';
 import path from 'path';
@@ -9,9 +8,6 @@ import * as Sentry from '@sentry/node';
 import { RewriteFrames } from '@sentry/integrations';
 import Log, { LogUtils } from './utils/Log';
 import apiKeys from './service/constants/apiKeys';
-
-// initialize logger
-new Log();
 
 initializeSentryIO();
 const client: Client = initializeClient();

@@ -1,6 +1,6 @@
 {
     "name": "degen-bankless-dao",
-    "version": "1.2.4",
+    "version": "1.3.0",
     "description": "Administrative and Utilitarian bot for the Bankless Discord Server.",
     "main": "app.js",
     "private": true,
@@ -27,7 +27,7 @@
         "crypto"
     ],
     "author": "BANKLESS DAO",
-    "license": "BUSL-1.1",
+    "license": "MIT",
     "bugs": {
         "url": "https://github.com/BanklessDAO/degen-bankless-dao/issues"
     },
@@ -37,11 +37,11 @@
         "@sentry/node": "^6.16.1",
         "@sentry/tracing": "^6.16.1",
         "@logdna/logger": "^2.4.1",
-        "@notionhq/client": "0.2.0",
+        "@notionhq/client": "0.4.1",
         "@types/node": "^16.7.1",
         "axios": "^0.21.4",
+        "cron": "^1.8.2",
         "dayjs": "^1.10.7",
-        "dd-trace": "^1.5.1",
         "discord.js": "^13.1.0",
         "discord.js-captcha": "^2.2.2",
         "dotenv": "^10.0.0",
@@ -51,6 +51,7 @@
         "mongodb": "^3.6.9",
         "p-queue": "^6.6.2",
         "slash-create": "^4.3.0",
+        "tslib": "^2.3.1",
         "uuid": "^8.3.2"
     },
     "devDependencies": {

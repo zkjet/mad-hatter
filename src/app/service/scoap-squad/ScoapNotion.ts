@@ -1,16 +1,8 @@
 import { Client as NotionClient } from '@notionhq/client';
 import {
-	InputPropertyValueMap,
-	PropertyMap,
+	CreateDatabaseParameters,
+	CreatePageParameters,
 } from '@notionhq/client/build/src/api-endpoints';
-import {
-	MultiSelectPropertyValue,
-	SelectPropertyValue,
-	DatePropertyValue,
-	TitlePropertyValue,
-	RichTextPropertyValue,
-	ParagraphBlock,
-} from '@notionhq/client/build/src/api-types';
 import scoapSquadNotion from '../constants/scoapSquadNotion';
 
 
@@ -45,31 +37,30 @@ const getRandomColor = () => {
 
 export const updateStatusSelectField = async (pageId: string, selectOption: string): Promise<void> => {
 	const selectOptionObject = retrieveSelectOption(await notionDatabaseProperties(), scoapSquadNotion.SCOAP_SQUAD_NOTION_FIELDS.status.field_name, selectOption);
-	const propertyValues: InputPropertyValueMap = {};
-	propertyValues[scoapSquadNotion.SCOAP_SQUAD_NOTION_FIELDS.status.field_name] = {
-		type: scoapSquadNotion.SCOAP_SQUAD_NOTION_FIELDS.status.type,
-		id: selectOptionObject.id,
-		select: selectOptionObject,
-	} as SelectPropertyValue;
+	
 	await notion.pages.update({
 		page_id: pageId,
-		properties: propertyValues,
+		properties: {
+			Status: {
+				id: selectOptionObject.id,
+				select: selectOptionObject,
+			},
+		},
 	});
 };
 
 const updateDiscordHandleMultiSelectField = async (pageId: string, multiSelectoptions: Array<any>): Promise<void> => {
-	const propertyValues: InputPropertyValueMap = {};
-	propertyValues[scoapSquadNotion.SCOAP_SQUAD_NOTION_FIELDS.scoap_squad_discord_handles.field_name] = {
-		type: scoapSquadNotion.SCOAP_SQUAD_NOTION_FIELDS.scoap_squad_discord_handles.type,
-		multi_select: multiSelectoptions,
-	} as MultiSelectPropertyValue;
 	await notion.pages.update({
 		page_id: pageId,
-		properties: propertyValues,
+		properties: {
+			'Scoap Squad Discord Handles': {
+				multi_select: multiSelectoptions,
+			},
+		},
 	});
 };
 
-const retrieveSelectOption = (properties: PropertyMap, fieldName: string, option: string): any => {
+const retrieveSelectOption = (properties: CreateDatabaseParameters['properties'], fieldName: string, option: string): any => {
 	let selectOptionResult = {};
 	Object.entries(properties).forEach(([nme, property]) => {
 		if (property.type === 'select' && nme === fieldName) {
@@ -84,7 +75,7 @@ const retrieveSelectOption = (properties: PropertyMap, fieldName: string, option
 	return selectOptionResult;
 };
 
-const retrieveMultiSelectOptions = (properties: PropertyMap, fieldName: string, options): any => {
+const retrieveMultiSelectOptions = (properties: CreateDatabaseParameters['properties'], fieldName: string, options): any => {
 	const existingMultiSelectOptions = [];
 	const existingOptionsNameMapping = {};
 	Object.entries(properties).forEach(([nme, property]) => {
@@ -114,12 +105,12 @@ const createNewMultiSelectOptions = (existingOptionsNameMapping, options) => {
 	return newMultiSelectOptions;
 };
 
-const getNotionDatabaseProperties = async (): Promise<PropertyMap> => {
+const getNotionDatabaseProperties = async (): Promise<CreateDatabaseParameters['properties']> => {
 	const { properties } = await notion.databases.retrieve({ database_id: databaseId });
 	return properties;
 };
 
-const createNewNotionPage = async (properties: InputPropertyValueMap): Promise<string> => {
+const createNewNotionPage = async (properties: Record<string, any>): Promise<string> => {
 	const response = await notion.pages.create({
 		parent: {
 			database_id: databaseId,
@@ -150,59 +141,42 @@ const appendBlockToPage = async (pageId, summary) => {
 						},
 					],
 				},
-			} as ParagraphBlock,
+			},
 		],
 	});
 };
 
-const createNotionProperties = (selectOption, scoapTitle: string, scoapAuthor: string): InputPropertyValueMap => {
-	const propertyValues: InputPropertyValueMap = {};
-
-	// title (Page)
-	propertyValues[scoapSquadNotion.SCOAP_SQUAD_NOTION_FIELDS.project.field_name] = {
-		type: scoapSquadNotion.SCOAP_SQUAD_NOTION_FIELDS.project.type,
-		title: [
-			{
-				type: 'text',
-				text: {
-					content: scoapTitle,
+const createNotionProperties = (selectOption, scoapTitle: string, scoapAuthor: string): CreatePageParameters['properties'] => {
+	return {
+		Project: {
+			title: [
+				{
+					type: 'text',
+					text: {
+						content: scoapTitle,
+					},
 				},
-			},
-		],
-	} as TitlePropertyValue;
-
-	// scoap author
-	propertyValues[scoapSquadNotion.SCOAP_SQUAD_NOTION_FIELDS.author_discord_handle.field_name] = {
-		type: scoapSquadNotion.SCOAP_SQUAD_NOTION_FIELDS.author_discord_handle.type,
-		// id: property.id,
-		rich_text: [
-			{
-				type: 'text',
-				text: { content: scoapAuthor },
-			},
-		],
-	} as RichTextPropertyValue;
-
-	// multi select input
-	// propertyValues[scoapSquadNotion.SCOAP_SQUAD_NOTION_FIELDS.scoap_squad_discord_handles.field_name] = {
-	// 	type: scoapSquadNotion.SCOAP_SQUAD_NOTION_FIELDS.scoap_squad_discord_handles.type,
-	// 	multi_select: multi_select_options,
-	// } as MultiSelectPropertyValue;
-
-	// select
-	propertyValues[scoapSquadNotion.SCOAP_SQUAD_NOTION_FIELDS.status.field_name] = {
-		type: scoapSquadNotion.SCOAP_SQUAD_NOTION_FIELDS.status.type,
-		id: selectOption.id,
-		select: selectOption,
-	} as SelectPropertyValue;
-
-	// date input
-	propertyValues[scoapSquadNotion.SCOAP_SQUAD_NOTION_FIELDS.date_created.field_name] = {
-		type: scoapSquadNotion.SCOAP_SQUAD_NOTION_FIELDS.date_created.type,
-		date: {
-			start: new Date().toISOString(),
+			],
 		},
-	} as DatePropertyValue;
-
-	return propertyValues;
+		'Author Discord Handle': {
+			rich_text: [
+				{
+					type: 'text',
+					text: {
+						content: scoapAuthor,
+					},
+				},
+			],
+		},
+		Status: {
+			select: {
+				name: selectOption,
+			},
+		},
+		'Date Created': {
+			date: {
+				start: new Date().toISOString(),
+			},
+		},
+	};
 };

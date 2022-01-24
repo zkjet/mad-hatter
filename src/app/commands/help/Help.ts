@@ -3,7 +3,7 @@ import {
 	SlashCommand,
 	SlashCreator,
 } from 'slash-create';
-import { LogUtils } from '../../utils/Log';
+import Log, { LogUtils } from '../../utils/Log';
 
 export default class Help extends SlashCommand {
 	constructor(creator: SlashCreator) {
@@ -23,6 +23,6 @@ export default class Help extends SlashCommand {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;
 		
-		await ctx.send('https://discord.gg/C4xmJJUkMh');
+		await ctx.send('https://discord.gg/C4xmJJUkMh').catch(Log.error);
 	}
 }

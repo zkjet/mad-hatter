@@ -73,7 +73,6 @@ export default class ScoapSquad extends SlashCommand {
 	@command
 	async run(ctx: CommandContext): Promise<void> {
 		await ctx.send({ content: 'TBD' });
-		return;
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;
 		const { guildMember } = await ServiceUtils.getGuildAndMember(ctx);
