@@ -10,35 +10,35 @@
         "description": "Squad ID"
       },
       "guildId": {
-        "bsonType": "string",
+        "bsonType":  ["string", "null"],
         "description": "Discord guild ID of Squad"
       },
       "messageId": {
-        "bsonType": "string",
+        "bsonType":  ["string", "null"],
         "description": "Discord message ID of Squad"
       },
       "authorId": {
-        "bsonType": "string",
+        "bsonType":  ["string", "null"],
         "description": "Discord user ID of Squad author"
       },
       "title": {
-        "bsonType": "string",
+        "bsonType":  ["string", "null"],
         "description": "Squad title"
       },
       "description": {
-        "bsonType": "string",
+        "bsonType":  ["string", "null"],
         "description": "Squad description"
       },
       "claimedBy": {
-        "bsonType": "object",
+        "bsonType":  ["object", "null"],
         "description": "Record of users who raised their hand. Key: Discord user ID, value: timestamp of hand raise "
       },
       "created": {
-        "bsonType": "double",
+        "bsonType":  ["double", "null"],
         "description": "Timestamp of Squad created"
       },
       "active": {
-        "bsonType": "boolean",
+        "bsonType":  ["boolean", "null"],
         "description": "Whether the Squad is active"
       }
     }

@@ -58,3 +58,13 @@ conflicts and failed workflows, the better.
 Once the branch is ready to be merged, push it to the repo and create a PR
 to the dev branch. From this point, it will follow the details set out in
 WORKFLOW.md.
+
+## Logging Guideline
+
+We need more logs, as a general guide:
+
+1. Starting log at the start of the function
+2. Ending log at the end of the function
+3. A log stating the path in the if block
+4. Log before a message is sent to the user
+5. Log for a failure or edge case scenario

@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.3.1-RELEASE
+## 1.4.0-RELEASE
 
 1. Add SquadUp feature (/squad up command) - tool to assemble project teams
 

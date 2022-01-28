@@ -11,6 +11,7 @@ import ValidationError from '../../errors/ValidationError';
 import discordServerIds from '../../service/constants/discordServerIds';
 import { LogUtils } from '../../utils/Log';
 import LaunchSquad from '../../service/squad/LaunchSquad';
+import { GuildMember } from 'discord.js';
 
 module.exports = class Squad extends SlashCommand {
 	constructor(creator: SlashCreator) {
@@ -73,7 +74,13 @@ module.exports = class Squad extends SlashCommand {
 	async run(ctx: CommandContext) {
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;
-		const { guildMember } = await ServiceUtils.getGuildAndMember(ctx);
+		let guildMember: GuildMember;
+		try {
+			({ guildMember } = await ServiceUtils.getGuildAndMember(ctx));
+		} catch (e) {
+			LogUtils.logError('failed to get guild Member', e);
+			return;
+		}
 		let command: Promise<any>;
 		switch (ctx.subcommands[0]) {
 		case 'up':
@@ -87,10 +94,10 @@ module.exports = class Squad extends SlashCommand {
 	}
 
 	handleCommandError(ctx: CommandContext, command: Promise<any>) {
-		command.catch(e => {
+		command.catch(async e => {
 			if (!(e instanceof ValidationError)) {
-				LogUtils.logError('failed to handle squad command', e);
-				return ctx.send('Sorry something is not working and our devs are looking into it');
+				await ServiceUtils.sendOutErrorMessage(ctx);
+				return;
 			}
 		});
 	}

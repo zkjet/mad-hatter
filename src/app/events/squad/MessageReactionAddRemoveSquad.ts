@@ -22,6 +22,8 @@ export default async (reaction: MessageReaction, user: User, toggle: string): Pr
 		return;
 	}
 
+	Log.debug('message reaction valid for squad up');
+
 	const guildMember: GuildMember = await reaction.message.guild.members.fetch(user);
 
 	const db: Db = await dbInstance.connect(constants.DB_NAME_DEGEN);
@@ -32,15 +34,22 @@ export default async (reaction: MessageReaction, user: User, toggle: string): Pr
 
 
 	if (reaction.emoji.name === '🙋') {
+		Log.debug('hand raise emoji');
+
 		if (toggle === 'ADD') {
+			Log.debug('toggle ADD');
+
 			return claimSquad(guildMember.user, message, 'CLAIM').catch(e => LogUtils.logError('failed to claim squad', e));
 
 		} else if (toggle === 'REMOVE') {
+			Log.debug('toggle REMOVE');
+
 			return unclaimSquad(guildMember.user, message, 'UNCLAIM').catch(e => LogUtils.logError('failed to un-claim squad', e));
 		}
 
 	} else if ((reaction.emoji.name === '❌') && (toggle === 'ADD')) {
 		if (user.id === record.authorId) {
+			Log.debug('❌ emoji && toggle ADD by authorized user');
 
 			await message.reactions.removeAll()
 				.catch(error => LogUtils.logError('Squad: failed to clear reactions:', error));
@@ -53,6 +62,7 @@ export default async (reaction: MessageReaction, user: User, toggle: string): Pr
 		return;
 	} else if ((reaction.emoji.name === '🔃') && (toggle === 'ADD')) {
 		if (user.id === record.authorId) {
+			Log.debug('🔃 emoji && toggle ADD by authorized user');
 
 			await message.reactions.removeAll()
 				.catch(error => LogUtils.logError('Squad: failed to clear reactions:', error));
