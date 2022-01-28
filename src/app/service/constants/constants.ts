@@ -166,5 +166,5 @@ export default Object.freeze({
 		{
 			name: 'Writers',
 			value: 'Writers',
-		}]
+		}],
 });

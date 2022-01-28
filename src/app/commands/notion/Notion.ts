@@ -29,16 +29,16 @@ export default class NotionNotes extends SlashCommand {
 					type: CommandOptionType.SUB_COMMAND,
 					description: 'Get the Notion homepage for a guild',
 					options: [
-						{ 
+						{
 							name: 'guild',
 							type: CommandOptionType.STRING,
 							description: 'Select a guild',
 							required: true,
-							choices: constants.GUILD_CHOICES
-						}
-					]
+							choices: constants.GUILD_CHOICES,
+						},
+					],
 				},
-				{ 
+				{
 					name: COMMAND_NOTES_CREATE,
 					type: CommandOptionType.SUB_COMMAND,
 					description: 'Create a meeting notes page in Notion',
@@ -54,7 +54,7 @@ export default class NotionNotes extends SlashCommand {
 							type: CommandOptionType.STRING,
 							description: 'Guild that meeting notes belong to',
 							required: false,
-							choices: constants.GUILD_CHOICES
+							choices: constants.GUILD_CHOICES,
 						},
 						{
 							name: 'type',
@@ -92,8 +92,8 @@ export default class NotionNotes extends SlashCommand {
 								},
 							],
 						},
-					]
-				}
+					],
+				},
 			],
 			throttling: {
 				usages: 2,
@@ -109,13 +109,13 @@ export default class NotionNotes extends SlashCommand {
 		if (ctx.user.bot) return;
 
 		switch (ctx.subcommands[0]) {
-			case COMMAND_HOMEPAGE:
-				return this.getGuildHomepage(ctx);
-			case COMMAND_NOTES_CREATE:
-				return this.createMeetingNotes(ctx);
-			default:
-				LogUtils.logError(`Undefined command`, null);
-				return;
+		case COMMAND_HOMEPAGE:
+			return this.getGuildHomepage(ctx);
+		case COMMAND_NOTES_CREATE:
+			return this.createMeetingNotes(ctx);
+		default:
+			LogUtils.logError('Undefined command', null);
+			return;
 		}
 	}
 
@@ -129,7 +129,7 @@ export default class NotionNotes extends SlashCommand {
 	async createMeetingNotes(ctx: CommandContext): Promise<any> {
 		const options = ctx.options[COMMAND_NOTES_CREATE];
 		const { guild, guildMember } = await ServiceUtils.getGuildAndMember(ctx);
-		const voiceChannelId = guildMember.voice.channelId
+		const voiceChannelId = guildMember.voice.channelId;
 
 		let databaseId = process.env.NOTION_CENTRAL_MEETING_NOTES_DATABASE_ID;
 		if (options.guild !== undefined) {
@@ -137,8 +137,8 @@ export default class NotionNotes extends SlashCommand {
 			const dbMeetingNotes = db.collection(constants.DB_COLLECTION_MEETING_NOTES);
 
 			const notionMeetingNotes: NotionMeetingNotes = await dbMeetingNotes.findOne({
-				guild: options.guild
-			})
+				guild: options.guild,
+			});
 
 			if (notionMeetingNotes) {
 				databaseId = notionMeetingNotes.databaseId;
@@ -152,33 +152,33 @@ export default class NotionNotes extends SlashCommand {
 					{
 						type: 'text',
 						text: {
-							content: options.title
+							content: options.title,
 						},
 					},
 				],
 			},
 			'Date': {
 				date: {
-					start: dayjs().format('YYYY-MM-DD')
-				}
+					start: dayjs().format('YYYY-MM-DD'),
+				},
 			},
 			'Note-taker': {
 				rich_text: [
 					{
 						type: 'text',
 						text: {
-							content: `${ctx.user.username}#${ctx.user.discriminator}`
-						}
-					}
-				]
-			}
-		}
+							content: `${ctx.user.username}#${ctx.user.discriminator}`,
+						},
+					},
+				],
+			},
+		};
 
 		// Add members in attendence to properties if user is in a voice channel
 		if (voiceChannelId !== undefined) {
-			const voiceChannel = guild.channels.cache.find((voiceChannel) => {
-				return voiceChannel.id == voiceChannelId
-			}) as BaseGuildVoiceChannel
+			const voiceChannel = guild.channels.cache.find((channel) => {
+				return channel.id == voiceChannelId;
+			}) as BaseGuildVoiceChannel;
 
 			if (voiceChannel != null && voiceChannel.type != 'GUILD_STAGE_VOICE') {
 				properties['Attendance'] = {
@@ -186,11 +186,11 @@ export default class NotionNotes extends SlashCommand {
 						{
 							type: 'text',
 							text: {
-								content: voiceChannel.members.map(member => member.displayName).join(', ')
-							}
-						}
-					]
-				}
+								content: voiceChannel.members.map(member => member.displayName).join(', '),
+							},
+						},
+					],
+				};
 			}
 		}
 
@@ -199,23 +199,23 @@ export default class NotionNotes extends SlashCommand {
 			properties['Type'] = {
 				multi_select: [
 					{
-						name: options.type === undefined ? null : options.type
+						name: options.type === undefined ? null : options.type,
 					},
 				],
-			}
+			};
 		}
 
 		await notion.pages.create({
 			parent: {
 				database_id: databaseId,
 			},
-			properties: properties as Record<string, any>
+			properties: properties as Record<string, any>,
 		}).then(async response => {
 			return ctx.send(`Created meeting notes page: ${response.url}`);
 		})
-		.catch(e => {
-			LogUtils.logError('Failed to create meeting notes', e, guild.id);
-			return ctx.send(`Unable to create meeting notes at this time.`)
-		})
+			.catch(e => {
+				LogUtils.logError('Failed to create meeting notes', e, guild.id);
+				return ctx.send('Unable to create meeting notes at this time.');
+			});
 	}
 }

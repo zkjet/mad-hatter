@@ -1,7 +1,7 @@
 import { Client as NotionClient } from '@notionhq/client';
 import {
 	CreateDatabaseParameters,
-	CreatePageParameters
+	CreatePageParameters,
 } from '@notionhq/client/build/src/api-endpoints';
 import scoapSquadNotion from '../constants/scoapSquadNotion';
 
@@ -43,8 +43,8 @@ export const updateStatusSelectField = async (pageId: string, selectOption: stri
 		properties: {
 			Status: {
 				id: selectOptionObject.id,
-				select: selectOptionObject
-			}
+				select: selectOptionObject,
+			},
 		},
 	});
 };
@@ -54,13 +54,13 @@ const updateDiscordHandleMultiSelectField = async (pageId: string, multiSelectop
 		page_id: pageId,
 		properties: {
 			'Scoap Squad Discord Handles': {
-				multi_select: multiSelectoptions
-			}
+				multi_select: multiSelectoptions,
+			},
 		},
 	});
 };
 
-const retrieveSelectOption = (properties: CreateDatabaseParameters["properties"], fieldName: string, option: string): any => {
+const retrieveSelectOption = (properties: CreateDatabaseParameters['properties'], fieldName: string, option: string): any => {
 	let selectOptionResult = {};
 	Object.entries(properties).forEach(([nme, property]) => {
 		if (property.type === 'select' && nme === fieldName) {
@@ -75,7 +75,7 @@ const retrieveSelectOption = (properties: CreateDatabaseParameters["properties"]
 	return selectOptionResult;
 };
 
-const retrieveMultiSelectOptions = (properties: CreateDatabaseParameters["properties"], fieldName: string, options): any => {
+const retrieveMultiSelectOptions = (properties: CreateDatabaseParameters['properties'], fieldName: string, options): any => {
 	const existingMultiSelectOptions = [];
 	const existingOptionsNameMapping = {};
 	Object.entries(properties).forEach(([nme, property]) => {
@@ -105,7 +105,7 @@ const createNewMultiSelectOptions = (existingOptionsNameMapping, options) => {
 	return newMultiSelectOptions;
 };
 
-const getNotionDatabaseProperties = async (): Promise<CreateDatabaseParameters["properties"]> => {
+const getNotionDatabaseProperties = async (): Promise<CreateDatabaseParameters['properties']> => {
 	const { properties } = await notion.databases.retrieve({ database_id: databaseId });
 	return properties;
 };
@@ -141,21 +141,21 @@ const appendBlockToPage = async (pageId, summary) => {
 						},
 					],
 				},
-			}
+			},
 		],
 	});
 };
 
-const createNotionProperties = (selectOption, scoapTitle: string, scoapAuthor: string): CreatePageParameters["properties"] => {
+const createNotionProperties = (selectOption, scoapTitle: string, scoapAuthor: string): CreatePageParameters['properties'] => {
 	return {
 		Project: {
 			title: [
 				{
-					type: 'text', 
-					text: { 
-						content: scoapTitle
-					}
-				}
+					type: 'text',
+					text: {
+						content: scoapTitle,
+					},
+				},
 			],
 		},
 		'Author Discord Handle': {
@@ -163,20 +163,20 @@ const createNotionProperties = (selectOption, scoapTitle: string, scoapAuthor: s
 				{
 					type: 'text',
 					text: {
-							content: scoapAuthor
-					}
-				}
+						content: scoapAuthor,
+					},
+				},
 			],
 		},
 		Status: {
 			select: {
-				name: selectOption
-			}
+				name: selectOption,
+			},
 		},
 		'Date Created': {
 			date: {
-				start: new Date().toISOString()
-			}
-		}
-	}
+				start: new Date().toISOString(),
+			},
+		},
+	};
 };
