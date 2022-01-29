@@ -15,7 +15,7 @@ const notion = new NotionClient({ auth: process.env.NOTION_TOKEN });
 
 // Subcommands
 const COMMAND_HOMEPAGE = 'homepage';
-const COMMAND_NOTES_CREATE = 'create';
+const COMMAND_MEETING_NOTES = 'meeting-notes';
 
 export default class NotionNotes extends SlashCommand {
 	constructor(creator: SlashCreator) {
@@ -39,7 +39,7 @@ export default class NotionNotes extends SlashCommand {
 					],
 				},
 				{
-					name: COMMAND_NOTES_CREATE,
+					name: COMMAND_MEETING_NOTES,
 					type: CommandOptionType.SUB_COMMAND,
 					description: 'Create a meeting notes page in Notion',
 					options: [
@@ -111,7 +111,7 @@ export default class NotionNotes extends SlashCommand {
 		switch (ctx.subcommands[0]) {
 		case COMMAND_HOMEPAGE:
 			return this.getGuildHomepage(ctx);
-		case COMMAND_NOTES_CREATE:
+		case COMMAND_MEETING_NOTES:
 			return this.createMeetingNotes(ctx);
 		default:
 			LogUtils.logError('Undefined command', null);
@@ -127,7 +127,7 @@ export default class NotionNotes extends SlashCommand {
 	}
 
 	async createMeetingNotes(ctx: CommandContext): Promise<any> {
-		const options = ctx.options[COMMAND_NOTES_CREATE];
+		const options = ctx.options[COMMAND_MEETING_NOTES];
 		const { guild, guildMember } = await ServiceUtils.getGuildAndMember(ctx);
 		const voiceChannelId = guildMember.voice.channelId;
 		const fields: EmbedFieldData[] = [];
@@ -228,14 +228,8 @@ export default class NotionNotes extends SlashCommand {
 			},
 			properties: properties as Record<string, any>,
 		}).then(async response => {
-			fields.push({
-				'name': 'Link',
-				'value': `**[${options.title}](${response.url})**`,
-			} as EmbedFieldData);
-
 			const embed = new MessageEmbed()
-				.setTitle('Meeting Notes')
-				.setDescription('Created new meeting notes.')
+				.setDescription(`Created meeting notes: ${response.url}`)
 				.setColor(0xFF1A1A)
 				.setFields(fields.reverse());
 				
