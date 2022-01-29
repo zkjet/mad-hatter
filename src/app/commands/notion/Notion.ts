@@ -1,16 +1,16 @@
-import { SlashCommand, CommandOptionType, CommandContext, SlashCreator } from 'slash-create';
-import discordServerIds from '../../service/constants/discordServerIds';
-import notionPageRefs from '../../service/notion/NotionGuildPages';
-import { LogUtils } from '../../utils/Log';
-import { command } from '../../utils/SentryUtils';
 import { Client as NotionClient } from '@notionhq/client';
 import dayjs from 'dayjs';
-import ServiceUtils from '../../utils/ServiceUtils';
-import { BaseGuildVoiceChannel } from 'discord.js';
-import constants from '../../service/constants/constants';
+import { BaseGuildVoiceChannel, EmbedFieldData, MessageEmbed } from 'discord.js';
 import { Db } from 'mongodb';
-import MongoDbUtils from '../../utils/MongoDbUtils';
+import { CommandContext, CommandOptionType, SlashCommand, SlashCreator } from 'slash-create';
+import constants from '../../service/constants/constants';
+import discordServerIds from '../../service/constants/discordServerIds';
+import notionPageRefs from '../../service/notion/NotionGuildPages';
 import { NotionMeetingNotes } from '../../types/notion/NotionMeetingNotes';
+import { LogUtils } from '../../utils/Log';
+import MongoDbUtils from '../../utils/MongoDbUtils';
+import { command } from '../../utils/SentryUtils';
+import ServiceUtils from '../../utils/ServiceUtils';
 const notion = new NotionClient({ auth: process.env.NOTION_TOKEN });
 
 // Subcommands
@@ -130,20 +130,7 @@ export default class NotionNotes extends SlashCommand {
 		const options = ctx.options[COMMAND_NOTES_CREATE];
 		const { guild, guildMember } = await ServiceUtils.getGuildAndMember(ctx);
 		const voiceChannelId = guildMember.voice.channelId;
-
-		let databaseId = process.env.NOTION_CENTRAL_MEETING_NOTES_DATABASE_ID;
-		if (options.guild !== undefined) {
-			const db: Db = await MongoDbUtils.connect(constants.DB_NAME_DEGEN);
-			const dbMeetingNotes = db.collection(constants.DB_COLLECTION_MEETING_NOTES);
-
-			const notionMeetingNotes: NotionMeetingNotes = await dbMeetingNotes.findOne({
-				guild: options.guild,
-			});
-
-			if (notionMeetingNotes) {
-				databaseId = notionMeetingNotes.databaseId;
-			}
-		}
+		const fields: EmbedFieldData[] = [];
 
 		// Initialize properties with required or automatically generated fields
 		const properties = {
@@ -176,21 +163,27 @@ export default class NotionNotes extends SlashCommand {
 
 		// Add members in attendence to properties if user is in a voice channel
 		if (voiceChannelId !== undefined) {
-			const voiceChannel = guild.channels.cache.find((channel) => {
+			const voiceChannel = guild.channels.cache.find(channel => {
 				return channel.id == voiceChannelId;
 			}) as BaseGuildVoiceChannel;
 
 			if (voiceChannel != null && voiceChannel.type != 'GUILD_STAGE_VOICE') {
+				const attendees = voiceChannel.members.map(member => member.displayName).join(', ');
 				properties['Attendance'] = {
 					rich_text: [
 						{
 							type: 'text',
 							text: {
-								content: voiceChannel.members.map(member => member.displayName).join(', '),
+								content: attendees,
 							},
 						},
 					],
 				};
+				
+				fields.push({
+					'name': 'Attendees',
+					'value': attendees,
+				} as EmbedFieldData);
 			}
 		}
 
@@ -199,10 +192,34 @@ export default class NotionNotes extends SlashCommand {
 			properties['Type'] = {
 				multi_select: [
 					{
-						name: options.type === undefined ? null : options.type,
+						name: options.type,
 					},
 				],
 			};
+			fields.push({
+				'name': 'Type',
+				'value': options.type,
+			} as EmbedFieldData);
+		}
+
+		// Default database is the central meeting notes database
+		let databaseId = process.env.NOTION_CENTRAL_MEETING_NOTES_DATABASE_ID;
+		if (options.guild !== undefined) {
+			const db: Db = await MongoDbUtils.connect(constants.DB_NAME_DEGEN);
+			const dbMeetingNotes = db.collection(constants.DB_COLLECTION_MEETING_NOTES);
+
+			const notionMeetingNotes: NotionMeetingNotes = await dbMeetingNotes.findOne({
+				guild: options.guild,
+			});
+
+			// Use guild-specific meeting notes database if it exists
+			if (notionMeetingNotes) {
+				databaseId = notionMeetingNotes.databaseId;
+				fields.push({
+					'name': 'Guild',
+					'value': options.guild,
+				} as EmbedFieldData);
+			}
 		}
 
 		await notion.pages.create({
@@ -211,11 +228,21 @@ export default class NotionNotes extends SlashCommand {
 			},
 			properties: properties as Record<string, any>,
 		}).then(async response => {
-			return ctx.send(`Created meeting notes page: ${response.url}`);
-		})
-			.catch(e => {
-				LogUtils.logError('Failed to create meeting notes', e, guild.id);
-				return ctx.send('Unable to create meeting notes at this time.');
-			});
+			fields.push({
+				'name': 'Link',
+				'value': `**[${options.title}](${response.url})**`,
+			} as EmbedFieldData);
+
+			const embed = new MessageEmbed()
+				.setTitle('Meeting Notes')
+				.setDescription('Created new meeting notes.')
+				.setColor(0xFF1A1A)
+				.setFields(fields.reverse());
+				
+			return ctx.send({ embeds: [embed as any] });
+		}).catch(e => {
+			LogUtils.logError('Failed to create meeting notes', e, guild.id);
+			return ctx.send('Unable to create meeting notes at this time.');
+		});
 	}
 }
