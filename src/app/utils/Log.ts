@@ -34,8 +34,8 @@ const Log = {
 			logger.info(statement, options);
 			Sentry.addBreadcrumb({
 				level: Sentry.Severity.Info,
-				message: statement
-			})
+				message: statement,
+			});
 		}
 	},
 
@@ -47,8 +47,8 @@ const Log = {
 			logger.warn(statement, options);
 			Sentry.addBreadcrumb({
 				level: Sentry.Severity.Warning,
-				message: statement
-			})
+				message: statement,
+			});
 		}
 	},
 
@@ -69,8 +69,8 @@ const Log = {
 			logger.error(statement, options);
 			Sentry.addBreadcrumb({
 				level: Sentry.Severity.Error,
-				message: statement
-			})
+				message: statement,
+			});
 		}
 	},
 
@@ -82,8 +82,8 @@ const Log = {
 			logger.fatal(statement, options);
 			Sentry.addBreadcrumb({
 				level: Sentry.Severity.Fatal,
-				message: statement
-			})
+				message: statement,
+			});
 		}
 	},
 
@@ -104,8 +104,8 @@ const Log = {
 		logger.log(statement, options);
 		Sentry.addBreadcrumb({
 			level: Sentry.Severity.Log,
-			message: statement
-		})
+			message: statement,
+		});
 	},
 
 	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
