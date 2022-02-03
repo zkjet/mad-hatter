@@ -32,6 +32,10 @@ const Log = {
 			console.log(statement);
 		} else {
 			logger.info(statement, options);
+			Sentry.addBreadcrumb({
+				level: Sentry.Severity.Info,
+				message: statement
+			})
 		}
 	},
 
@@ -41,6 +45,10 @@ const Log = {
 			console.log(statement);
 		} else {
 			logger.warn(statement, options);
+			Sentry.addBreadcrumb({
+				level: Sentry.Severity.Warning,
+				message: statement
+			})
 		}
 	},
 
@@ -59,6 +67,10 @@ const Log = {
 			console.error(statement);
 		} else {
 			logger.error(statement, options);
+			Sentry.addBreadcrumb({
+				level: Sentry.Severity.Error,
+				message: statement
+			})
 		}
 	},
 
@@ -68,6 +80,10 @@ const Log = {
 			console.error(statement);
 		} else {
 			logger.fatal(statement, options);
+			Sentry.addBreadcrumb({
+				level: Sentry.Severity.Fatal,
+				message: statement
+			})
 		}
 	},
 
@@ -86,6 +102,10 @@ const Log = {
 			console.log(statement);
 		}
 		logger.log(statement, options);
+		Sentry.addBreadcrumb({
+			level: Sentry.Severity.Log,
+			message: statement
+		})
 	},
 
 	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
