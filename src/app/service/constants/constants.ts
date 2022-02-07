@@ -116,20 +116,12 @@ export default Object.freeze({
 			value: 'Analytics',
 		},
 		{
-			name: 'AV',
-			value: 'AV',
-		},
-		{
-			name: 'Bizdev',
-			value: 'Bizdev',
+			name: 'AudioVisual',
+			value: 'AudioVisual',
 		},
 		{
 			name: 'Design',
 			value: 'Design',
-		},
-		{
-			name: 'DAOLationships',
-			value: 'DAOLationships',
 		},
 		{
 			name: 'Developers',
@@ -150,10 +142,6 @@ export default Object.freeze({
 		{
 			name: 'Operations',
 			value: 'Operations',
-		},
-		{
-			name: 'Research',
-			value: 'Research',
 		},
 		{
 			name: 'Translators',
