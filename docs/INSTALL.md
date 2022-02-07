@@ -89,5 +89,9 @@ yarn start
 
 If using docker:
 ```bash
-docker-compose up
+make
+```
+or
+```bash
+docker-compose up --build
 ```
