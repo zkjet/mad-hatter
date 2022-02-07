@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0-RELEASE
+
+1. Add Sentry breadcrumbs
+
 ## 1.3.0-RELEASE (2022-01-13)
 
 1. Remove datadog tracer
