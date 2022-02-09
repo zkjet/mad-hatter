@@ -4,6 +4,8 @@
 
 1. Add Sentry breadcrumbs
 2. Add Makefile and Dockerfile for arm machines
+3. Add notion meeting command
+
 
 ## 1.3.0-RELEASE (2022-01-13)
 
