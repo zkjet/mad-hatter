@@ -3,7 +3,8 @@ version: '3.8'
 services:
   bot:
     container_name: degen_bot
-    build: .
+    build:
+      dockerfile: ${DOCKERFILE:-Dockerfile}
     environment: 
       MONGODB_PREFIX: mongodb
       MONGODB_USERNAME: dev
