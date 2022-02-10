@@ -22,7 +22,11 @@ export function command(target: SlashCommand, propertyKey: string, descriptor: P
 		});
 
 		Sentry.configureScope(async scope => {
-			scope.setTransactionName(`/${ctx.commandName} ${ctx.subcommands[0]}`);
+			if (ctx.subcommands[0] !== undefined) {
+				scope.setTransactionName(`/${ctx.commandName} ${ctx.subcommands[0]}`);
+			} else {
+				scope.setTransactionName(`/${ctx.commandName}`);
+			}
 
 			scope.setSpan(transaction);
 

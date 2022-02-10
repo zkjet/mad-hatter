@@ -23,6 +23,7 @@ export default Object.freeze({
 
 	DB_COLLECTION_POAP_ADMINS: 'poapAdmins',
 	DB_COLLECTION_ALLOWLIST: 'allowList',
+	DB_COLLECTION_MEETING_NOTES: 'meetingNotes',
 
 	MONGODB_URI_PARTIAL: `${process.env.MONGODB_PREFIX}://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASS}@${process.env.MONGODB_CLUSTER}/`,
 	MONGODB_OPTIONS: '?retryWrites=true&w=majority',
@@ -110,4 +111,50 @@ export default Object.freeze({
 		'notionsupport',
 		'notion-support',
 	],
+
+	GUILD_CHOICES: [
+		{
+			name: 'Analytics',
+			value: 'Analytics',
+		},
+		{
+			name: 'AudioVisual',
+			value: 'AudioVisual',
+		},
+		{
+			name: 'Design',
+			value: 'Design',
+		},
+		{
+			name: 'Developers',
+			value: 'Developers',
+		},
+		{
+			name: 'Education',
+			value: 'Education',
+		},
+		{
+			name: 'Legal',
+			value: 'legal',
+		},
+		{
+			name: 'Marketing',
+			value: 'Marketing',
+		},
+		{
+			name: 'Operations',
+			value: 'Operations',
+		},
+		{
+			name: 'Translators',
+			value: 'Translators',
+		},
+		{
+			name: 'Treasury',
+			value: 'Treasury',
+		},
+		{
+			name: 'Writers',
+			value: 'Writers',
+		}],
 });
