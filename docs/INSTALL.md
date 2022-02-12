@@ -6,7 +6,7 @@ application is available.
 These tools can make development quick and are recommended:
 
 -   [git CLI](https://git-scm.com) - version control system
--   [nodejs v14.17.0](https://nodejs.org/en/) - js runtime built on chrome's v8 engine
+-   [nodejs v16.x](https://nodejs.org/en/) - js runtime built on chrome's v8 engine
 -   [nvm](https://github.com/nvm-sh/nvm) - easily change node versions
 -   [yarn v1.x](https://yarnpkg.com/) - dependency management system
 -   [Docker](https://docs.docker.com/desktop/) - for local development
@@ -89,5 +89,9 @@ yarn start
 
 If using docker:
 ```bash
-docker-compose up
+make
+```
+or
+```bash
+docker-compose up --build
 ```
