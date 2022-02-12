@@ -301,7 +301,7 @@ const postSquad = async (member, squadEmbed, xChannelList): Promise<void> => {
 	let squadChannel: TextChannel;
 
 	try {
-		squadChannel = await client.channels.fetch(channelIds.scoapSquad) as TextChannel;
+		squadChannel = await client.channels.fetch(channelIds.squad) as TextChannel;
 	} catch (e) {
 		LogUtils.logError('squadUp postSquad() failed to fetch squad channel', e);
 		return;
@@ -339,7 +339,7 @@ const postSquad = async (member, squadEmbed, xChannelList): Promise<void> => {
 	}
 	Log.debug('squadUp postSquad() about to send success message to user via DM');
 
-	await dmChannel.send(`All done! Your squad assemble has been posted. Check it out in <#${channelIds.scoapSquad}>`);
+	await dmChannel.send(`All done! Your squad assemble has been posted. Check it out in <#${channelIds.squad}>`);
 
 };
 
@@ -520,7 +520,13 @@ export const checkExpiration = async (): Promise<void> => {
 		{ '$match': {	active: true } },
 	]).toArray();
 
-	const squadChannel: TextChannel = await client.channels.fetch(channelIds.scoapSquad) as TextChannel;
+	let squadChannel: TextChannel;
+	try {
+		squadChannel = await client.channels.fetch(channelIds.squad) as TextChannel;
+	} catch {
+		Log.debug('squadUp checkExpiration() failed to fetch squad channel');
+		return;
+	}
 
 	for (const squad of timestampAggregate) {
 
@@ -543,7 +549,7 @@ export const checkExpiration = async (): Promise<void> => {
 
 							try {
 								await dmChannel.send({ content: 'Squad has been completed. Time to get in touch with your team! ' +
-										`<https://discord.com/channels/${squad.guildId}/${channelIds.scoapSquad}/${squad.messageId}>` });
+										`<https://discord.com/channels/${squad.guildId}/${channelIds.squad}/${squad.messageId}>` });
 							} catch {
 								Log.info(`Squad completed - failed to send DM - SquadId ${squad._id}`);
 							}

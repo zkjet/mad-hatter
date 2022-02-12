@@ -3,6 +3,7 @@
 ## 1.4.0-RELEASE
 
 1. Add SquadUp feature (/squad up command) - tool to assemble project teams
+2. remove ScoapSquad feature (/scoap-squad command)
 
 ## 1.3.0-RELEASE (2022-01-13)
 

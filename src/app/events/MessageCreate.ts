@@ -15,13 +15,6 @@ export default class implements DiscordEvent {
 			await MessageCreateOnDEGEN(message).catch(e => {
 				LogUtils.logError('DEGEN failed to say hello', e);
 			});
-			// TODO: enable scoap squad at a future date
-			// if (message.channel.type === 'DM') {
-			// 	// Run scoap squad DM flow
-			// 	await messageSetScoapRoles(message).catch(e => {
-			// 		LogUtils.logError('failed to run scoap-squad DM flow', e);
-			// 	});
-			// }
 			// Check mentions for AFK users
 			if (message.mentions.users.size > 0) {
 				await HandleAFK(message).catch((e) => {
