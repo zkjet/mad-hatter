@@ -7,7 +7,7 @@ import dbInstance from '../../utils/MongoDbUtils';
 import constants from '../../service/constants/constants';
 
 export default async (reaction: MessageReaction, user: User, toggle: string): Promise<any> => {
-	if (reaction.message.channel.id !== channelIds.squad) {
+	if (reaction.message.channel.id !== channelIds.SQUAD) {
 		return;
 	}
 

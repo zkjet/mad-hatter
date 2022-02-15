@@ -88,7 +88,13 @@ const getDescription = async (member: GuildMember, title: string): Promise<void>
 
 	Log.debug('squadUp getDescription() - about to send input prompt DM to user');
 
-	const getDescriptionPrompt = await dmChannel.send({ content: 'A short description perhaps?' });
+	let getDescriptionPrompt: Message;
+	try {
+		getDescriptionPrompt = await dmChannel.send({ content: 'A short description perhaps?' });
+	} catch {
+		Log.debug('squadUp getDescription() failed to send DM');
+		return;
+	}
 
 	const collector = dmChannel.createMessageCollector({ max: 1, time: (5000 * 60), dispose: true });
 
@@ -103,7 +109,11 @@ const getDescription = async (member: GuildMember, title: string): Promise<void>
 
 			Log.debug('squadUp getDescription() - about to send preview embed DM to user');
 
-			await dmChannel.send({ content: 'Preview: ', embeds: [squadEmbed] });
+			try {
+				await dmChannel.send({ content: 'Preview: ', embeds: [squadEmbed] });
+			} catch {
+				Log.debug('squadUp getDescription() failed to send DM');
+			}
 
 			await xPostConfirm(member, title, msg.content, squadEmbed);
 
@@ -145,11 +155,17 @@ const xPostConfirm = async (member, title, description, squadEmbed): Promise<voi
 
 	Log.debug('squadUp xPostConfirm() - about to send confirmation prompt DM to user');
 
-	const xPostConfirmMsg = await dmChannel.send({ content: 'Would you like to cross post the Squad in other channels? \n' +
-	'👍 - Post now, without cross posting\n' +
-	'📮 - Select cross post channels\n' +
-	'🔃 - Start over\n' +
-	'❌ - Abort' });
+	let xPostConfirmMsg: Message;
+	try {
+		xPostConfirmMsg = await dmChannel.send({ content: 'Would you like to cross post the Squad in other channels? \n' +
+				'👍 - Post now, without cross posting\n' +
+				'📮 - Select cross post channels\n' +
+				'🔃 - Start over\n' +
+				'❌ - Abort' });
+	} catch {
+		Log.debug('squadUp xPostConfirm() failed to send DM');
+		return;
+	}
 
 	const filter = (reaction, user) => {
 		return ['👍', '📮', '❌', '🔃'].includes(reaction.emoji.name) && !user.bot;
@@ -185,7 +201,11 @@ const xPostConfirm = async (member, title, description, squadEmbed): Promise<voi
 					} else if (reac.emoji.name === '🔃') {
 						Log.debug('squadUp xPostConfirm 🔃 selected');
 
-						await dmChannel.send({ content: 'Let\'s start over.' });
+						try {
+							await dmChannel.send({ content: 'Let\'s start over.' });
+						} catch {
+							Log.debug('squadUp xPostConfirm failed to send DM');
+						}
 
 						await getTitle(member);
 
@@ -193,7 +213,11 @@ const xPostConfirm = async (member, title, description, squadEmbed): Promise<voi
 					} else if (reac.emoji.name === '❌') {
 						Log.debug('squadUp xPostConfirm ❌ selected');
 
-						await dmChannel.send({ content: 'Command cancelled.' });
+						try {
+							await dmChannel.send({ content: 'Command cancelled.' });
+						} catch {
+							Log.debug('squadUp xPostConfirm failed to send DM');
+						}
 
 						return;
 					}
@@ -223,13 +247,21 @@ const finalConfirm = async (member, squadEmbed, xChannelList): Promise<void> => 
 
 	Log.debug('squadUp finalConfirm() - about to send confirmation prompt DM to user');
 
-	await dmChannel.send({ content: 'the following channels were selected:\n' });
+	try {
+		await dmChannel.send({ content: 'the following channels were selected:\n' });
+	} catch {
+		Log.debug('squadUp finalConfirm() failed to send DM');
+	}
 
 	if (xChannelList.length > 0) {
 		Log.debug('squadUp list of cross post channels was provided by user');
 
 		for (const chan of xChannelList) {
-			await dmChannel.send({ content: `<#${chan}>\n` });
+			try {
+				await dmChannel.send({ content: `<#${chan}>\n` });
+			} catch {
+				Log.debug('squadUp finalConfirm() failed to send DM');
+			}
 		}
 	}
 
@@ -263,16 +295,23 @@ const finalConfirm = async (member, squadEmbed, xChannelList): Promise<void> => 
 					} else if (reac.emoji.name === '🔃') {
 						Log.debug('squadUp finalConfirm() received 🔃 reaction');
 
-						await dmChannel.send({ content: 'Let\'s start over.' });
+						try {
+							await dmChannel.send({ content: 'Let\'s start over.' });
+						} catch {
+							Log.debug('squadUp finalConfirm() failed to send DM');
+						}
 
 						await getTitle(member);
 
 						return;
 					} else if (reac.emoji.name === '❌') {
 						Log.debug('squadUp finalConfirm() received ❌ reaction');
+						try {
+							await dmChannel.send({ content: 'Command cancelled.' });
 
-						await dmChannel.send({ content: 'Command cancelled.' });
-
+						} catch {
+							Log.debug('squadUp finalConfirm() failed to send DM');
+						}
 						return;
 					}
 				}
@@ -301,7 +340,7 @@ const postSquad = async (member, squadEmbed, xChannelList): Promise<void> => {
 	let squadChannel: TextChannel;
 
 	try {
-		squadChannel = await client.channels.fetch(channelIds.squad) as TextChannel;
+		squadChannel = await client.channels.fetch(channelIds.SQUAD) as TextChannel;
 	} catch (e) {
 		LogUtils.logError('squadUp postSquad() failed to fetch squad channel', e);
 		return;
@@ -312,6 +351,7 @@ const postSquad = async (member, squadEmbed, xChannelList): Promise<void> => {
 		squadMsg = await squadChannel.send({ embeds: [squadEmbed] });
 	} catch (e) {
 		LogUtils.logError('squadUp postSquad() failed to post to squad channel', e);
+		await dmChannel.send(`Failed to post in <#${channelIds.SQUAD}>, please check channel permissions and try again.`).catch();
 		return;
 	}
 
@@ -334,12 +374,18 @@ const postSquad = async (member, squadEmbed, xChannelList): Promise<void> => {
 
 			} catch (e) {
 				LogUtils.logError(`failed to cross post in channel ${chan}`, e);
+				await dmChannel.send(`Failed to post in <#${chan}>, please check channel permissions and try again or cross post manually`).catch();
 			}
 		}
 	}
 	Log.debug('squadUp postSquad() about to send success message to user via DM');
 
-	await dmChannel.send(`All done! Your squad assemble has been posted. Check it out in <#${channelIds.squad}>`);
+	try {
+		await dmChannel.send(`All done! Your squad assemble has been posted. Check it out in <#${channelIds.SQUAD}>`);
+	} catch (e) {
+		Log.debug('squadUp postSquad() failed to send dm DM');
+		return;
+	}
 
 };
 
@@ -449,7 +495,13 @@ const getCrossPostChannels = async (member: GuildMember, squadEmbed) => {
 
 	Log.debug('squadUp getCrossPostChannels() about to send DM to user: xPost channel list input prompt');
 
-	const channelListInputPrompt = await dmChannel.send({ content: 'Please send me a list of comma separated channel Id\'s' });
+	let channelListInputPrompt: Message;
+	try {
+		channelListInputPrompt = await dmChannel.send({ content: 'Please send me a list of comma separated channel Id\'s' });
+	} catch (e) {
+		Log.debug(`squadUp getCrossPostChannels() failed to send DM ${e}`);
+		return;
+	}
 
 	const collector = dmChannel.createMessageCollector({ max: 1, time: (20000 * 60), dispose: true });
 
@@ -522,7 +574,7 @@ export const checkExpiration = async (): Promise<void> => {
 
 	let squadChannel: TextChannel;
 	try {
-		squadChannel = await client.channels.fetch(channelIds.squad) as TextChannel;
+		squadChannel = await client.channels.fetch(channelIds.SQUAD) as TextChannel;
 	} catch {
 		Log.debug('squadUp checkExpiration() failed to fetch squad channel');
 		return;
@@ -549,7 +601,7 @@ export const checkExpiration = async (): Promise<void> => {
 
 							try {
 								await dmChannel.send({ content: 'Squad has been completed. Time to get in touch with your team! ' +
-										`<https://discord.com/channels/${squad.guildId}/${channelIds.squad}/${squad.messageId}>` });
+										`<https://discord.com/channels/${squad.guildId}/${channelIds.SQUAD}/${squad.messageId}>` });
 							} catch {
 								Log.info(`Squad completed - failed to send DM - SquadId ${squad._id}`);
 							}
