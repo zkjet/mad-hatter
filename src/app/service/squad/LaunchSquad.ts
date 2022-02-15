@@ -115,6 +115,7 @@ const getDescription = async (member: GuildMember, title: string): Promise<void>
 				Log.debug('squadUp getDescription() failed to send DM');
 			}
 
+
 			await xPostConfirm(member, title, msg.content, squadEmbed);
 
 			return;
@@ -166,6 +167,7 @@ const xPostConfirm = async (member, title, description, squadEmbed): Promise<voi
 		Log.debug('squadUp xPostConfirm() failed to send DM');
 		return;
 	}
+
 
 	const filter = (reaction, user) => {
 		return ['👍', '📮', '❌', '🔃'].includes(reaction.emoji.name) && !user.bot;
@@ -301,17 +303,20 @@ const finalConfirm = async (member, squadEmbed, xChannelList): Promise<void> => 
 							Log.debug('squadUp finalConfirm() failed to send DM');
 						}
 
+
 						await getTitle(member);
 
 						return;
 					} else if (reac.emoji.name === '❌') {
 						Log.debug('squadUp finalConfirm() received ❌ reaction');
+            
 						try {
 							await dmChannel.send({ content: 'Command cancelled.' });
 
 						} catch {
 							Log.debug('squadUp finalConfirm() failed to send DM');
 						}
+
 						return;
 					}
 				}
@@ -341,6 +346,7 @@ const postSquad = async (member, squadEmbed, xChannelList): Promise<void> => {
 
 	try {
 		squadChannel = await client.channels.fetch(channelIds.SQUAD) as TextChannel;
+
 	} catch (e) {
 		LogUtils.logError('squadUp postSquad() failed to fetch squad channel', e);
 		return;
@@ -386,6 +392,7 @@ const postSquad = async (member, squadEmbed, xChannelList): Promise<void> => {
 		Log.debug('squadUp postSquad() failed to send dm DM');
 		return;
 	}
+
 
 };
 

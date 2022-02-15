@@ -14,6 +14,7 @@ import LaunchSquad from '../../service/squad/LaunchSquad';
 import { GuildMember } from 'discord.js';
 
 export default class Squad extends SlashCommand {
+
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: 'squad',
@@ -72,6 +73,7 @@ export default class Squad extends SlashCommand {
 	}
 
 	async run(ctx: CommandContext): Promise<any> {
+
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;
 		let guildMember: GuildMember;
@@ -94,6 +96,7 @@ export default class Squad extends SlashCommand {
 	}
 
 	handleCommandError(ctx: CommandContext, command: Promise<any>): void {
+    
 		command.catch(async e => {
 			if (!(e instanceof ValidationError)) {
 				await ServiceUtils.sendOutErrorMessage(ctx);
@@ -102,3 +105,4 @@ export default class Squad extends SlashCommand {
 		});
 	}
 }
+
