@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.2
+
+1. Send Tips of $BANK on Polygon with `/tip` command.
+
 ## 1.3.1-RELEASE (2022-02-03)
 
 1. Feb coordinape distribution round link update
