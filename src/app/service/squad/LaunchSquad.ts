@@ -309,7 +309,7 @@ const finalConfirm = async (member, squadEmbed, xChannelList): Promise<void> => 
 						return;
 					} else if (reac.emoji.name === '❌') {
 						Log.debug('squadUp finalConfirm() received ❌ reaction');
-            
+
 						try {
 							await dmChannel.send({ content: 'Command cancelled.' });
 
@@ -620,8 +620,6 @@ export const checkExpiration = async (): Promise<void> => {
 							await squadMsg.react('🔃');
 
 							await dbSquad.updateOne({ _id: squad._id }, { $set: { active: false } }, { upsert: true });
-
-							return;
 						}
 					}
 				}
