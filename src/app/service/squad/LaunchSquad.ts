@@ -41,7 +41,7 @@ const getTitle = async (member: GuildMember, ctx?: CommandContext): Promise<void
 		return;
 	}
 
-	const collector = dmChannel.createMessageCollector({ max: 1, time: (5000 * 60), dispose: true });
+	const collector = dmChannel.createMessageCollector({ max: 1, time: (10000 * 60), dispose: true });
 
 	collector.on('collect', async (msg) => {
 
@@ -65,15 +65,19 @@ const getTitle = async (member: GuildMember, ctx?: CommandContext): Promise<void
 
 	collector.on('end', async (_, reason) => {
 
-		// if getTitlePrompt is not the last message, time out silently.
-		if ((getTitlePrompt.id === dmChannel.lastMessage.id) && (reason === 'time')) {
-			Log.debug('squadUp getTitle message collector timed out');
+		try {
+			// if getTitlePrompt is not the last message, time out silently.
+			if ((getTitlePrompt.id === dmChannel.lastMessageId) && (reason === 'time')) {
+				Log.debug('squadUp getTitle message collector timed out');
 
-			try {
-				await dmChannel.send('The conversation timed out.');
-			} catch (e) {
-				Log.debug(`Squad getTitle collector timed out, unable to send dm, error msg: ${e}`);
+				try {
+					await dmChannel.send('The conversation timed out.');
+				} catch (e) {
+					Log.debug(`Squad getTitle collector timed out, unable to send dm, error msg: ${e}`);
+				}
 			}
+		} catch (e) {
+			Log.debug(`Squad getTitle unable to send timeout message: ${e}`);
 		}
 		if (!['time'].includes(reason)) {
 			Log.debug(`Squad getTitle collector stopped for unknown reason: ${reason}`);
@@ -96,7 +100,7 @@ const getDescription = async (member: GuildMember, title: string): Promise<void>
 		return;
 	}
 
-	const collector = dmChannel.createMessageCollector({ max: 1, time: (5000 * 60), dispose: true });
+	const collector = dmChannel.createMessageCollector({ max: 1, time: (10000 * 60), dispose: true });
 
 	collector.on('collect', async (msg) => {
 
@@ -133,15 +137,19 @@ const getDescription = async (member: GuildMember, title: string): Promise<void>
 
 	collector.on('end', async (_, reason) => {
 
-		// if getTitlePrompt is not the last message, time out silently.
-		if ((getDescriptionPrompt.id === dmChannel.lastMessage.id) && (reason === 'time')) {
-			Log.debug('squadUp getDescription() message collector timed out');
+		try {
+			// if getTitlePrompt is not the last message, time out silently.
+			if ((getDescriptionPrompt.id === dmChannel.lastMessageId) && (reason === 'time')) {
+				Log.debug('squadUp getDescription() message collector timed out');
 
-			try {
-				await dmChannel.send('The conversation timed out.');
-			} catch (e) {
-				Log.debug(`Squad getDescription collector timed out, unable to send dm, error msg: ${e}`);
+				try {
+					await dmChannel.send('The conversation timed out.');
+				} catch (e) {
+					Log.debug(`Squad getDescription collector timed out, unable to send dm, error msg: ${e}`);
+				}
 			}
+		} catch (e) {
+			Log.debug(`Squad getDescription unable to send timeout message ${e}`);
 		}
 		if (!['time'].includes(reason)) {
 			Log.debug(`Squad getDescription collector stopped for unknown reason: ${reason}`);
@@ -178,7 +186,7 @@ const xPostConfirm = async (member, title, description, squadEmbed): Promise<voi
 	await xPostConfirmMsg.react('🔃');
 	await xPostConfirmMsg.react('❌');
 
-	const collector = xPostConfirmMsg.createReactionCollector({ filter, max: 1, time: (3000 * 60), dispose: true });
+	const collector = xPostConfirmMsg.createReactionCollector({ filter, max: 1, time: (10000 * 60), dispose: true });
 
 	collector.on('end', async (collected, reason) => {
 		if (reason === 'limit') {
@@ -226,14 +234,18 @@ const xPostConfirm = async (member, title, description, squadEmbed): Promise<voi
 				}
 			}
 		} else {
-			if ((xPostConfirmMsg.id === dmChannel.lastMessage.id) && (reason === 'time')) {
-				Log.debug('squadUp xPostConfirm reaction collector timed out');
+			try {
+				if ((xPostConfirmMsg.id === dmChannel.lastMessageId) && (reason === 'time')) {
+					Log.debug('squadUp xPostConfirm reaction collector timed out');
 
-				try {
-					await dmChannel.send('The conversation timed out.');
-				} catch (e) {
-					Log.debug(`Squad xPostConfirmMsg reaction collector timed out, unable to send dm, error msg: ${e}`);
+					try {
+						await dmChannel.send('The conversation timed out.');
+					} catch (e) {
+						Log.debug(`Squad xPostConfirmMsg reaction collector timed out, unable to send dm, error msg: ${e}`);
+					}
 				}
+			} catch (e) {
+				Log.debug(`Squad xPostConfirmMsg failed to send timeout message ${e}`);
 			}
 			if (!['time'].includes(reason)) {
 				Log.debug(`Squad xPostConfirmMsg collector stopped for unknown reason: ${reason}`);
@@ -280,7 +292,7 @@ const finalConfirm = async (member, squadEmbed, xChannelList): Promise<void> => 
 	await finalConfirmMsg.react('🔃');
 	await finalConfirmMsg.react('❌');
 
-	const collector = finalConfirmMsg.createReactionCollector({ filter, max: 1, time: (3000 * 60), dispose: true });
+	const collector = finalConfirmMsg.createReactionCollector({ filter, max: 1, time: (10000 * 60), dispose: true });
 
 	collector.on('end', async (collected, reason) => {
 		if (reason === 'limit') {
@@ -322,13 +334,17 @@ const finalConfirm = async (member, squadEmbed, xChannelList): Promise<void> => 
 				}
 			}
 		} else {
-			if ((finalConfirmMsg.id === dmChannel.lastMessage.id) && (reason === 'time')) {
-				Log.debug('squadUp finalConfirm() reaction collector timed out');
-				try {
-					await dmChannel.send('The conversation timed out.');
-				} catch (e) {
-					Log.debug(`Squad finalConfirmMsg reaction collector timed out, unable to send dm, error msg: ${e}`);
+			try {
+				if ((finalConfirmMsg.id === dmChannel.lastMessageId) && (reason === 'time')) {
+					Log.debug('squadUp finalConfirm() reaction collector timed out');
+					try {
+						await dmChannel.send('The conversation timed out.');
+					} catch (e) {
+						Log.debug(`Squad finalConfirmMsg reaction collector timed out, unable to send dm, error msg: ${e}`);
+					}
 				}
+			} catch (e) {
+				Log.debug(`Squad finalConfirmMsg failed to send timeout message ${e}`);
 			}
 			if (!['time'].includes(reason)) {
 				Log.debug(`Squad finalConfirmMsg collector stopped for unknown reason: ${reason}`);
@@ -554,13 +570,17 @@ const getCrossPostChannels = async (member: GuildMember, squadEmbed) => {
 
 	collector.on('end', async (_, reason) => {
 
-		// if channelListInputPrompt is not the last message, time out silently.
-		if ((channelListInputPrompt.id === dmChannel.lastMessage.id) && (reason === 'time')) {
-			try {
-				await dmChannel.send('The conversation timed out.');
-			} catch (e) {
-				Log.debug(`Squad getCrossPostChannels collector timed out, unable to send dm, error msg: ${e}`);
+		try {
+			// if channelListInputPrompt is not the last message, time out silently.
+			if ((channelListInputPrompt.id === dmChannel.lastMessageId) && (reason === 'time')) {
+				try {
+					await dmChannel.send('The conversation timed out.');
+				} catch (e) {
+					Log.debug(`Squad getCrossPostChannels collector timed out, unable to send dm, error msg: ${e}`);
+				}
 			}
+		} catch (e) {
+			Log.debug(`Squad getCrossPostChannels failed to send timeout message ${e}`);
 		}
 		if (!['time', 'limit'].includes(reason)) {
 			Log.debug(`Squad getCrossPostChannels collector stopped for unknown reason: ${reason}`);
