@@ -5,7 +5,11 @@
 1. Add Sentry breadcrumbs
 2. Add Makefile and Dockerfile for arm machines
 3. Add notion meeting command
+4. Add SquadUp feature (/squad up command) - tool to assemble project teams
 
+## 1.3.1-RELEASE (2022-02-03)
+
+1. Feb coordinape distribution round link update
 
 ## 1.3.0-RELEASE (2022-01-13)
 

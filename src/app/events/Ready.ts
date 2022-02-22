@@ -5,6 +5,7 @@ import discordServerIds from '../service/constants/discordServerIds';
 import { DiscordEvent } from '../types/discord/DiscordEvent';
 import Log, { LogUtils } from '../utils/Log';
 import MongoDbUtils from '../utils/MongoDbUtils';
+import SquadCronJob from '../service/squad/SquadCronJobs';
 
 export default class implements DiscordEvent {
 	name = 'ready';
@@ -22,8 +23,7 @@ export default class implements DiscordEvent {
 
 			if (client.guilds.cache.some((guild) => guild.id == discordServerIds.banklessDAO || guild.id == discordServerIds.discordBotGarage)) {
 				await GuestPassService(client).catch(Log.error);
-				// TODO: enable when scoap squad is fixed
-				// await restoreScoapEmbedAndVoteRecord().catch(Log.error);
+				await SquadCronJob().catch(Log.error);
 			}
 			
 			Log.info(`${constants.APP_NAME} is ready!`);
