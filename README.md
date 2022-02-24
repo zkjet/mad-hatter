@@ -9,6 +9,8 @@
 </p>
 
 <p align="center">
+  <a href="https://docs.bankless.community/mad-hatter-product-support/">User Guide</a>
+  •
   <a href="https://discord.gg/EWRMHjqQVf">Bankless Bot Garage Discord</a>
   •
   <a href="https://sentry.io/organizations/bankless-dao/projects/mad-hatter/?project=6095995">Sentry</a>
