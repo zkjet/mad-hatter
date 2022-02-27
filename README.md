@@ -1,28 +1,63 @@
-# BanklessBot
-Bankless Discord Bot development<br>
-Multisig Wallet: 0x735FF6F197B0dc18eBEE127DD918d2111Eaf8220 (https://etherscan.io/address/0x735ff6f197b0dc18ebee127dd918d2111eaf8220)
+<h1 align="center">Mad Hatter - Bankless DAO's Discord Bot</h1>
 
-## What We Need
+<p align="center">
+  <img src="./assets/profile.png" alt="mad-hatter-logo" width="120px" height="120px"/>
+  <br>
+  <i>Mad Hatter is a Node.js Discord bot written in Typescript to help
+    <br> faciliate operations in the Bankless DAO Discord.</i>
+  <br>
+</p>
 
-Devs, testers, reviewers. If you are interested in developing features for
-the bot, please see the Getting Started heading below. If you want to be
-involved as a tester, please connect with a developer; paired programming
-will be a big win here. If you are interested in helping as a reviewer,
-please connect with any package maintainer for details on workflow.
+<p align="center">
+  <a href="https://docs.bankless.community/mad-hatter-product-support/">User Guide</a>
+  •
+  <a href="https://discord.gg/EWRMHjqQVf">Bankless Bot Garage Discord</a>
+  •
+  <a href="https://sentry.io/organizations/bankless-dao/projects/mad-hatter/?project=6095995">Sentry</a>
+  <br>
+  <br>
+</p>
+<hr>
 
-## Getting Started
+## Documentation
 
-If you're interested in helping with development, follow the steps outlined under docs/
-in [CONTRIBUTING.md](docs/CONTRIBUTING.md). This consists of setting up your own bot, having it added
-to the test server, and acquiring the tokens to connect with the test Notion
-and database.
+- [Developer Setup](docs/DEVELOPER.md)
+- [Contributing Guidelines](docs/CONTRIBUTING.md)
+#### Libraries
+- [discord.js](https://discord.js.org/#/docs/main/stable/general/welcome)
+- [slash-create](https://slash-create.js.org/#/)
 
-## Notion Links
+#### Guides
+* [discord.js Guide](https://discordjs.guide/)
+* [A Guide to Discord Bots](https://maah.gitbooks.io/discord-bots/content/)
 
--   [Guild Sign Up Form](https://docs.google.com/forms/d/e/1FAIpQLScpV0-OTbcRj-fH8zv7y9EYom-J-PtKxJSgGjBTUmKQ1pHv1g/viewform)
--   [Meeting Notes](https://www.notion.so/Developers-Guild-7dbde19a264d43debf75ecb27a9d406c)
--   [Bot Suggestion Form](https://docs.google.com/forms/d/e/1FAIpQLSffkvYdOeW5k3DAXeMl82wGlpuz8oZVIEOuf6mHFpYCriHqbw/viewform)
--   [DEV Guild Projects](https://www.notion.so/Dev-Guild-Projects-2d36ac50c02640bda22fbbf72069afe3)
+## Development Setup
+### Prerequisites
+- Install [Node.js 16.x](https://nodejs.org/en/) which includes [Node Package Manager](https://docs.npmjs.com/getting-started)
+- Install [Yarn 1.x](https://classic.yarnpkg.com/lang/en/docs/install)
+- Install [Docker Desktop](https://www.docker.com/products/docker-desktop) which includes Docker Engine, Docker CLI client, and Docker Compose.
+- Configure Discord application on the [Discord Developer Portal](https://discord.com/developers/applications).
 
-## RUNNING MONGODB
-https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
+### Optional downloads
+* Install [Robo3T](https://robomongo.org/) or Studio3T for a MongoDB GUI.
+* Install [Node Version Manager (NVM)](https://github.com/nvm-sh/nvm) to simplifiy management of node versions.
+
+### Starting the application
+
+#### Recommended method
+Verify [GNU Make](https://www.gnu.org/software/make/) v3.81+ is installed by running `make -v`, then run the Makefile in the project root directory:
+```
+make
+```
+
+#### Alternative methods
+If not using GNU make:
+
+```
+docker-compose up --build
+```
+
+If not using Docker:
+```
+yarn start
+```
