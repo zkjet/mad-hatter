@@ -95,12 +95,6 @@ description: 'View a Guild\'s notion page'
 guild description: 'Select a guild'
 choices: analytics | av | bizdev | design | developers | education | egal | marketing | operations | research | translators | treasury | writers
 
-## /scoap-squad/ScoapSquad.ts
-
-command: /scoap-squad assemble
-desription: 'Create or delete a SCOAP Squad request'
-assemble description: 'Create a SCOAP Squad request'
-
 ## /timecard/Timecard.ts
 
 command: /timecard checkin | checkout description | hours
