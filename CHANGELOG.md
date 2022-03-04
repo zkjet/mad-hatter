@@ -7,7 +7,7 @@
 3. Add notion meeting command
 4. Add SquadUp feature (/squad up command) - tool to assemble project teams
 5. remove ScoapSquad feature (/scoap-squad command)
-
+6. Update coordinape links for March round
 
 ## 1.3.1-RELEASE (2022-02-03)
 
