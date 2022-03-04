@@ -9,10 +9,13 @@
 5. remove ScoapSquad feature (/scoap-squad command)
 6. Update coordinape links for March round
 
+## 1.3.2
+
+1. Send Tips of $BANK on Polygon with `/tip` command.
+
 ## 1.3.1-RELEASE (2022-02-03)
 
 1. Feb coordinape distribution round link update
-
 
 ## 1.3.0-RELEASE (2022-01-13)
 
