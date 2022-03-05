@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.0-RELEASE
+
+1. Add Sentry breadcrumbs
+2. Add Makefile and Dockerfile for arm machines
+3. Add notion meeting command
+4. Add SquadUp feature (/squad up command) - tool to assemble project teams
+5. remove ScoapSquad feature (/scoap-squad command)
+6. Update coordinape links for March round
+
 ## 1.3.2
 
 1. Send Tips of $BANK on Polygon with `/tip` command.

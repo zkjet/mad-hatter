@@ -7,39 +7,34 @@ import {
 } from 'slash-create';
 import roleIds from '../../service/constants/roleIds';
 import ServiceUtils from '../../utils/ServiceUtils';
-import CreateNewScoapPoll from '../../service/scoap-squad/CreateNewScoapPoll';
 import ValidationError from '../../errors/ValidationError';
 import discordServerIds from '../../service/constants/discordServerIds';
 import { LogUtils } from '../../utils/Log';
-import { command } from '../../utils/SentryUtils';
+import LaunchSquad from '../../service/squad/LaunchSquad';
+import { GuildMember } from 'discord.js';
 
-export default class ScoapSquad extends SlashCommand {
+export default class Squad extends SlashCommand {
+
 	constructor(creator: SlashCreator) {
 		super(creator, {
-			name: 'scoap-squad',
-			description: 'Create or delete a SCOAP Squad request',
-			guildIDs: [discordServerIds.discordBotGarage],
+			name: 'squad',
+			description: 'Squad Commands',
+			guildIDs: [discordServerIds.banklessDAO, discordServerIds.discordBotGarage],
 			options: [
 				{
-					name: 'assemble',
+					name: 'up',
 					type: CommandOptionType.SUB_COMMAND,
-					description: 'Create a SCOAP Squad request',
+					description: 'Assemble a Squad',
 					options: [],
 				},
-				
 			],
 			throttling: {
-				usages: 2,
+				usages: 4,
 				duration: 1,
 			},
 			defaultPermission: false,
 			permissions: {
-				[discordServerIds.discordBotGarage]: [
-					{
-						type: ApplicationCommandPermissionType.ROLE,
-						id: roleIds.level1,
-						permission: true,
-					},
+				[discordServerIds.banklessDAO]: [
 					{
 						type: ApplicationCommandPermissionType.ROLE,
 						id: roleIds.level2,
@@ -47,12 +42,19 @@ export default class ScoapSquad extends SlashCommand {
 					},
 					{
 						type: ApplicationCommandPermissionType.ROLE,
-						id: roleIds.level3,
+						id: roleIds.admin,
 						permission: true,
 					},
 					{
 						type: ApplicationCommandPermissionType.ROLE,
-						id: roleIds.level4,
+						id: roleIds.genesisSquad,
+						permission: true,
+					},
+				],
+				[discordServerIds.discordBotGarage]: [
+					{
+						type: ApplicationCommandPermissionType.ROLE,
+						id: roleIds.level2,
 						permission: true,
 					},
 					{
@@ -70,32 +72,37 @@ export default class ScoapSquad extends SlashCommand {
 		});
 	}
 
-	@command
-	async run(ctx: CommandContext): Promise<void> {
-		await ctx.send({ content: 'TBD' });
+	async run(ctx: CommandContext): Promise<any> {
+
 		LogUtils.logCommandStart(ctx);
 		if (ctx.user.bot) return;
-		const { guildMember } = await ServiceUtils.getGuildAndMember(ctx);
-		let commandPromise: Promise<any>;
-		switch (ctx.subcommands[0]) {
-		case 'assemble':
-			commandPromise = CreateNewScoapPoll(guildMember, ctx);
-			break;
-		default:
-			await ctx.send(`${ctx.user.mention} Please try again.`);
+		let guildMember: GuildMember;
+		try {
+			({ guildMember } = await ServiceUtils.getGuildAndMember(ctx));
+		} catch (e) {
+			LogUtils.logError('failed to get guild Member', e);
 			return;
 		}
+		let command: Promise<any>;
+		switch (ctx.subcommands[0]) {
+		case 'up':
+			command = LaunchSquad(guildMember, ctx);
+			break;
+		default:
+			return ctx.send(`${ctx.user.mention} Please try again.`);
+		}
 
-		this.handleCommandError(ctx, commandPromise);
+		this.handleCommandError(ctx, command);
 	}
 
-	handleCommandError(ctx: CommandContext, commandPromise: Promise<any>): void {
-		commandPromise.catch(e => {
+	handleCommandError(ctx: CommandContext, command: Promise<any>): void {
+    
+		command.catch(async e => {
 			if (!(e instanceof ValidationError)) {
-				LogUtils.logError('failed to handle scoap-squad command', e);
-				return ServiceUtils.sendOutErrorMessage(ctx);
+				await ServiceUtils.sendOutErrorMessage(ctx);
+				return;
 			}
 		});
 	}
-	
 }
+

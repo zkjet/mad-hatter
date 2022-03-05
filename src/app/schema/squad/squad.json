@@ -1,0 +1,46 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": [
+      "_id"
+    ],
+    "properties": {
+      "_id": {
+        "bsonType": "objectId",
+        "description": "Squad ID"
+      },
+      "guildId": {
+        "bsonType":  ["string", "null"],
+        "description": "Discord guild ID of Squad"
+      },
+      "messageId": {
+        "bsonType":  ["string", "null"],
+        "description": "Discord message ID of Squad"
+      },
+      "authorId": {
+        "bsonType":  ["string", "null"],
+        "description": "Discord user ID of Squad author"
+      },
+      "title": {
+        "bsonType":  ["string", "null"],
+        "description": "Squad title"
+      },
+      "description": {
+        "bsonType":  ["string", "null"],
+        "description": "Squad description"
+      },
+      "claimedBy": {
+        "bsonType":  ["object", "null"],
+        "description": "Record of users who raised their hand. Key: Discord user ID, value: timestamp of hand raise "
+      },
+      "created": {
+        "bsonType":  ["double", "null"],
+        "description": "Timestamp of Squad created"
+      },
+      "active": {
+        "bsonType":  ["boolean", "null"],
+        "description": "Whether the Squad is active"
+      }
+    }
+  }
+}
