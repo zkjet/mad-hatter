@@ -12,7 +12,7 @@ const MessageCreateOnDEGEN = async (message: Message): Promise<void> => {
 			if (randomNum >= 0.75) {
 				await message.channel.sendTyping();
 				await message.channel.send({
-					content: `${degenPhrases.down[Math.floor(Math.random() * degenPhrases.app.length)]}`,
+					content: `${degenPhrases.down[Math.floor(Math.random() * degenPhrases.down.length)]}`,
 				}).catch(Log.error);
 			}
 			return;
