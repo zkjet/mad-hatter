@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.1-RELEASE (2022-05-13)
+
+1. Update Coordinape form for March
+2. Remove @nonsense from code owners
+3. Remove snarky comments, add positive comments, reduce POAP comments to 25 percent
+
 ## 1.4.0-RELEASE
 
 1. Add Sentry breadcrumbs

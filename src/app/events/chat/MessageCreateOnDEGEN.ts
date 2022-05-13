@@ -7,10 +7,21 @@ const MessageCreateOnDEGEN = async (message: Message): Promise<void> => {
 	try {
 		const content: string = message.content;
 		
+		if (content.match(/down/gi) || message.mentions.has(constants.DISCORD_BOT_USER_ID)) {
+			const randomNum = Math.random();
+			if (randomNum >= 0.75) {
+				await message.channel.sendTyping();
+				await message.channel.send({
+					content: `${degenPhrases.down[Math.floor(Math.random() * degenPhrases.down.length)]}`,
+				}).catch(Log.error);
+			}
+			return;
+		}
+		
 		// POAP
 		if (content.match(/POAP/gi)) {
 			const randomNum = Math.random();
-			if (randomNum <= 0.75) {
+			if (randomNum <= 0.25) {
 				await message.channel.sendTyping();
 				await message.channel.send({
 					content: `${degenPhrases.poap[Math.floor(Math.random() * degenPhrases.poap.length)]}`,
