@@ -25,7 +25,7 @@ jobs:
       - name: Deploy to Heroku Shared Test Environment
         uses: AkhileshNS/heroku-deploy@v3.12.12
         with:
-          heroku_api_key: ${{secrets.PROD_HEROKU_API_KEY}}
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: 'degen-bankless-dao'
           heroku_email: 'patinobrian@gmail.com'
           procfile: 'worker: yarn prod'
