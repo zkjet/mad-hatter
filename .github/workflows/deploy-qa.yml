@@ -31,7 +31,7 @@ jobs:
               with:
                   heroku_api_key: ${{secrets.QA_HEROKU_API_KEY}}
                   heroku_app_name: 'degen-bankless-dao-test'
-                  heroku_email: 'patinobrian@gmail.com'
+                  heroku_email: 'joshua@nonsensecodes.io'
                   procfile: 'worker: yarn qa'
               env:
                   HD_DISCORD_BOT_TOKEN: ${{secrets.QA_DISCORD_TOKEN}}
