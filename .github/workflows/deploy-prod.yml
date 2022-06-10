@@ -27,7 +27,7 @@ jobs:
         with:
           heroku_api_key: ${{secrets.PROD_HEROKU_API_KEY}}
           heroku_app_name: 'degen-bankless-dao'
-          heroku_email: 'patinobrian@gmail.com'
+          heroku_email: 'joshua@nonsensecodes.io'
           procfile: 'worker: yarn prod'
         env:
           HD_DISCORD_BOT_TOKEN: ${{secrets.PROD_DISCORD_TOKEN}}
