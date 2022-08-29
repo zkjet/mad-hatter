@@ -2,13 +2,13 @@ import {
 	SlashCreator,
 	GatewayServer,
 	SlashCommand,
-	CommandContext
+	CommandContext,
 } from 'slash-create';
 import Discord, {
 	Client,
 	ClientOptions,
 	Intents,
-	WSEventType
+	WSEventType,
 } from 'discord.js';
 import path from 'path';
 import fs from 'fs';
