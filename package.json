@@ -1,5 +1,5 @@
 {
-    "name": "degen-bankless-dao",
+    "name": "madhatter",
     "version": "1.4.1",
     "description": "Administrative and Utilitarian bot for the Bankless Discord Server.",
     "main": "app.js",
@@ -18,7 +18,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/BanklessDAO/degen-bankless-dao"
+        "url": "git+https://github.com/BanklessDAO/mad-hatter"
     },
     "keywords": [
         "bankless",
@@ -29,9 +29,9 @@
     "author": "BANKLESS DAO",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/BanklessDAO/degen-bankless-dao/issues"
+        "url": "https://github.com/BanklessDAO/mad-hatter/issues"
     },
-    "homepage": "https://github.com/BanklessDAO/degen-bankless-dao/main/README.md",
+    "homepage": "https://github.com/BanklessDAO/mad-hatter/main/README.md",
     "dependencies": {
         "@sentry/integrations": "^6.16.1",
         "@sentry/node": "^6.16.1",

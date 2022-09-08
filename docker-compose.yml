@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   bot:
-    container_name: degen_bot
+    container_name: mad_hatter
     build:
       dockerfile: ${DOCKERFILE:-Dockerfile}
     environment: 
@@ -14,7 +14,7 @@ services:
       - .:/app
 
   mongo:
-    container_name: degen_mongo
+    container_name: mad_hatter_mongos
     image: mongo:4.4.6
     environment:
       MONGO_INITDB_ROOT_USERNAME: dev
