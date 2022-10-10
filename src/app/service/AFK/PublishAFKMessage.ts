@@ -8,7 +8,7 @@ export const PublishAFKMessage = (username: string, content: string, guildId: st
 		description: content,
 		url: `https://discord.com/channels/${guildId}/${channelId}/${id}`,
 		footer: {
-			text: 'Brought to you by DEGEN',
+			text: 'Brought to you by MADHATTER',
 		},
 	};
 };
