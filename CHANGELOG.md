@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.1.1-FIX (2022-10-07)
+
+1. Replaced DEGEN with MADHATTER as output for AFK Command
+
 ## 1.4.1-RELEASE (2022-05-13)
 
 1. Update Coordinape form for March
