@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.2.1-FIX (2022-10-07)
+
+1. Replaced DEGEN with Mad Hatter as output for AFK Command
+
 ## 1.4.2 Pre-release
 
 1. Updated Feature Request command with link to new feedback form for Mad Hatter
