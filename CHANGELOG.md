@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.2.2-FIX (2022-10-27)
+
+1. Update `package.json` to reflect proper app name
+2. Updated Mad Hatter icons for README reference
+3. Updated verbiage on README to replace DEGEN with Mad Hatter
+3. Removed extraneous files and folders
+
 ## 1.4.2.1-FIX (2022-10-07)
 
 1. Replaced DEGEN with Mad Hatter as output for AFK Command
