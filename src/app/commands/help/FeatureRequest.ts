@@ -21,7 +21,7 @@ export default class FeatureRequest extends SlashCommand {
 		// Ignores commands from bots
 		if (ctx.user.bot) return;
 
-		const form = 'https://degen.canny.io/';
-		await ctx.send(`Here you are ${ctx.user.mention}, the DEGEN feature request form: ${form}`);
+		const form = 'https://airtable.com/shrCvG4C2SshXJRP4';
+		await ctx.send(`Here you are ${ctx.user.mention}, the Mad Hatter feature request form: ${form}`);
 	}
 }

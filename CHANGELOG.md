@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.2-RELEASE (2022-10-28)
+
+1. Updated Feature Request command with link to new feedback form for Mad Hatter
+2. Replaced DEGEN with Mad Hatter as output for AFK Command
+3. Update `package.json` to reflect proper app name
+4. Updated Mad Hatter icons for README reference
+5. Updated verbiage on README to replace DEGEN with Mad Hatter
+6. Removed extraneous files and folders
+
 ## 1.4.1-RELEASE (2022-05-13)
 
 1. Update Coordinape form for March

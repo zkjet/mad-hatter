@@ -13,12 +13,12 @@ export default class implements DiscordEvent {
 			if(message.author.bot) return;
 			// DEGEN says hello
 			await MessageCreateOnDEGEN(message).catch(e => {
-				LogUtils.logError('DEGEN failed to say hello', e);
+				LogUtils.logError('Mad Hatter failed to say hello', e);
 			});
 			// Check mentions for AFK users
 			if (message.mentions.users.size > 0) {
 				await HandleAFK(message).catch((e) => {
-					LogUtils.logError('DEGEN failed to handle AFK', e);
+					LogUtils.logError('Mad Hatter failed to handle AFK', e);
 				});
 			}
 		} catch (e) {
