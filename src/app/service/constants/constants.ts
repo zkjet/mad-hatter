@@ -94,23 +94,27 @@ export default Object.freeze({
 	GUILD_CHOICES: [
 		{
 			name: 'Analytics',
-			value: 'Analytics',
+			value: 'analytics',
 		},
 		{
 			name: 'AudioVisual',
-			value: 'AudioVisual',
+			value: 'audioVisual',
+		},
+		{
+			name: 'DAOlationships',
+			value: 'daolationships',
 		},
 		{
 			name: 'Design',
-			value: 'Design',
+			value: 'design',
 		},
 		{
 			name: 'Developers',
-			value: 'Developers',
+			value: 'developers',
 		},
 		{
 			name: 'Education',
-			value: 'Education',
+			value: 'education',
 		},
 		{
 			name: 'Legal',
@@ -118,22 +122,26 @@ export default Object.freeze({
 		},
 		{
 			name: 'Marketing',
-			value: 'Marketing',
+			value: 'marketing',
 		},
 		{
 			name: 'Operations',
-			value: 'Operations',
+			value: 'operations',
+		},
+		{
+			name: 'Project Management',
+			value: 'projectmanagement',
 		},
 		{
 			name: 'Translators',
-			value: 'Translators',
+			value: 'translators',
 		},
 		{
 			name: 'Treasury',
-			value: 'Treasury',
+			value: 'treasury',
 		},
 		{
 			name: 'Writers',
-			value: 'Writers',
+			value: 'writers',
 		}],
 });
