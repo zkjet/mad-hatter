@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.3-PRE-RELEASE
+
+1. Updated Guild listing to include DAOlationships and Project Management guilds
+
 ## 1.4.2-RELEASE (2022-10-28)
 
 1. Updated Feature Request command with link to new feedback form for Mad Hatter
